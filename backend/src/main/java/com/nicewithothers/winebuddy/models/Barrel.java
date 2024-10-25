@@ -1,6 +1,7 @@
 package com.nicewithothers.winebuddy.models;
 
 import io.github.sebasbaumh.postgis.Point;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +21,8 @@ public class Barrel {
 
     private String name;
 
+    @Column(columnDefinition = "geometry")
     private Point location;
 
-    private double volume;
+    private Double volume;
 }
