@@ -29,7 +29,8 @@ services:
       - backend
     volumes:
       - ./frontend:/app
-    command: ["npm", "run", "start"]
+      - /app/node_modules
+    command: ["npm", "run", "start", "--", "--host", "0.0.0.0"]
 
 volumes:
   db_data:
