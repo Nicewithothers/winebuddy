@@ -1,1 +1,0 @@
-create extension postgis if not exists;

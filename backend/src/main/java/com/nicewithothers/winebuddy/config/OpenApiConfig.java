@@ -20,6 +20,7 @@ public class OpenApiConfig {
                                 .name(securitySchemeName)
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
+                                .in(SecurityScheme.In.HEADER)
                                 .description("JWT token provider.")
                                 .bearerFormat("JWT")));
     }

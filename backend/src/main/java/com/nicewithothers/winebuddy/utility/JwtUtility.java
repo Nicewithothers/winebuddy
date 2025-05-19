@@ -1,95 +1,78 @@
 package com.nicewithothers.winebuddy.utility;
 
-import com.nicewithothers.winebuddy.models.AuthResponse;
-import com.nicewithothers.winebuddy.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.Jwks;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.security.KeyPair;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class JwtUtility {
-    private CacheManager cacheManager;
-    private TokenRepository tokenRepository;
+    private KeyPair secretKey;
 
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
-
-    private SecretKey generateSecretKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private String createToken(UserDetails userDetails) {
-        SecretKey key = generateSecretKey();
-        String token = Jwts.builder()
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .signWith(key)
-                .compact();
-        AuthResponse authResponse = new AuthResponse(token, userDetails.getAuthorities().toString());
-        tokenRepository.save(authResponse);
-        return token;
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        return createToken(userDetails);
-    }
-
-    public Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(generateSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        return claimsResolver.apply(extractAllClaims(token));
+    @PostConstruct
+    public void init() {
+        secretKey = Jwks.CRV.Ed25519.keyPair().build();
     }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiraton(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public List<GrantedAuthority> extractRoles(String token) {
-        Claims claims = extractAllClaims(token);
-        List<?> rawRoles = claims.get("auth", List.class);
-        return rawRoles.stream()
-                .filter(role -> role instanceof GrantedAuthority)
-                .map(role -> (GrantedAuthority) role)
-                .collect(Collectors.toList());
+    public Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 
-    public boolean isAuthExists(String token, UserDetails userDetails) {
-        AuthResponse authResponse = tokenRepository.findAuthResponseByToken(token);
-        return userDetails.getAuthorities().toString().contains(authResponse.getRole().substring(1, authResponse.getRole().length() - 1));
+    public String generateToken(UserDetails userDetails) {
+        return createToken(userDetails);
     }
 
-    @Cacheable(value = "tokenCache", key = "#token")
-    public boolean validateToken(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && tokenRepository.existsAuthResponseByToken(token) && isAuthExists(token, userDetails));
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public void invalidateToken(String token) {
-        tokenRepository.delete(tokenRepository.findAuthResponseByTokenContains(token.substring(7)));
-        cacheManager.getCache("tokenCache").clear();
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = exctractClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims exctractClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey.getPublic())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    private String createToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList())
+        );
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 12))
+                .signWith(secretKey.getPrivate())
+                .compact();
     }
 }
