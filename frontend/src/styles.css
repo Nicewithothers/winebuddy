@@ -1,0 +1,125 @@
+@import '@angular/cdk/overlay-prebuilt.css';
+
+/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+@import '@spartan-ng/brain/hlm-tailwind-preset.css';
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('./app/static/assets/fonts/Montserrat.ttf') format('truetype');
+}
+
+:root {
+    font-family: 'Montserrat', 'sans-serif';
+}
+
+/*Original*/
+/*:root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142.1 76.2% 36.3%;
+    --radius: 0.5rem;
+    color-scheme: light;
+}
+
+.dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 95%;
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 142.1 70.6% 45.3%;
+    --primary-foreground: 144.9 80.4% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142.4 71.8% 29.2%;
+    color-scheme: dark;
+}
+*/
+
+:root {
+    --background: 0 0% 100%; /* #d9b99b */
+    --foreground: 158 16% 24%; /* #3e5e4e */
+    --card: 0 0% 100%; /* #d9b99b */
+    --card-foreground: 158 16% 24%; /* #3e5e4e */
+    --popover: 0 0% 100%; /* #d9b99b */
+    --popover-foreground: 158 16% 24%; /* #3e5e4e */
+    --primary: 151 23% 45%; /* #5a9178 */
+    --primary-foreground: 33 41% 76%; /* #d9b99b */
+    --secondary: 33 41% 86%; /* lighter #d9b99b */
+    --secondary-foreground: 158 16% 24%; /* #3e5e4e */
+    --muted: 33 41% 86%; /* light beige */
+    --muted-foreground: 158 10% 50%; /* desaturated green */
+    --accent: 33 41% 86%; /* light beige */
+    --accent-foreground: 158 16% 24%; /* #3e5e4e */
+    --destructive: 0 60% 50%; /* preserved red for visibility */
+    --destructive-foreground: 0 0% 98%;
+    --border: 33 41% 66%; /* slightly darker beige */
+    --input: 33 41% 66%;
+    --ring: 151 23% 45%; /* #5a9178 */
+    --radius: 0.5rem;
+    color-scheme: light;
+}
+
+.dark {
+    --background: 158 16% 24%; /* #3e5e4e */
+    --foreground: 33 41% 76%; /* #d9b99b */
+    --card: 158 16% 20%; /* slightly darker green */
+    --card-foreground: 33 41% 76%; /* #d9b99b */
+    --popover: 158 16% 20%;
+    --popover-foreground: 33 41% 76%;
+    --primary: 151 23% 45%; /* #5a9178 */
+    --primary-foreground: 33 41% 76%; /* #d9b99b */
+    --secondary: 158 16% 18%; /* very dark green */
+    --secondary-foreground: 33 41% 76%;
+    --muted: 158 16% 18%;
+    --muted-foreground: 33 41% 66%;
+    --accent: 33 41% 30%; /* mid-tone beige */
+    --accent-foreground: 33 41% 76%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 33 41% 76%;
+    --border: 158 16% 18%;
+    --input: 158 16% 18%;
+    --ring: 151 23% 45%; /* #5a9178 */
+    color-scheme: dark;
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    .btn-menubar {
+        @apply font-bold hover:bg-primary ease-in transition-all duration-300 ease-in-out transform;
+    }
+}
+
+html,
+body {
+    min-height: 100%;
+}

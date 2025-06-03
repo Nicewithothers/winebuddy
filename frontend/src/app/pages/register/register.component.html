@@ -1,0 +1,64 @@
+<section class="flex justify-center items-center h-screen">
+    <div hlmCard class="flex flex-col justify-center items-center shadow-xl">
+        <div hlmCardHeader>
+            <h3 hlmCardTitle>Registration</h3>
+        </div>
+        <div hlmCardContent>
+            <form
+                class="flex flex-col justify-center items-center gap-6"
+                [formGroup]="registerForm"
+                (ngSubmit)="register()"
+            >
+                <div class="flex flex-row items-center justify-center gap-2">
+                    <ng-icon hlm name="lucideUser" />
+                    <hlm-form-field>
+                        <input
+                            class="w-80"
+                            hlmInput
+                            type="text"
+                            placeholder="Username"
+                            formControlName="username"
+                        />
+                    </hlm-form-field>
+                </div>
+                <div class="flex flex-row items-center justify-center gap-2">
+                    <ng-icon hlm name="lucideMail" />
+                    <hlm-form-field>
+                        <input
+                            class="w-80"
+                            hlmInput
+                            type="email"
+                            placeholder="Email"
+                            formControlName="email"
+                        />
+                    </hlm-form-field>
+                </div>
+                <div class="flex flex-row items-center justify-center gap-2">
+                    <ng-icon hlm name="lucideKeyRound" />
+                    <hlm-form-field>
+                        <input
+                            class="w-80"
+                            hlmInput
+                            type="password"
+                            placeholder="Password"
+                            formControlName="password"
+                        />
+                    </hlm-form-field>
+                </div>
+                <div class="flex flex-row items-center justify-center gap-2">
+                    <ng-icon hlm name="lucideKeyRound" />
+                    <hlm-form-field>
+                        <input
+                            class="w-80"
+                            hlmInput
+                            type="password"
+                            placeholder="Confirm password"
+                            formControlName="passwordConfirm"
+                        />
+                    </hlm-form-field>
+                </div>
+                <button hlmBtn type="submit" class="cursor-pointer">Register</button>
+            </form>
+        </div>
+    </div>
+</section>
