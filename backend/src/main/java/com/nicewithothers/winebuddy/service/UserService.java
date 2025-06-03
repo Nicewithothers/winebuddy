@@ -4,6 +4,7 @@ import com.nicewithothers.winebuddy.mapper.UserMapper;
 import com.nicewithothers.winebuddy.model.User;
 import com.nicewithothers.winebuddy.model.dto.user.RegisterRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
+import com.nicewithothers.winebuddy.model.enums.Roles;
 import com.nicewithothers.winebuddy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Collections;
 
 @Service
@@ -38,7 +40,10 @@ public class UserService implements UserDetailsService {
                     .username(registerRequest.getUsername())
                     .email(registerRequest.getEmail())
                     .password(passwordEncoder.encode(registerRequest.getPassword()))
+                    .created(Instant.now())
+                    .role(Roles.USER)
                     .build();
+            userRepository.save(user);
             return userMapper.toUserDto(user);
         } catch (Exception e) {
             throw new RuntimeException(String.format("Could not register user: %s", registerRequest.getUsername()), e);
