@@ -35,7 +35,7 @@ services:
     container_name: 'frontend'
     depends_on:
       - backend
-    command: ["npm", "run", "dev"]
+    command: ["pnpm", "run", "dev"]
 
 volumes:
   db_data:

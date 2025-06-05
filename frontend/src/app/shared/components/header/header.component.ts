@@ -1,12 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import { HlmMenuBarComponent, HlmMenuBarItemDirective } from '@spartan-ng/ui-menu-helm';
-import { NgIf, NgOptimizedImage } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+    HlmMenuBarComponent,
+    HlmMenuBarItemDirective,
+    HlmMenuComponent,
+    HlmMenuItemDirective,
+} from '@spartan-ng/ui-menu-helm';
+import { AsyncPipe, NgIf, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
-import { lucideLogIn, lucideUserRoundPen } from '@ng-icons/lucide';
+import {
+    lucideLayoutGrid,
+    lucideLogIn,
+    lucideLogOut,
+    lucideSettings,
+    lucideUserRoundPen,
+} from '@ng-icons/lucide';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user';
+import { Observable } from 'rxjs';
+import { HlmAvatarComponent, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
+import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
 
 @Component({
     selector: 'app-header',
@@ -18,24 +32,36 @@ import { User } from '../../models/user';
         NgIcon,
         HlmIconDirective,
         NgIf,
+        AsyncPipe,
+        HlmAvatarComponent,
+        HlmAvatarImageDirective,
+        BrnMenuTriggerDirective,
+        HlmMenuItemDirective,
+        HlmMenuComponent,
     ],
-    providers: [provideIcons({ lucideLogIn, lucideUserRoundPen })],
+    providers: [
+        provideIcons({
+            lucideLogIn,
+            lucideUserRoundPen,
+            lucideLayoutGrid,
+            lucideSettings,
+            lucideLogOut,
+        }),
+    ],
     templateUrl: './header.component.html',
     styleUrl: './header.component.css',
     standalone: true,
 })
 export class HeaderComponent implements OnInit {
-    user: User | null = null;
-    isLoggedIn: boolean = false;
+    user!: Observable<User | null>;
 
     constructor(private authService: AuthService) {}
 
-    ngOnInit(): void {
-        this.authService.currentUser$.subscribe(user => {
-            if (user) {
-                this.user = user;
-                this.isLoggedIn = this.authService.isLoggedIn();
-            }
-        });
+    ngOnInit() {
+        this.user = this.authService.currentUser$;
+    }
+
+    signOut() {
+        this.authService.logout();
     }
 }

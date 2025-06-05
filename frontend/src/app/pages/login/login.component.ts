@@ -59,7 +59,6 @@ export class LoginComponent {
                     position: 'bottom-center',
                 });
                 this.authService.sessionHandler();
-                console.log(user);
                 this.router.navigate(['/']);
             } else {
                 toast.error('Login failed, try again!', {

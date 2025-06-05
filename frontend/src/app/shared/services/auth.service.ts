@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, take, timer } from 'rxjs';
 import { RegisterRequest } from '../models/register-request';
 import { LoginRequest } from '../models/login-request';
@@ -13,12 +13,36 @@ import { toast } from 'ngx-sonner';
 export class AuthService {
     private authPath: string = 'http://localhost:8080/api/auth';
     private currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
-    currentUser$: Observable<User | null> = this.currentUser.asObservable();
+    public currentUser$: Observable<User | null> = this.currentUser.asObservable();
 
     constructor(
         private http: HttpClient,
         private router: Router,
     ) {}
+
+    getUser(): Observable<User | null> {
+        const token = sessionStorage.getItem('token') as string;
+        const headers = new HttpHeaders({ Authorization: token });
+
+        return this.http
+            .get<User>(`${this.authPath}/getUser`, { headers, observe: 'response' })
+            .pipe(
+                map((response: any) => {
+                    if (response.ok && response.body) {
+                        const user = response.body as User;
+                        this.currentUser.next(user);
+                        return user;
+                    } else {
+                        throw new Error('User not found');
+                    }
+                }),
+                catchError(err => {
+                    console.error(err);
+                    this.currentUser.next(null);
+                    return of(null);
+                }),
+            );
+    }
 
     register(credentials: RegisterRequest): Observable<RegisterRequest | null> {
         return this.http
@@ -41,7 +65,7 @@ export class AuthService {
     login(credentials: LoginRequest): Observable<User | null> {
         return this.http.post(`${this.authPath}/login`, credentials, { observe: 'response' }).pipe(
             map((response: any) => {
-                const token = response.headers.authorization as string;
+                const token = response.headers.get('Authorization') as string;
                 sessionStorage.setItem('token', token);
                 if (response.ok && response.body) {
                     const user = response.body as User;
@@ -62,6 +86,11 @@ export class AuthService {
     logout(): void {
         sessionStorage.clear();
         this.currentUser.next(null);
+        this.router.navigate(['/']).then(() => {
+            toast.success('Logged out successfully!', {
+                position: 'bottom-center',
+            });
+        });
     }
 
     sessionHandler(): void {
@@ -74,9 +103,5 @@ export class AuthService {
                 });
                 this.router.navigate(['/login']);
             });
-    }
-
-    isLoggedIn(): boolean {
-        return this.currentUser.value !== null;
     }
 }
