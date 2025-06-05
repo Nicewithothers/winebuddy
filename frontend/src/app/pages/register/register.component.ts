@@ -13,7 +13,7 @@ import {
     HlmCardHeaderDirective,
     HlmCardTitleDirective,
 } from '@spartan-ng/ui-card-helm';
-import { RegisterRequest } from '../../shared/models/register-request';
+import { RegisterRequest } from '../../shared/models/user/register-request';
 import { registerForm } from '../../shared/forms/register.form';
 import { AuthService } from '../../shared/services/auth.service';
 import { toast } from 'ngx-sonner';
@@ -46,24 +46,15 @@ export class RegisterComponent {
     ) {}
 
     register(): void {
-        if (this.registerForm.invalid) {
-            return;
-        }
-
-        const registerData: RegisterRequest = {
-            username: this.registerForm.get('username')?.value,
-            email: this.registerForm.get('email')?.value,
-            password: this.registerForm.get('password')?.value,
-        };
-
-        this.authService.register(registerData).subscribe(user => {
+        this.authService.register(this.registerForm.value).subscribe(user => {
             if (user) {
-                toast.success('Registered successfully, you can now log in!', {
-                    position: 'bottom-center',
+                this.router.navigate(['/login']).then(() => {
+                    toast.success('Registered successfully!', {
+                        position: 'bottom-center',
+                    });
                 });
-                this.router.navigate(['/login']);
             } else {
-                toast.error('Register failed, try again!', {
+                toast.error('Registration failed, try again!', {
                     position: 'bottom-center',
                 });
             }

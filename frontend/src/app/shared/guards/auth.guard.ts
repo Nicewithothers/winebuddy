@@ -1,17 +1,22 @@
 import { CanActivateFn, Router } from '@angular/router';
-import { inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { toast } from 'ngx-sonner';
+import { inject } from '@angular/core';
+import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = async (route, state) => {
+export const authGuard: CanActivateFn = (route, state) => {
     const router = inject(Router);
-    const token = sessionStorage.getItem('token') as string;
-    if (token) {
-        return true;
-    } else {
-        toast.error('You cannot access this page unless you log in!', {
-            position: 'bottom-center',
-        });
-        await router.navigate(['/login']);
-        return false;
-    }
+    const authService = inject(AuthService);
+    return firstValueFrom(authService.user$).then(user => {
+        if (user) {
+            return true;
+        } else {
+            router.navigate(['/login']).then(() => {
+                toast.error('You must be logged in to access this page.', {
+                    position: 'bottom-center',
+                });
+            });
+            return false;
+        }
+    });
 };

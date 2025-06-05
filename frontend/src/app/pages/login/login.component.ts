@@ -49,17 +49,14 @@ export class LoginComponent {
     ) {}
 
     login(): void {
-        if (this.loginForm.invalid) {
-            return;
-        }
-
         this.authService.login(this.loginForm.value).subscribe(user => {
             if (user) {
-                toast.success('Logged in successfully!', {
-                    position: 'bottom-center',
-                });
                 this.authService.sessionHandler();
-                this.router.navigate(['/']);
+                this.router.navigate(['/']).then(() => {
+                    toast.success('Logged in successfully!', {
+                        position: 'bottom-center',
+                    });
+                });
             } else {
                 toast.error('Login failed, try again!', {
                     position: 'bottom-center',

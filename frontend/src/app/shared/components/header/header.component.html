@@ -12,38 +12,47 @@
                 priority
             />
         </div>
-        <div *ngIf="user | async; else loggedIn">
-            <hlm-avatar variant="large">
-                <img
-                    [src]="
-                        (user | async)?.profileURL
-                            ? (user | async)?.profileURL
-                            : 'images/anonymous.png'
-                    "
-                    [brnMenuTriggerFor]="userOptions"
-                    class="cursor-pointer"
-                    alt="profile_picture"
-                    hlmAvatarImage
-                />
-            </hlm-avatar>
-            <ng-template #userOptions>
-                <hlm-menu>
-                    <button hlmMenuItem routerLink="/dashboard" class="btn-profile cursor-pointer">
-                        <ng-icon hlm name="lucideLayoutGrid" />
-                        Dashboard
-                    </button>
-                    <button hlmMenuItem routerLink="/settings" class="btn-profile cursor-pointer">
-                        <ng-icon hlm name="lucideSettings" />
-                        Settings
-                    </button>
-                    <button hlmMenuItem (click)="signOut()" class="btn-profile cursor-pointer">
-                        <ng-icon hlm name="lucideLogOut" />
-                        Sign Out
-                    </button>
-                </hlm-menu>
-            </ng-template>
-        </div>
-        <ng-template #loggedIn>
+        @if (this.authService.user$ | async) {
+            <div>
+                <hlm-avatar variant="large">
+                    <img
+                        [src]="
+                            (this.authService.user$ | async)?.profileURL
+                                ? (this.authService.user$ | async)?.profileURL
+                                : 'images/anonymous.png'
+                        "
+                        [brnMenuTriggerFor]="userOptions"
+                        class="cursor-pointer"
+                        alt="profile_picture"
+                        hlmAvatarImage
+                    />
+                </hlm-avatar>
+                <ng-template #userOptions>
+                    <hlm-menu>
+                        <button
+                            hlmMenuItem
+                            routerLink="/dashboard"
+                            class="btn-profile cursor-pointer"
+                        >
+                            <ng-icon hlm name="lucideLayoutGrid" />
+                            Dashboard
+                        </button>
+                        <button
+                            hlmMenuItem
+                            routerLink="/settings"
+                            class="btn-profile cursor-pointer"
+                        >
+                            <ng-icon hlm name="lucideSettings" />
+                            Settings
+                        </button>
+                        <button hlmMenuItem (click)="signOut()" class="btn-profile cursor-pointer">
+                            <ng-icon hlm name="lucideLogOut" />
+                            Sign Out
+                        </button>
+                    </hlm-menu>
+                </ng-template>
+            </div>
+        } @else {
             <div class="flex flex-row gap-2">
                 <button hlmMenuBarItem routerLink="/login" class="btn-menubar cursor-pointer">
                     Login
@@ -54,6 +63,6 @@
                     <ng-icon hlm name="lucideUserRoundPen" />
                 </button>
             </div>
-        </ng-template>
+        }
     </hlm-menu-bar>
 </header>

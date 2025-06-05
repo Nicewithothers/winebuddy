@@ -57,7 +57,14 @@
                         />
                     </hlm-form-field>
                 </div>
-                <button hlmBtn type="submit" class="cursor-pointer">Register</button>
+                <button
+                    hlmBtn
+                    type="submit"
+                    class="cursor-pointer"
+                    [disabled]="this.registerForm.invalid"
+                >
+                    Register
+                </button>
             </form>
         </div>
     </div>

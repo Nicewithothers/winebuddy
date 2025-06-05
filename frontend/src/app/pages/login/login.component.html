@@ -33,7 +33,14 @@
                         />
                     </hlm-form-field>
                 </div>
-                <button hlmBtn type="submit" class="cursor-pointer">Login</button>
+                <button
+                    hlmBtn
+                    type="submit"
+                    class="cursor-pointer"
+                    [disabled]="this.loginForm.invalid"
+                >
+                    Login
+                </button>
             </form>
         </div>
     </div>

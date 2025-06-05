@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
     HlmMenuBarComponent,
     HlmMenuBarItemDirective,
     HlmMenuComponent,
     HlmMenuItemDirective,
 } from '@spartan-ng/ui-menu-helm';
-import { AsyncPipe, NgIf, NgOptimizedImage } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
@@ -17,10 +17,10 @@ import {
     lucideUserRoundPen,
 } from '@ng-icons/lucide';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../models/user';
-import { Observable } from 'rxjs';
 import { HlmAvatarComponent, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
 import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
+import { User } from '../../models/user/user';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-header',
@@ -31,7 +31,6 @@ import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
         RouterLink,
         NgIcon,
         HlmIconDirective,
-        NgIf,
         AsyncPipe,
         HlmAvatarComponent,
         HlmAvatarImageDirective,
@@ -53,15 +52,17 @@ import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
     standalone: true,
 })
 export class HeaderComponent implements OnInit {
-    user!: Observable<User | null>;
+    user!: User;
 
-    constructor(private authService: AuthService) {}
+    constructor(protected authService: AuthService) {}
 
     ngOnInit() {
-        this.user = this.authService.currentUser$;
+        firstValueFrom(this.authService.user$).then(user => {
+            this.user = user;
+        });
     }
 
-    signOut() {
+    signOut(): void {
         this.authService.logout();
     }
 }

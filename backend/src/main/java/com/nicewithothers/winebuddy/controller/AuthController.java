@@ -1,31 +1,30 @@
 package com.nicewithothers.winebuddy.controller;
 
-import com.nicewithothers.winebuddy.mapper.UserMapper;
+import com.nicewithothers.winebuddy.model.dto.user.AuthResponse;
 import com.nicewithothers.winebuddy.model.dto.user.LoginRequest;
 import com.nicewithothers.winebuddy.model.dto.user.RegisterRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
+import com.nicewithothers.winebuddy.service.AuthService;
 import com.nicewithothers.winebuddy.service.UserService;
-import com.nicewithothers.winebuddy.utility.JwtUtility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthenticationManager authenticationManager;
     private final UserService userService;
-    private final UserMapper userMapper;
-    private final JwtUtility jwtUtility;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -35,30 +34,22 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@Valid @RequestBody LoginRequest loginRequest) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-            );
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String token = jwtUtility.generateToken(userDetails);
-            headers.add("Authorization", token);
-            return new ResponseEntity<>(
-                    userMapper.toUserDto(userService.findByUsername(loginRequest.getUsername())), headers, HttpStatus.OK);
-        } catch (AuthenticationException ae) {
-            headers.add("Authorization", "");
-            return new ResponseEntity<>(headers, HttpStatus.UNAUTHORIZED);
-        }
-    }
+            HttpHeaders headers = new HttpHeaders();
+            AuthResponse auth = authService.authenticate(loginRequest);
 
-    @GetMapping("/getUser")
-    public ResponseEntity<UserDto> getUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if (token != null) {
-            String username = jwtUtility.extractUsername(token);
-            UserDto userDto = userMapper.toUserDto(userService.findByUsername(username));
-            return new ResponseEntity<>(userDto, HttpStatus.OK);
-        } else {
+            ResponseCookie cookie = ResponseCookie.from("authCookie", auth.getToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(Duration.ofHours(1))
+                    .sameSite(SameSiteCookies.STRICT.toString())
+                    .build();
+            headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+            return new ResponseEntity<>(auth, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error while authenticating user", e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
