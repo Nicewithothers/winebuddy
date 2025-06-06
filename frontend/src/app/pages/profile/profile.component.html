@@ -1,0 +1,8 @@
+<div hlmCard>
+    @if (this.authService.user$ | async; as user) {
+        <div hlmCardHeader>
+            <h3 hlmCardTitle>Profile of {{ user.username }}</h3>
+        </div>
+        <div hlmCardContent></div>
+    } @else {}
+</div>

@@ -23,8 +23,6 @@ export class AuthService {
         const user = JSON.parse(sessionStorage.getItem('User') || 'null');
         if (user) {
             this.userSubject.next(user);
-        } else {
-            this.userSubject.next(null);
         }
     }
 
@@ -32,6 +30,7 @@ export class AuthService {
         return this.http
             .post<RegisterRequest>(`${this.authPath}/register`, credentials, {
                 observe: 'response',
+                responseType: 'json',
             })
             .pipe(
                 map((response: any) => {
@@ -52,14 +51,14 @@ export class AuthService {
         return this.http
             .post(`${this.authPath}/login`, credentials, {
                 observe: 'response',
-                withCredentials: true,
             })
             .pipe(
                 map((response: any) => {
                     if (response.ok && response.body) {
-                        const authResponse = response.body as AuthResponse;
-                        const user = authResponse.user;
+                        const user = response.body.user as User;
+                        const token = response.body.token as string;
                         sessionStorage.setItem('User', JSON.stringify(user));
+                        sessionStorage.setItem('AuthToken', token);
                         this.userSubject.next(user);
                         return user;
                     } else {
@@ -81,17 +80,5 @@ export class AuthService {
                 position: 'bottom-center',
             });
         });
-    }
-
-    sessionHandler(): void {
-        timer(1000 * 60)
-            .pipe(take(1))
-            .subscribe(() => {
-                this.logout();
-                toast.warning('Session timed out, please log in again.', {
-                    position: 'bottom-center',
-                });
-                this.router.navigate(['/login']);
-            });
     }
 }

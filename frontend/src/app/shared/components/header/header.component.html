@@ -39,11 +39,11 @@
                         </button>
                         <button
                             hlmMenuItem
-                            routerLink="/settings"
+                            routerLink="/profile"
                             class="btn-profile cursor-pointer"
                         >
-                            <ng-icon hlm name="lucideSettings" />
-                            Settings
+                            <ng-icon hlm name="lucideCircleUserRound" />
+                            Profile
                         </button>
                         <button hlmMenuItem (click)="signOut()" class="btn-profile cursor-pointer">
                             <ng-icon hlm name="lucideLogOut" />
@@ -55,12 +55,12 @@
         } @else {
             <div class="flex flex-row gap-2">
                 <button hlmMenuBarItem routerLink="/login" class="btn-menubar cursor-pointer">
-                    Login
                     <ng-icon hlm name="lucideLogIn" />
+                    Login
                 </button>
                 <button hlmMenuBarItem routerLink="/register" class="btn-menubar cursor-pointer">
-                    Register
                     <ng-icon hlm name="lucideUserRoundPen" />
+                    Register
                 </button>
             </div>
         }

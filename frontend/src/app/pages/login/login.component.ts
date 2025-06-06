@@ -51,7 +51,6 @@ export class LoginComponent {
     login(): void {
         this.authService.login(this.loginForm.value).subscribe(user => {
             if (user) {
-                this.authService.sessionHandler();
                 this.router.navigate(['/']).then(() => {
                     toast.success('Logged in successfully!', {
                         position: 'bottom-center',

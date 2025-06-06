@@ -10,10 +10,10 @@ import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import {
+    lucideCircleUserRound,
     lucideLayoutGrid,
     lucideLogIn,
     lucideLogOut,
-    lucideSettings,
     lucideUserRoundPen,
 } from '@ng-icons/lucide';
 import { AuthService } from '../../services/auth.service';
@@ -43,7 +43,7 @@ import { firstValueFrom } from 'rxjs';
             lucideLogIn,
             lucideUserRoundPen,
             lucideLayoutGrid,
-            lucideSettings,
+            lucideCircleUserRound,
             lucideLogOut,
         }),
     ],
