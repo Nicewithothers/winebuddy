@@ -37,6 +37,10 @@ services:
       - backend
     command: ["pnpm", "run", "dev"]
 
+networks:
+    minionetwork:
+        driver: bridge
+
 volumes:
   db_data:
   minio_data:

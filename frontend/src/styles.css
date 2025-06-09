@@ -121,6 +121,10 @@
     .btn-profile {
         @apply font-bold hover:bg-primary ease-in transition-all duration-300 ease-in-out transform flex flex-row gap-2;
     }
+
+    .section-container {
+        @apply flex items-center justify-center h-screen;
+    }
 }
 
 html,

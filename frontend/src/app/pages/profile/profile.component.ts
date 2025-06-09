@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../shared/services/auth.service';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgSwitch } from '@angular/common';
 import {
     HlmCardContentDirective,
     HlmCardDirective,
+    HlmCardFooterDirective,
     HlmCardHeaderDirective,
     HlmCardTitleDirective,
 } from '@spartan-ng/ui-card-helm';
+import { HlmAvatarComponent, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
+import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
+import { FileService } from '../../shared/services/file.service';
+import { firstValueFrom } from 'rxjs';
+import { User } from '../../shared/models/user/user';
 
 @Component({
     selector: 'app-profile',
@@ -16,10 +22,51 @@ import {
         HlmCardHeaderDirective,
         HlmCardTitleDirective,
         AsyncPipe,
+        HlmAvatarComponent,
+        HlmAvatarImageDirective,
+        HlmButtonDirective,
     ],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.css',
 })
 export class ProfileComponent {
-    constructor(protected authService: AuthService) {}
+    user!: User;
+    selectedPreviewImage: string | null = null;
+    selectedImage: File | null = null;
+
+    constructor(
+        protected authService: AuthService,
+        private fileService: FileService,
+    ) {
+        firstValueFrom(this.authService.user$).then(user => {
+            this.user = user;
+        });
+    }
+
+    protected openImageDialog(): void {
+        const fileInput = document.querySelector('#picture') as HTMLElement;
+        fileInput.click();
+    }
+
+    onImageSelected(event: any): void {
+        const file: File = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            this.selectedImage = file;
+            reader.onload = e => {
+                this.selectedPreviewImage = e.target?.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    uploadProfile() {
+        if (this.selectedImage) {
+            this.fileService
+                .uploadProfile(this.user.username, this.selectedImage)
+                .subscribe(user => {
+                    this.user = user;
+                });
+        }
+    }
 }
