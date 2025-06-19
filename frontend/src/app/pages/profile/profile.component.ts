@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../shared/services/auth.service';
-import { AsyncPipe, NgSwitch } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
     HlmCardContentDirective,
     HlmCardDirective,
-    HlmCardFooterDirective,
     HlmCardHeaderDirective,
     HlmCardTitleDirective,
 } from '@spartan-ng/ui-card-helm';
@@ -12,7 +11,8 @@ import { HlmAvatarComponent, HlmAvatarImageDirective } from '@spartan-ng/ui-avat
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { FileService } from '../../shared/services/file.service';
 import { firstValueFrom } from 'rxjs';
-import { User } from '../../shared/models/user/user';
+import { User } from '../../shared/models/User';
+import { toast } from 'ngx-sonner';
 
 @Component({
     selector: 'app-profile',
@@ -29,7 +29,7 @@ import { User } from '../../shared/models/user/user';
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.css',
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
     user!: User;
     selectedPreviewImage: string | null = null;
     selectedImage: File | null = null;
@@ -37,7 +37,9 @@ export class ProfileComponent {
     constructor(
         protected authService: AuthService,
         private fileService: FileService,
-    ) {
+    ) {}
+
+    ngOnInit() {
         firstValueFrom(this.authService.user$).then(user => {
             this.user = user;
         });
@@ -65,7 +67,12 @@ export class ProfileComponent {
             this.fileService
                 .uploadProfile(this.user.username, this.selectedImage)
                 .subscribe(user => {
-                    this.user = user;
+                    if (user) {
+                        this.user = user;
+                        toast.success('Picture updated successfully', {
+                            position: 'top-right',
+                        });
+                    }
                 });
         }
     }

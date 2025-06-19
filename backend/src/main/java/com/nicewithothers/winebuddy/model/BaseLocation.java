@@ -1,17 +1,20 @@
 package com.nicewithothers.winebuddy.model;
 
-import io.github.sebasbaumh.postgis.Polygon;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.locationtech.jts.geom.Polygon;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
+@NoArgsConstructor
+@SuperBuilder
 @MappedSuperclass
 public abstract class BaseLocation {
     @Id
@@ -21,10 +24,9 @@ public abstract class BaseLocation {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "geometry", nullable = false)
+    @Column(columnDefinition = "Geometry(Polygon,4326)", nullable = false)
     private Polygon mapArea;
 
-    @Nullable
-    @Column
-    private LocalDateTime owningDate;
+    @Column(nullable = false)
+    private Instant owningDate = Instant.now();
 }

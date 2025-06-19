@@ -1,6 +1,5 @@
 package com.nicewithothers.winebuddy.model;
 
-import io.github.sebasbaumh.postgis.Point;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +11,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
 @Data
 @Entity
@@ -31,6 +31,10 @@ public class Barrel {
 
     @Column(nullable = false)
     private Double volume;
+
+    @ManyToOne
+    @JoinColumn(name = "grape_id", referencedColumnName = "id")
+    private Grape grape;
 
     @ManyToOne
     @JoinColumn(name = "cellar_id", referencedColumnName = "id")

@@ -1,6 +1,6 @@
 package com.nicewithothers.winebuddy.model.dto.user;
 
-import com.nicewithothers.winebuddy.model.Vineyard;
+import com.nicewithothers.winebuddy.model.dto.vineyard.VineyardDto;
 import com.nicewithothers.winebuddy.model.enums.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,5 +17,5 @@ public class UserDto {
     private Roles role;
     private Instant created;
     private String profileURL;
-    private Vineyard vineyard;
+    private VineyardDto vineyard;
 }

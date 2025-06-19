@@ -21,10 +21,13 @@ public class FileController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    @PostMapping("/{username}/uploadProfile")
-    public ResponseEntity<UserDto> uploadProfile(@PathVariable String username, @RequestParam("file") MultipartFile file) {
+    @PostMapping("/{username}/changeProfile")
+    public ResponseEntity<UserDto> changeProfile(@PathVariable String username, @RequestParam("file") MultipartFile file) {
         User user = userService.findByUsername(username);
-        String filename = fileService.upload(user.getUsername(), file);
+        if (user.getProfileURL() != null) {
+            fileService.deleteOldPicture(username);
+        }
+        String filename = fileService.uploadPicture(user.getUsername(), file);
         user.setProfileURL(String.format("http://localhost:8080/profiles/%s", filename));
         userRepository.save(user);
         return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);

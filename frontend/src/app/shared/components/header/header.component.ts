@@ -19,7 +19,7 @@ import {
 import { AuthService } from '../../services/auth.service';
 import { HlmAvatarComponent, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
 import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
-import { User } from '../../models/user/user';
+import { User } from '../../models/User';
 import { firstValueFrom } from 'rxjs';
 
 @Component({

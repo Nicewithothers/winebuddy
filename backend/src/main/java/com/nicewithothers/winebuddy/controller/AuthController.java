@@ -1,6 +1,7 @@
 package com.nicewithothers.winebuddy.controller;
 
 import com.nicewithothers.winebuddy.mapper.UserMapper;
+import com.nicewithothers.winebuddy.model.User;
 import com.nicewithothers.winebuddy.model.dto.user.AuthResponse;
 import com.nicewithothers.winebuddy.model.dto.user.LoginRequest;
 import com.nicewithothers.winebuddy.model.dto.user.RegisterRequest;
@@ -36,7 +37,7 @@ public class AuthController {
         return new ResponseEntity<>(userDto, headers, HttpStatus.OK);
     }
 
-    @PostMapping( "/login")
+    @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         HttpHeaders headers = new HttpHeaders();
         try {

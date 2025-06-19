@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
@@ -12,10 +12,8 @@ import { AuthService } from './shared/services/auth.service';
     styleUrl: './app.component.css',
     standalone: true,
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
     title = 'winebuddy';
 
     constructor(private authService: AuthService) {}
-
-    ngOnInit() {}
 }

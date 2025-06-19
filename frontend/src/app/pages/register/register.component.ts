@@ -13,7 +13,7 @@ import {
     HlmCardHeaderDirective,
     HlmCardTitleDirective,
 } from '@spartan-ng/ui-card-helm';
-import { RegisterRequest } from '../../shared/models/user/register-request';
+import { RegisterRequest } from '../../shared/models/user/RegisterRequest';
 import { registerForm } from '../../shared/forms/register.form';
 import { AuthService } from '../../shared/services/auth.service';
 import { toast } from 'ngx-sonner';

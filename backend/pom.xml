@@ -73,9 +73,24 @@
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-			<groupId>io.github.sebasbaumh</groupId>
-			<artifactId>postgis-java-ng</artifactId>
-			<version>24.1.1</version>
+			<groupId>org.locationtech.jts</groupId>
+			<artifactId>jts-core</artifactId>
+			<version>1.20.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.locationtech.jts.io</groupId>
+			<artifactId>jts-io-common</artifactId>
+			<version>1.20.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-spatial</artifactId>
+			<version>6.6.15.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>com.graphhopper.external</groupId>
+			<artifactId>jackson-datatype-jts</artifactId>
+			<version>2.14</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>

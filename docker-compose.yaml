@@ -1,7 +1,8 @@
 services:
   database:
     container_name: 'database'
-    image: 'postgis/postgis:17-3.5'
+    build:
+      context: ./database
     restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -11,21 +12,12 @@ services:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
-  minio:
-    image: "bitnami/minio"
-    volumes:
-      - minio_data:/bitnami/minio/data
-    container_name: minio
-    ports:
-      - "9000:9000" # API
-      - "9001:9001" # UI
-    environment:
-      MINIO_USER: ${MINIO_USER}
-      MINIO_PW: ${MINIO_PW}
   backend:
     build: ./backend
     container_name: 'backend'
-    restart: always
+    restart: unless-stopped
+    profiles:
+      - backend
     ports:
       - '8080:8080'
     depends_on:
@@ -33,14 +25,12 @@ services:
   frontend:
     build: ./frontend
     container_name: 'frontend'
+    profiles:
+      - frontend
+    restart: unless-stopped
     depends_on:
       - backend
     command: ["pnpm", "run", "dev"]
 
-networks:
-    minionetwork:
-        driver: bridge
-
 volumes:
   db_data:
-  minio_data:
