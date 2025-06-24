@@ -5,6 +5,6 @@ export interface User {
     email: string;
     role: string;
     created: string;
-    profileURL: string | null;
-    vineyard: Vineyard | null;
+    profileURL?: string;
+    vineyard?: Vineyard;
 }

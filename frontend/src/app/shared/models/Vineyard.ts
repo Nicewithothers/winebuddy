@@ -8,5 +8,5 @@ export interface Vineyard {
     owningDate: string;
     area: number;
     owner: User;
-    cellars: Cellar[] | null;
+    cellars?: Cellar[];
 }

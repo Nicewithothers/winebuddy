@@ -1,5 +1,6 @@
 package com.nicewithothers.winebuddy.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,6 +38,7 @@ public class Barrel {
     private Grape grape;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "cellar_id", referencedColumnName = "id")
     private Cellar cellar;
 }

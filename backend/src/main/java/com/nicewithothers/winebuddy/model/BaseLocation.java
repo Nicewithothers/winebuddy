@@ -28,5 +28,8 @@ public abstract class BaseLocation {
     private Polygon mapArea;
 
     @Column(nullable = false)
-    private Instant owningDate = Instant.now();
+    private Double area;
+
+    @Column(nullable = false)
+    private Instant owningDate;
 }

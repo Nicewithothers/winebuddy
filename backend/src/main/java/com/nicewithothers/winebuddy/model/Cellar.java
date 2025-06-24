@@ -1,5 +1,7 @@
 package com.nicewithothers.winebuddy.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -26,9 +29,11 @@ public class Cellar extends BaseLocation {
     private Integer capacity;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "vineyard_id", referencedColumnName = "id")
     private Vineyard vineyard;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "cellar", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Barrel> barrels;
+    private List<Barrel> barrels = new ArrayList<>();
 }

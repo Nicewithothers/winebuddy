@@ -1,0 +1,61 @@
+@if (this.authService.user$ | async; as user) {
+    <section class="section-container">
+        <div class="flex w-full h-full">
+            <div class="w-1/4 border-r-4 border-gray-200 p-4 flex flex-col justify-center gap-4">
+                @if (user.vineyard!.cellars) {
+                    <div class="overflow-x-auto shadow-lg rounded-lg">
+                        <table class="w-full table-auto border border-gray-200">
+                            <thead>
+                                <tr class="dashboard-tr">
+                                    <th scope="col" class="dashboard-th">Name</th>
+                                    <th scope="col" class="dashboard-th">Capacity</th>
+                                    <th scope="col" class="dashboard-th">Area</th>
+                                    <th scope="col" class="dashboard-th">Owning Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (cellar of user.vineyard!.cellars; track cellar) {
+                                    <tr class="dashboard-tr" [brnCtxMenuTriggerFor]="menu">
+                                        <td class="dashboard-td">
+                                            {{ cellar.name }}
+                                        </td>
+                                        <td class="dashboard-td">
+                                            {{ cellar.barrels?.length ?? 0 }}/{{ cellar.capacity }}
+                                        </td>
+                                        <td class="dashboard-td">{{ cellar.area | number }} km²</td>
+                                        <td class="dashboard-td">
+                                            {{ cellar.owningDate | datetransform }}
+                                        </td>
+                                    </tr>
+                                    <ng-template #menu>
+                                        <hlm-menu>
+                                            <button
+                                                variant="destructive"
+                                                class="w-full"
+                                                (click)="deleteCellar(cellar.id)"
+                                                hlmBtn
+                                            >
+                                                <ng-icon name="lucideTrash2"></ng-icon>
+                                                Delete
+                                            </button>
+                                        </hlm-menu>
+                                    </ng-template>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+            <div class="flex-1 p-4">
+                <div
+                    class="h-full w-full rounded-xl shadow border border-gray-200 z-10"
+                    leaflet
+                    leafletDraw
+                    [leafletOptions]="options"
+                    [leafletDrawOptions]="setDrawFeatures()"
+                    (leafletMapReady)="onMapReady($event)"
+                ></div>
+            </div>
+        </div>
+    </section>
+}

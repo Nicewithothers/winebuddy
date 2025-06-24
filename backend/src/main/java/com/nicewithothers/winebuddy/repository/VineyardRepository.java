@@ -10,17 +10,17 @@ import org.springframework.data.repository.query.Param;
 public interface VineyardRepository extends JpaRepository<Vineyard, Long> {
     @Query(value = """
             SELECT st_within(:mapArea, h.geom)
-                        from hungary h
-                        limit 1;
+            from hungary h
+            limit 1;
             """, nativeQuery = true)
     Boolean isWithinHungary(@Param("mapArea") Polygon mapArea);
 
     @Query(value = """
             SELECT st_area(cast(:mapArea as geography))
-                        from vineyard v
-                        limit 1;
+            from vineyard v
+            where v.id = :vineyardId
             """, nativeQuery = true)
-    Double getAreaMeters(@Param("mapArea") Polygon mapArea);
+    Double getAreaMeters(@Param("mapArea") Polygon mapArea, @Param("vineyardId") Long vineyardId);
 
     Vineyard getVineyardById(Long id);
 

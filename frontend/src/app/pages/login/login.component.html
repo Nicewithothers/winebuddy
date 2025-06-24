@@ -1,47 +1,49 @@
 <section class="section-container">
-    <div hlmCard class="flex flex-col justify-center items-center shadow-xl">
-        <div hlmCardHeader>
-            <h3 hlmCardTitle>Login</h3>
-        </div>
-        <div hlmCardContent>
-            <form
-                class="flex flex-col justify-center items-center gap-6"
-                [formGroup]="loginForm"
-                (ngSubmit)="login()"
-            >
-                <div class="flex flex-row items-center justify-center gap-2">
-                    <ng-icon hlm name="lucideUser" />
-                    <hlm-form-field>
-                        <input
-                            class="w-80"
-                            hlmInput
-                            type="text"
-                            placeholder="Username"
-                            formControlName="username"
-                        />
-                    </hlm-form-field>
-                </div>
-                <div class="flex flex-row items-center justify-center gap-2">
-                    <ng-icon hlm name="lucideKeyRound" />
-                    <hlm-form-field>
-                        <input
-                            class="w-80"
-                            hlmInput
-                            type="password"
-                            placeholder="Password"
-                            formControlName="password"
-                        />
-                    </hlm-form-field>
-                </div>
-                <button
-                    hlmBtn
-                    type="submit"
-                    class="cursor-pointer"
-                    [disabled]="this.loginForm.invalid"
+    <div class="flex flex-col justify-center items-center h-full">
+        <div hlmCard class="flex flex-col justify-center items-center shadow-xl">
+            <div hlmCardHeader>
+                <h3 hlmCardTitle>Login</h3>
+            </div>
+            <div hlmCardContent>
+                <form
+                    class="flex flex-col justify-center items-center gap-6"
+                    [formGroup]="loginForm"
+                    (ngSubmit)="login()"
                 >
-                    Login
-                </button>
-            </form>
+                    <div class="flex flex-row items-center justify-center gap-2">
+                        <ng-icon hlm name="lucideUser" />
+                        <hlm-form-field>
+                            <input
+                                class="w-80"
+                                hlmInput
+                                type="text"
+                                placeholder="Username"
+                                formControlName="username"
+                            />
+                        </hlm-form-field>
+                    </div>
+                    <div class="flex flex-row items-center justify-center gap-2">
+                        <ng-icon hlm name="lucideKeyRound" />
+                        <hlm-form-field>
+                            <input
+                                class="w-80"
+                                hlmInput
+                                type="password"
+                                placeholder="Password"
+                                formControlName="password"
+                            />
+                        </hlm-form-field>
+                    </div>
+                    <button
+                        hlmBtn
+                        type="submit"
+                        class="cursor-pointer"
+                        [disabled]="this.loginForm.invalid"
+                    >
+                        Login
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </section>

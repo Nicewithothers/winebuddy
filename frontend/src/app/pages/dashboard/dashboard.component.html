@@ -1,85 +1,36 @@
-<section class="section-container justify-evenly">
-    <div hlmCard class="flex flex-col items-center shadow-xl">
-        @if (this.authService.user$ | async; as user) {
-            @if (user.vineyard !== undefined && user.vineyard !== null) {
-                <div hlmCardHeader>
-                    <h1 hlmCardTitle>Dashboard of {{ user.vineyard.name }}</h1>
-                </div>
-                <div hlmCardContent>
-                    <hlm-table class="w-full min-w-[400px]">
-                        <div [brnCtxMenuTriggerFor]="menu">
-                            <hlm-trow class="*:flex *:justify-center :*items-center">
-                                <hlm-th class="w-36">Owning Date</hlm-th>
-                                <hlm-th class="w-36">Area</hlm-th>
-                                <hlm-th class="w-36">Owner</hlm-th>
-                                <hlm-th class="w-36" *ngIf="user.vineyard.cellars !== null"
-                                    >Cellars</hlm-th
-                                >
-                            </hlm-trow>
-                            <hlm-trow class="flex justify-between items-center">
-                                <hlm-td>{{ user.vineyard.owningDate | datetransform }}</hlm-td>
-                                <hlm-td>{{ user.vineyard.area | number }} km²</hlm-td>
-                                <hlm-td>{{ user.vineyard.owner.username }}</hlm-td>
-                                <hlm-td *ngIf="user.vineyard.cellars !== null">{{
-                                    user.vineyard.cellars
-                                }}</hlm-td>
-                            </hlm-trow>
-                        </div>
-                        <ng-template #menu>
-                            <hlm-menu>
-                                <button
-                                    variant="destructive"
-                                    class="w-full"
-                                    (click)="deleteVineyard()"
-                                    hlmBtn
-                                >
-                                    <ng-icon name="lucideTrash2"></ng-icon>
-                                    Delete
-                                </button>
-                            </hlm-menu>
-                        </ng-template>
-                    </hlm-table>
-                </div>
-            } @else {
-                <div hlmCardHeader>
-                    <h1 hlmCardTitle>Add new vineyard</h1>
-                </div>
-                <div hlmCardContent>
-                    <form
-                        [formGroup]="vineyardForm"
-                        (ngSubmit)="addVineyard()"
-                        class="flex flex-col items-center justify-between"
-                    >
-                        <hlm-form-field>
-                            <input
-                                class="w-64"
-                                hlmInput
-                                type="text"
-                                placeholder="Vineyard name"
-                                formControlName="name"
-                            />
-                        </hlm-form-field>
-                        <button
-                            hlmBtn
-                            type="submit"
-                            class="cursor-pointer"
-                            [disabled]="this.checkFields()"
+@if (this.authService.user$ | async; as user) {
+    <section class="section-container">
+        <div class="flex justify-center items-center h-full p-6">
+            <div class="flex flex-wrap justify-center items-center gap-10">
+                @for (item of carouselItems; track item) {
+                    <div class="flex flex-col justify-center items-center gap-4">
+                        <div
+                            class="w-[300px] h-[300px] bg-white rounded-2xl shadow-lg overflow-hidden transform transition duration-200 hover:scale-105 hover:shadow-xl"
+                            [ngClass]="
+                                this.checkAccessibleItems(item, user)
+                                    ? 'cursor-pointer'
+                                    : 'cursor-not-allowed'
+                            "
                         >
-                            Create
-                        </button>
-                    </form>
-                </div>
-            }
-        }
-    </div>
-    <div class="flex items-center h-1/2 w-1/2 rounded-lg border-4 shadow-md">
-        <div
-            class="h-full w-full z-10"
-            leaflet
-            leafletDraw
-            [leafletOptions]="options"
-            [leafletDrawOptions]="drawVineyardOptions"
-            (leafletMapReady)="onMapReady($event)"
-        ></div>
-    </div>
-</section>
+                            <img
+                                [src]="item.backgroundImage"
+                                [alt]="item.displayText"
+                                [routerLink]="
+                                    this.checkAccessibleItems(item, user) ? item.route : null
+                                "
+                                [class.opacity-50]="!this.checkAccessibleItems(item, user)"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div>
+                            <h1 [class.opacity-50]="!this.checkAccessibleItems(item, user)">
+                                {{ item.displayText }}
+                            </h1>
+                        </div>
+                    </div>
+                }
+                <div class=""></div>
+            </div>
+        </div>
+    </section>
+}

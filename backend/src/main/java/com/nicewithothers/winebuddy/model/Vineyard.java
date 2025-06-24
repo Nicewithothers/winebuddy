@@ -1,5 +1,6 @@
 package com.nicewithothers.winebuddy.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
@@ -14,6 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,13 +25,11 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "vineyard")
 public class Vineyard extends BaseLocation {
-    @Column(nullable = false)
-    private Double area;
-
     @JsonManagedReference
     @OneToOne(mappedBy = "vineyard")
     private User owner;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "vineyard", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Cellar> cellars;
+    private List<Cellar> cellars = new ArrayList<>();
 }

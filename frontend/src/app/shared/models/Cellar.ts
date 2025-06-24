@@ -7,6 +7,7 @@ export interface Cellar {
     mapArea: any;
     owningDate: string;
     capacity: number;
-    vineyard: Vineyard | null;
-    barrels: Barrel[] | null;
+    area: number;
+    vineyard: Vineyard;
+    barrels?: Barrel[];
 }

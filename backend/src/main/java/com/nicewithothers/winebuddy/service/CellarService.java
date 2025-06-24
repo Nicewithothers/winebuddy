@@ -1,9 +1,9 @@
 package com.nicewithothers.winebuddy.service;
 
-import com.nicewithothers.winebuddy.model.User;
+import com.nicewithothers.winebuddy.model.Cellar;
 import com.nicewithothers.winebuddy.model.Vineyard;
-import com.nicewithothers.winebuddy.model.dto.vineyard.VineyardRequest;
-import com.nicewithothers.winebuddy.repository.UserRepository;
+import com.nicewithothers.winebuddy.model.dto.cellar.CellarRequest;
+import com.nicewithothers.winebuddy.repository.CellarRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -22,14 +22,13 @@ import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
-public class VineyardService {
-    private final UserRepository userRepository;
+public class CellarService {
+    private final CellarRepository cellarRepository;
     private final VineyardRepository vineyardRepository;
-    private final UserService userService;
 
-    public Vineyard createVineyard(String username, VineyardRequest vineyardRequest) throws ParseException {
+    public Cellar createCellar(Vineyard vineyard, CellarRequest cellarRequest) throws ParseException {
         GeoJsonReader geoJsonReader = new GeoJsonReader();
-        String json = new JSONObject(vineyardRequest.getCreatedPolygon()).toString();
+        String json = new JSONObject(cellarRequest.getCreatedPolygon()).toString();
         Geometry geometry = geoJsonReader.read(json);
 
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
@@ -38,31 +37,33 @@ public class VineyardService {
         LinearRing linearRing = geometryFactory.createLinearRing(coords);
         Polygon polygon = geometryFactory.createPolygon(linearRing);
 
-        if (!vineyardRepository.isWithinHungary(polygon)) {
-            throw new ParseException("Vineyard is not within Hungary");
+        if (!cellarRepository.isWithinVineyard(polygon, vineyard.getId())) {
+            throw new ParseException("Cellar is not within your Vineyard!");
         }
 
-        Vineyard vineyard = Vineyard.builder()
-                .name(vineyardRequest.getName())
+        Cellar cellar = Cellar.builder()
+                .name(cellarRequest.getName())
                 .mapArea(polygon)
                 .area(0.0)
+                .capacity(cellarRequest.getCapacity())
                 .owningDate(Instant.now())
-                .owner(userService.findByUsername(username))
-                .cellars(Collections.emptyList())
+                .vineyard(vineyardRepository.getReferenceById(vineyard.getId()))
+                .barrels(Collections.emptyList())
                 .build();
-        return vineyardRepository.save(vineyard);
+        return cellarRepository.save(cellar);
     }
 
-    public Double calculateArea(Vineyard vineyard) {
-        return vineyardRepository.getAreaMeters(vineyard.getMapArea(), vineyard.getId())/100000;
+    public Double calculateArea(Cellar cellar) {
+        return cellarRepository.getAreaMeters(cellar.getMapArea(), cellar.getId())/100000;
     }
 
-    public void deleteUserVineyard(User user) {
-        Vineyard vineyard = user.getVineyard();
-        if (vineyard != null) {
-            user.setVineyard(null);
-            userRepository.save(user);
-            vineyardRepository.delete(vineyard);
+    public void deleteVineyardCellar(Long id, Vineyard vineyard) {
+        Cellar cellar = cellarRepository.findCellarById(id).orElse(null);
+
+        if (cellar != null) {
+            vineyard.getCellars().remove(cellar);
+            vineyardRepository.save(vineyard);
+            cellarRepository.delete(cellar);
         }
     }
 }
