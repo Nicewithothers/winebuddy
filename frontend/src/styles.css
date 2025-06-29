@@ -123,11 +123,11 @@
     }
 
     .section-container {
-        @apply h-[calc(100vh-80px)] pt-20;
+        @apply h-[calc(100vh-64px)] pt-16;
     }
 
     .dashboard-container {
-        @apply w-full h-[calc(100vh-80px)] pt-20;
+        @apply w-full h-[calc(100vh-64px)] pt-16;
     }
 
     .dashboard-tr {

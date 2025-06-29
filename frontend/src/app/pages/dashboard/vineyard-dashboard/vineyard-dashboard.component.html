@@ -51,6 +51,55 @@
                             </button>
                         </hlm-menu>
                     </ng-template>
+                } @else {
+                    <hlm-dialog>
+                        <div class="flex justify-center w-full h-full">
+                            <button class="h-48 w-48" variant="outline" brnDialogTrigger hlmBtn>
+                                <ng-icon name="lucidePlus" size="80px"></ng-icon>
+                            </button>
+                        </div>
+                        <hlm-dialog-content *brnDialogContent="let ctx">
+                            <hlm-dialog-header>
+                                <h3 class="text-center" hlmDialogTitle>Add vineyard</h3>
+                                <p hlmDialogDescription>
+                                    IMPORTANT: You need to draw on the map before adding!
+                                </p>
+                            </hlm-dialog-header>
+                            <form [formGroup]="vineyardForm" (ngSubmit)="addVineyard()">
+                                <div class="flex flex-col items-center gap-y-2">
+                                    <hlm-form-field>
+                                        <input
+                                            class="w-64"
+                                            type="text"
+                                            placeholder="Vineyard name"
+                                            formControlName="name"
+                                            hlmInput
+                                        />
+                                    </hlm-form-field>
+                                    <div class="flex gap-6">
+                                        <button
+                                            variant="destructive"
+                                            hlmBtn
+                                            brnDialogClose
+                                            type="reset"
+                                            class="cursor-pointer"
+                                        >
+                                            Close
+                                        </button>
+                                        <button
+                                            variant="default"
+                                            hlmBtn
+                                            type="submit"
+                                            class="cursor-pointer"
+                                            [disabled]="this.checkFields()"
+                                        >
+                                            Create
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </hlm-dialog-content>
+                    </hlm-dialog>
                 }
             </div>
             <div class="flex-1 p-4">

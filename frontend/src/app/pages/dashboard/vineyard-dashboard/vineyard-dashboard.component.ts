@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AsyncPipe, DecimalPipe, NgClass, NgIf } from '@angular/common';
+import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { DateTransformPipe } from '../../../shared/pipes/datetransform.pipe';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
-import { HlmCardContentDirective, HlmCardImports } from '@spartan-ng/ui-card-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMenu, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { User } from '../../../shared/models/User';
@@ -14,7 +13,6 @@ import {
     GeoJSON,
     latLng,
     latLngBounds,
-    Layer,
     LayerEvent,
     Map,
     MapOptions,
@@ -25,7 +23,6 @@ import { AuthService } from '../../../shared/services/auth.service';
 import { VineyardService } from '../../../shared/services/vineyard.service';
 import { filter, Subscription } from 'rxjs';
 import { toast } from 'ngx-sonner';
-import { HlmTableImports } from '@spartan-ng/ui-table-helm';
 import { BrnContextMenuImports } from '@spartan-ng/brain/menu';
 import { HlmMenuComponent } from '@spartan-ng/ui-menu-helm';
 import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
@@ -35,6 +32,7 @@ import { vineyardForm } from '../../../shared/forms/vineyard.form';
 import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { HlmDialogImports } from '@spartan-ng/ui-dialog-helm';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
+import { VineyardRequest } from '../../../shared/models/vineyard/VineyardRequest';
 
 @Component({
     selector: 'app-vineyard-dashboard',
@@ -43,11 +41,7 @@ import { BrnDialogImports } from '@spartan-ng/brain/dialog';
         DateTransformPipe,
         DecimalPipe,
         HlmButtonDirective,
-        HlmCardContentDirective,
-        HlmCardImports,
-        HlmTableImports,
         BrnContextMenuImports,
-        NgIf,
         HlmMenuComponent,
         NgIcon,
         ReactiveFormsModule,
@@ -57,7 +51,6 @@ import { BrnDialogImports } from '@spartan-ng/brain/dialog';
         HlmInputDirective,
         BrnDialogImports,
         HlmDialogImports,
-        NgClass,
     ],
     standalone: true,
     providers: [provideIcons({ lucidePlus, lucideMenu, lucideTrash2 })],
@@ -67,7 +60,6 @@ import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 export class VineyardDashboardComponent implements OnInit, OnDestroy {
     user!: User;
     map!: Map;
-    drawnLayer: Layer | null = null;
     vineyardLayer: FeatureGroup = new FeatureGroup();
     options: MapOptions = {
         layers: [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')],
@@ -119,7 +111,6 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
             this.map.setMinZoom(7);
             this.map.on(Draw.Event.CREATED, (event: LayerEvent) => {
                 const layer = event.layer as GeoJSON;
-                this.drawnLayer = layer;
                 this.vineyardLayer.clearLayers();
                 this.vineyardLayer.addLayer(layer);
             });
@@ -157,36 +148,36 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
     }
 
     checkFields(): boolean {
-        return this.vineyardForm.get('name')?.invalid || this.drawnLayer === null;
+        return (
+            this.vineyardForm.get('name')?.invalid || this.vineyardLayer.getLayers().length === 0
+        );
     }
 
     addVineyard(): void {
         const name = this.vineyardForm.get('name')?.value as string;
         const polygonGeo = this.vineyardLayer.toGeoJSON();
-        this.vineyardService
-            .createVineyard({ name: name, createdPolygon: polygonGeo })
-            .subscribe(user => {
-                console.log('Before:', user);
-                if (user) {
-                    toast.success('Vineyard created successfully.', {
-                        position: 'bottom-center',
-                    });
-                } else {
-                    toast.error('Vineyard creation failed', {
-                        position: 'bottom-center',
-                    });
-                }
-            });
+        const vineyardRequest: VineyardRequest = { name: name, createdPolygon: polygonGeo };
+        this.vineyardService.createVineyard(vineyardRequest).subscribe(user => {
+            if (user) {
+                toast.success('Vineyard created successfully!', {
+                    position: 'bottom-center',
+                });
+            } else {
+                toast.error('Vineyard creation failed!', {
+                    position: 'bottom-center',
+                });
+            }
+        });
     }
 
     deleteVineyard() {
         this.vineyardService.deleteVineyard(this.user.vineyard?.id as number).subscribe(user => {
             if (user) {
-                toast.success('Vineyard deleted successfully.', {
+                toast.success('Vineyard deleted successfully!', {
                     position: 'bottom-center',
                 });
             } else {
-                toast.error('Vineyard deleted failed', {
+                toast.error('Vineyard deletion failed!', {
                     position: 'bottom-center',
                 });
             }
