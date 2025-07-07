@@ -1,7 +1,7 @@
 package com.nicewithothers.winebuddy.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nicewithothers.winebuddy.model.enums.Roles;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -51,8 +51,8 @@ public class User {
 
     private String profileURL;
 
-    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     @JoinColumn(name = "vineyard_id", referencedColumnName = "id")
     private Vineyard vineyard;
 }

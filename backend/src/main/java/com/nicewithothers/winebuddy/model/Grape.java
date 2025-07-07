@@ -1,5 +1,6 @@
 package com.nicewithothers.winebuddy.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nicewithothers.winebuddy.model.enums.GrapeTaste;
 import com.nicewithothers.winebuddy.model.enums.GrapeType;
 import jakarta.persistence.CascadeType;
@@ -36,13 +37,11 @@ public class Grape {
     @Column(nullable = false)
     private GrapeType grapeType;
 
-    @Column(nullable = false)
-    private String region;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GrapeTaste grapeTaste;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "grape", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Barrel> barrels;
 }

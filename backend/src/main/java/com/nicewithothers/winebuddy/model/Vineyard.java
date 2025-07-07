@@ -25,11 +25,11 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "vineyard")
 public class Vineyard extends BaseLocation {
-    @JsonManagedReference
+    @JsonBackReference
     @OneToOne(mappedBy = "vineyard")
     private User owner;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "vineyard", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Cellar> cellars = new ArrayList<>();
 }

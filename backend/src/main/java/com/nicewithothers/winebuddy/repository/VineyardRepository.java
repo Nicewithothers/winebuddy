@@ -21,8 +21,4 @@ public interface VineyardRepository extends JpaRepository<Vineyard, Long> {
             where v.id = :vineyardId
             """, nativeQuery = true)
     Double getAreaMeters(@Param("mapArea") Polygon mapArea, @Param("vineyardId") Long vineyardId);
-
-    Vineyard getVineyardById(Long id);
-
-    void removeVineyardById(Long id);
 }

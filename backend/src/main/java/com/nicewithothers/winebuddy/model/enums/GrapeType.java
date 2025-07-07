@@ -9,5 +9,6 @@ public enum GrapeType {
     MERLOT,
     PINOT_NOIR,
     RIESLING,
-    MUSCAT
+    MUSCAT,
+    PORTO
 }

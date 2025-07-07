@@ -29,11 +29,11 @@ public class Cellar extends BaseLocation {
     private Integer capacity;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "vineyard_id", referencedColumnName = "id")
     private Vineyard vineyard;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "cellar", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Barrel> barrels = new ArrayList<>();
 }

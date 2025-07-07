@@ -1,6 +1,6 @@
 package com.nicewithothers.winebuddy.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,18 +27,22 @@ public class Barrel {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "geometry", nullable = false)
+    @Column(columnDefinition = "Geometry(Point,4326)", nullable = false)
     private Point location;
 
     @Column(nullable = false)
     private Double volume;
 
+    @Column(nullable = false)
+    private Double maxVolume;
+
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "grape_id", referencedColumnName = "id")
     private Grape grape;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "cellar_id", referencedColumnName = "id")
     private Cellar cellar;
 }

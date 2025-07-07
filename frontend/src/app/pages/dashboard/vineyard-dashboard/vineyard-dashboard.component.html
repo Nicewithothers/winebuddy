@@ -1,195 +1,135 @@
 @if (this.authService.user$ | async; as user) {
     <section class="section-container">
         <div class="flex w-full h-full">
-            <div class="w-1/4 border-r-4 border-gray-200 p-4 flex flex-col justify-center gap-4">
-                @if (user.vineyard) {
-                    <div [brnCtxMenuTriggerFor]="menu" class="overflow-x-auto shadow-lg rounded-lg">
-                        <table class="w-full table-auto border border-gray-200">
-                            <tbody>
-                                <tr class="dashboard-tr">
-                                    <th scope="row" class="dashboard-th">Name</th>
-                                    <td class="dashboard-td">
-                                        {{ user.vineyard.name }}
-                                    </td>
-                                </tr>
-                                <tr class="dashboard-tr">
-                                    <th scope="row" class="dashboard-th">Owner</th>
-                                    <td class="dashboard-td">{{ user.vineyard.owner.username }}</td>
-                                </tr>
-                                <tr class="dashboard-tr">
-                                    <th scope="row" class="dashboard-th">Area</th>
-                                    <td class="dashboard-td">
-                                        {{ user.vineyard.area | number }} km²
-                                    </td>
-                                </tr>
-                                <tr class="dashboard-tr">
-                                    <th scope="row" class="dashboard-th">Cellars</th>
-                                    <td class="dashboard-td">
-                                        {{ user.vineyard.cellars?.length ?? 0 }}
-                                    </td>
-                                </tr>
-
-                                <tr class="dashboard-tr">
-                                    <th scope="row" class="dashboard-th">Owning Date</th>
-                                    <td class="dashboard-td">
-                                        {{ user.vineyard.owningDate | datetransform }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <ng-template #menu>
-                        <hlm-menu>
-                            <button
-                                variant="destructive"
-                                class="w-full"
-                                (click)="deleteVineyard()"
-                                hlmBtn
+            <hlm-tabs tab="data" class="w-full h-full">
+                <hlm-tabs-list class="grid w-full grid-cols-2">
+                    <button hlmTabsTrigger="data" class="cursor-pointer">Data view</button>
+                    <button hlmTabsTrigger="map" class="cursor-pointer">Map view</button>
+                </hlm-tabs-list>
+                <div class="w-full h-full flex flex-col justify-center">
+                    <div hlmTabsContent="data" class="w-full p-4 flex justify-center">
+                        @if (user.vineyard) {
+                            <div
+                                [brnCtxMenuTriggerFor]="menu"
+                                class="overflow-x-auto shadow-lg rounded-lg"
                             >
-                                <ng-icon name="lucideTrash2"></ng-icon>
-                                Delete
-                            </button>
-                        </hlm-menu>
-                    </ng-template>
-                } @else {
-                    <hlm-dialog>
-                        <div class="flex justify-center w-full h-full">
-                            <button class="h-48 w-48" variant="outline" brnDialogTrigger hlmBtn>
-                                <ng-icon name="lucidePlus" size="80px"></ng-icon>
-                            </button>
-                        </div>
-                        <hlm-dialog-content *brnDialogContent="let ctx">
-                            <hlm-dialog-header>
-                                <h3 class="text-center" hlmDialogTitle>Add vineyard</h3>
-                                <p hlmDialogDescription>
-                                    IMPORTANT: You need to draw on the map before adding!
-                                </p>
-                            </hlm-dialog-header>
-                            <form [formGroup]="vineyardForm" (ngSubmit)="addVineyard()">
-                                <div class="flex flex-col items-center gap-y-2">
-                                    <hlm-form-field>
-                                        <input
-                                            class="w-64"
-                                            type="text"
-                                            placeholder="Vineyard name"
-                                            formControlName="name"
-                                            hlmInput
-                                        />
-                                    </hlm-form-field>
-                                    <div class="flex gap-6">
-                                        <button
-                                            variant="destructive"
-                                            hlmBtn
-                                            brnDialogClose
-                                            type="reset"
-                                            class="cursor-pointer"
-                                        >
-                                            Close
-                                        </button>
-                                        <button
-                                            variant="default"
-                                            hlmBtn
-                                            type="submit"
-                                            class="cursor-pointer"
-                                            [disabled]="this.checkFields()"
-                                        >
-                                            Create
-                                        </button>
-                                    </div>
+                                <table class="w-full table-auto border border-gray-200">
+                                    <tbody>
+                                        <tr class="dashboard-tr">
+                                            <th scope="row" class="dashboard-th">Name</th>
+                                            <td class="dashboard-td">
+                                                {{ user.vineyard.name }}
+                                            </td>
+                                        </tr>
+                                        <tr class="dashboard-tr">
+                                            <th scope="row" class="dashboard-th">Owner</th>
+                                            <td class="dashboard-td">
+                                                {{ user.vineyard.owner.username }}
+                                            </td>
+                                        </tr>
+                                        <tr class="dashboard-tr">
+                                            <th scope="row" class="dashboard-th">Area</th>
+                                            <td class="dashboard-td">
+                                                {{ user.vineyard.area | number }} km²
+                                            </td>
+                                        </tr>
+                                        <tr class="dashboard-tr">
+                                            <th scope="row" class="dashboard-th">Cellars</th>
+                                            <td class="dashboard-td">
+                                                {{ user.vineyard.cellars?.length ?? 0 }}
+                                            </td>
+                                        </tr>
+
+                                        <tr class="dashboard-tr">
+                                            <th scope="row" class="dashboard-th">Owning Date</th>
+                                            <td class="dashboard-td">
+                                                {{ user.vineyard.owningDate | datetransform }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <ng-template #menu>
+                                <hlm-menu>
+                                    <button
+                                        variant="destructive"
+                                        class="w-full"
+                                        (click)="deleteVineyard()"
+                                        hlmBtn
+                                    >
+                                        <ng-icon name="lucideTrash2"></ng-icon>
+                                        Delete
+                                    </button>
+                                </hlm-menu>
+                            </ng-template>
+                        } @else {
+                            <hlm-dialog>
+                                <div class="flex justify-center w-full h-full">
+                                    <button
+                                        class="h-48 w-48"
+                                        variant="outline"
+                                        brnDialogTrigger
+                                        hlmBtn
+                                    >
+                                        <ng-icon name="lucidePlus" size="80px"></ng-icon>
+                                    </button>
                                 </div>
-                            </form>
-                        </hlm-dialog-content>
-                    </hlm-dialog>
-                }
-            </div>
-            <div class="flex-1 p-4">
-                <div
-                    class="h-full w-full rounded-xl shadow border border-gray-200 z-10"
-                    leaflet
-                    leafletDraw
-                    [leafletOptions]="options"
-                    [leafletDrawOptions]="setDrawFeatures()"
-                    (leafletMapReady)="onMapReady($event)"
-                ></div>
-            </div>
+                                <hlm-dialog-content *brnDialogContent="let ctx">
+                                    <hlm-dialog-header>
+                                        <h3 class="text-center" hlmDialogTitle>Add vineyard</h3>
+                                        <p hlmDialogDescription>
+                                            IMPORTANT: You need to draw on the map before adding!
+                                        </p>
+                                    </hlm-dialog-header>
+                                    <form [formGroup]="vineyardForm" (ngSubmit)="addVineyard()">
+                                        <div class="flex flex-col items-center gap-y-2">
+                                            <hlm-form-field>
+                                                <input
+                                                    class="w-64"
+                                                    type="text"
+                                                    placeholder="Vineyard name"
+                                                    formControlName="name"
+                                                    hlmInput
+                                                />
+                                            </hlm-form-field>
+                                            <div class="flex gap-6">
+                                                <button
+                                                    variant="destructive"
+                                                    hlmBtn
+                                                    brnDialogClose
+                                                    type="reset"
+                                                    class="cursor-pointer"
+                                                >
+                                                    Close
+                                                </button>
+                                                <button
+                                                    variant="default"
+                                                    hlmBtn
+                                                    type="submit"
+                                                    class="cursor-pointer"
+                                                    [disabled]="this.checkFields()"
+                                                >
+                                                    Create
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </hlm-dialog-content>
+                            </hlm-dialog>
+                        }
+                    </div>
+                    <div hlmTabsContent="map" class="h-full p-4">
+                        <div
+                            class="h-[75vh] w-full rounded-xl shadow border border-gray-200 z-10"
+                            leaflet
+                            leafletDraw
+                            [leafletOptions]="options"
+                            [leafletDrawOptions]="setDrawFeatures()"
+                            (leafletMapReady)="onMapReady($event)"
+                        ></div>
+                    </div>
+                </div>
+            </hlm-tabs>
         </div>
     </section>
 }
-
-<!--
-        <div hlmCard class="flex flex-col items-center shadow-xl">
-            @if (user.vineyard) {
-                <div hlmCardHeader>
-                    <h1 hlmCardTitle>Vineyard details of {{ user.vineyard.name }}</h1>
-                </div>
-                <div hlmCardContent>
-                    <hlm-table class="w-full min-w-[400px]">
-                        <div [brnCtxMenuTriggerFor]="menu">
-                            <hlm-trow class="*:flex *:justify-center :*items-center">
-                                <hlm-th class="w-36">Owner</hlm-th>
-                                <hlm-th class="w-36">Area</hlm-th>
-                                <hlm-th class="w-36">Owning Date</hlm-th>
-                                <hlm-th class="w-36" *ngIf="user.vineyard.cellars">Cellars</hlm-th>
-                            </hlm-trow>
-                            <hlm-trow class="flex justify-evenly items-center">
-                                <hlm-td>{{ user.vineyard.owner.username }}</hlm-td>
-                                <hlm-td>{{ user.vineyard.area | number }} km²</hlm-td>
-                                <hlm-td>{{ user.vineyard.owningDate | datetransform }}</hlm-td>
-                                <hlm-td *ngIf="user.vineyard.cellars">{{
-                                    user.vineyard.cellars.length
-                                }}</hlm-td>
-                            </hlm-trow>
-                            <hlm-caption>A detailed list of your Vineyard.</hlm-caption>
-                        </div>
-                        <ng-template #menu>
-                            <hlm-menu>
-                                <button
-                                    variant="destructive"
-                                    class="w-full"
-                                    (click)="deleteVineyard()"
-                                    hlmBtn
-                                >
-                                    <ng-icon name="lucideTrash2"></ng-icon>
-                                    Delete
-                                </button>
-                            </hlm-menu>
-                        </ng-template>
-                    </hlm-table>
-                </div>
-            } @else {
-                <hlm-dialog>
-                    <button brnDialogTrigger hlmBtn>Add vineyard</button>
-                    <hlm-dialog-content *brnDialogContent="let ctx">
-                        <hlm-dialog-header>
-                            <h3 class="text-center" hlmDialogTitle>Add vineyard</h3>
-                            <p hlmDialogDescription>
-                                IMPORTANT: You need to draw on the map before adding!
-                            </p>
-                        </hlm-dialog-header>
-                        <form [formGroup]="vineyardForm" (ngSubmit)="addVineyard()">
-                            <div class="flex flex-col items-center gap-y-2">
-                                <hlm-form-field>
-                                    <input
-                                        class="w-64"
-                                        type="text"
-                                        placeholder="Vineyard name"
-                                        formControlName="name"
-                                        hlmInput
-                                    />
-                                </hlm-form-field>
-                                <button
-                                    variant="default"
-                                    hlmBtn
-                                    type="submit"
-                                    class="cursor-pointer"
-                                    [disabled]="this.checkFields()"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </form>
-                    </hlm-dialog-content>
-                </hlm-dialog>
-            }
-        </div>
--->

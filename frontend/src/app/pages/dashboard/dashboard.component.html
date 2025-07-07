@@ -1,29 +1,41 @@
 @if (this.authService.user$ | async; as user) {
-    <section class="section-container">
-        <div class="flex justify-center items-center h-full p-6">
+    <section class="relative section-container overflow-hidden">
+        <div
+            [ngStyle]="{
+                backgroundImage: currentSelectedBackground
+                    ? 'url(' + currentSelectedBackground.backgroundImage + ')'
+                    : 'none',
+                backgroundSize: '100% 100%',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                opacity: selectedBackground ? '0.5' : '0',
+            }"
+            class="absolute inset-0 transition-opacity duration-500 z-0"
+        ></div>
+        <div class="relative z-10 flex justify-center items-center h-full p-6">
             <div class="flex flex-wrap justify-center items-center gap-10">
                 @for (item of carouselItems; track item) {
                     <div class="flex flex-col justify-center items-center gap-4">
                         <div
                             class="w-[300px] h-[300px] bg-white rounded-2xl shadow-lg overflow-hidden transform transition duration-200 hover:scale-105 hover:shadow-xl"
                             [ngClass]="
-                                this.checkAccessibleItems(item, user)
+                                this.checkAccessibleItems(item)
                                     ? 'cursor-pointer'
                                     : 'cursor-not-allowed'
                             "
+                            (mouseenter)="setActiveBackground(item.backgroundImage)"
+                            (mouseleave)="setActiveBackground(null)"
                         >
                             <img
                                 [src]="item.backgroundImage"
                                 [alt]="item.displayText"
-                                [routerLink]="
-                                    this.checkAccessibleItems(item, user) ? item.route : null
-                                "
-                                [class.opacity-50]="!this.checkAccessibleItems(item, user)"
+                                [routerLink]="this.checkAccessibleItems(item) ? item.route : null"
+                                [class.opacity-50]="!this.checkAccessibleItems(item)"
                                 class="w-full h-full object-cover"
                             />
                         </div>
                         <div>
-                            <h1 [class.opacity-50]="!this.checkAccessibleItems(item, user)">
+                            <h1 [class.opacity-50]="!this.checkAccessibleItems(item)">
                                 {{ item.displayText }}
                             </h1>
                         </div>

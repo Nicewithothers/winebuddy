@@ -14,11 +14,7 @@ import { WineDashboardComponent } from './pages/dashboard/wine-dashboard/wine-da
 export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
-    {
-        path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [AuthGuard],
-    },
+    { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
     { path: 'vineyard-dashboard', component: VineyardDashboardComponent, canActivate: [AuthGuard] },
     { path: 'cellar-dashboard', component: CellarDashboardComponent, canActivate: [AuthGuard] },
     { path: 'barrel-dashboard', component: BarrelDashboardComponent, canActivate: [AuthGuard] },

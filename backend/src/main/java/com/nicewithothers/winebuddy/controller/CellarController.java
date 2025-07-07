@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -46,5 +48,13 @@ public class CellarController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @DeleteMapping("/deleteCellar/{id}")
+    public ResponseEntity<UserDto> deleteCellar(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String username = jwtUtility.extractUsername(token);
+        User user = userService.findByUsername(username);
+        cellarService.deleteVineyardCellar(id, user.getVineyard());
+        return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
     }
 }

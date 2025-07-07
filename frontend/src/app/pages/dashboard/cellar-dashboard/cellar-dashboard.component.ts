@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { User } from '../../../shared/models/User';
 import {
+    Content,
     Control,
     Draw,
     FeatureGroup,
@@ -43,6 +44,7 @@ import { CellarService } from '../../../shared/services/cellar.service';
 import { CellarRequest } from '../../../shared/models/cellar/CellarRequest';
 import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { HlmSpinnerComponent } from '@spartan-ng/ui-spinner-helm';
+import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
 
 @Component({
     selector: 'app-cellar-dashboard',
@@ -68,6 +70,7 @@ import { HlmSpinnerComponent } from '@spartan-ng/ui-spinner-helm';
         HlmDialogTitleDirective,
         HlmSpinnerComponent,
         BrnDialogCloseDirective,
+        HlmTabsImports,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus })],
     templateUrl: './cellar-dashboard.component.html',
@@ -77,6 +80,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
     user!: User;
     map!: Map;
     drawnLayer: FeatureGroup = new FeatureGroup();
+    cellarLayers: FeatureGroup = new FeatureGroup();
     options: MapOptions = {
         layers: [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')],
         zoom: 7,
@@ -131,16 +135,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
             this.drawnLayer.addLayer(layer);
         });
 
-        const cellarLayers: FeatureGroup = new FeatureGroup();
-        this.user.vineyard!.cellars!.forEach(cellar => {
-            cellarLayers.addLayer(geoJSON(cellar.mapArea, {}));
-        });
-
-        cellarLayers
-            .setStyle({
-                color: '#5b2100',
-            })
-            .addTo(this.map);
+        this.drawCellars();
     }
 
     setDrawFeatures(): Control.DrawConstructorOptions {
@@ -174,6 +169,32 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         );
     }
 
+    drawCellars(): void {
+        this.user.vineyard!.cellars!.forEach(cellar => {
+            this.cellarLayers.addLayer(
+                geoJSON(cellar.mapArea, {
+                    onEachFeature: (feature, layer) => {
+                        const popup: Content = `
+                            <ul>
+                                <li>${cellar.id}</li>
+                            </ul>
+                            `;
+                        layer.bindPopup(popup).addTo(this.map);
+                        layer.on('click', () => {
+                            layer.openPopup();
+                        });
+                    },
+                }),
+            );
+        });
+
+        this.cellarLayers
+            .setStyle({
+                color: '#5b2100',
+            })
+            .addTo(this.map);
+    }
+
     addCellar() {
         const cellarRequest: CellarRequest = {
             name: this.cellarForm.get('name')?.value,
@@ -182,7 +203,6 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         };
         this.cellarService.createCellar(cellarRequest).subscribe(user => {
             if (user) {
-                this.user = user;
                 toast.success('Cellar created successfully!', {
                     position: 'bottom-center',
                 });
@@ -195,5 +215,24 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         });
     }
 
-    deleteCellar(id: number) {}
+    deleteCellarLayer(): void {
+        this.cellarLayers.clearLayers();
+        this.drawCellars();
+    }
+
+    deleteCellar(id: number) {
+        this.cellarService.deleteCellar(id).subscribe(user => {
+            if (user) {
+                this.deleteCellarLayer();
+                toast.success('Cellar deleted successfully!', {
+                    position: 'bottom-center',
+                });
+            } else {
+                toast.error('Cellar deletion failed!', {
+                    position: 'bottom-center',
+                });
+                throw new Error();
+            }
+        });
+    }
 }

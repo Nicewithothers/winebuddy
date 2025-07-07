@@ -41,4 +41,31 @@ export class CellarService {
                 }),
             );
     }
+
+    deleteCellar(id: number) {
+        const token = sessionStorage.getItem('AuthToken');
+        const headers = new HttpHeaders({ Authorization: `${token}` });
+        return this.http
+            .delete(`${this.apiURL}/deleteCellar/` + id, {
+                params: { id },
+                headers: headers,
+                observe: 'response',
+            })
+            .pipe(
+                map((response: any) => {
+                    if (response.ok && response.body) {
+                        const user = response.body as User;
+                        sessionStorage.setItem('User', JSON.stringify(user));
+                        this.authService.userSubject.next(user);
+                        return user;
+                    } else {
+                        throw new Error('Error deleting Vineyard');
+                    }
+                }),
+                catchError(err => {
+                    console.error(err);
+                    throw new Error('Unable to delete Vineyard');
+                }),
+            );
+    }
 }

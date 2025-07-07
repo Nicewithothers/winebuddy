@@ -6,6 +6,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMenu, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { User } from '../../../shared/models/User';
 import {
+    Content,
     Control,
     Draw,
     FeatureGroup,
@@ -13,9 +14,11 @@ import {
     GeoJSON,
     latLng,
     latLngBounds,
+    Layer,
     LayerEvent,
     Map,
     MapOptions,
+    TileLayer,
     tileLayer,
 } from 'leaflet';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -33,6 +36,7 @@ import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { HlmDialogImports } from '@spartan-ng/ui-dialog-helm';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { VineyardRequest } from '../../../shared/models/vineyard/VineyardRequest';
+import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
 
 @Component({
     selector: 'app-vineyard-dashboard',
@@ -51,6 +55,7 @@ import { VineyardRequest } from '../../../shared/models/vineyard/VineyardRequest
         HlmInputDirective,
         BrnDialogImports,
         HlmDialogImports,
+        HlmTabsImports,
     ],
     standalone: true,
     providers: [provideIcons({ lucidePlus, lucideMenu, lucideTrash2 })],
@@ -67,6 +72,8 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         center: latLng([47.1625, 19.5033]),
     };
     subscriptions: Subscription[] = [];
+    datePipe: DateTransformPipe = new DateTransformPipe();
+    numberPipe: DecimalPipe = new DecimalPipe('en-US');
 
     vineyardForm: FormGroup = vineyardForm();
 
@@ -101,6 +108,7 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
     }
 
     initMapFeatures() {
+        this.map.setMinZoom(7);
         if (!this.user.vineyard) {
             const hungaryBounds = latLngBounds([
                 [45.7371, 16.1139],
@@ -108,14 +116,30 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
             ]);
             this.map.fitBounds(hungaryBounds);
             this.map.setMaxBounds(hungaryBounds);
-            this.map.setMinZoom(7);
             this.map.on(Draw.Event.CREATED, (event: LayerEvent) => {
                 const layer = event.layer as GeoJSON;
                 this.vineyardLayer.clearLayers();
                 this.vineyardLayer.addLayer(layer);
             });
         } else {
-            const layer = geoJSON(this.user.vineyard?.mapArea);
+            const layer = geoJSON(this.user.vineyard!.mapArea, {
+                onEachFeature: (feature, layer) => {
+                    const popup: Content = `
+                            <ul>
+                                <li>ID: ${this.user.vineyard!.id}</li>
+                                <li>Name: ${this.user.vineyard!.name}</li>
+                                <li>Area: ${this.numberPipe.transform(this.user.vineyard!.area)} km2</li>
+                                <li>Owner: ${this.user.vineyard!.owner.username}</li>
+                                <li>Owning Date: ${this.datePipe.transform(this.user.vineyard!.owningDate)}</li>
+                                <li>Cellars: ${this.user.vineyard!.cellars?.length ?? 0}</li>
+                            </ul>
+                        `;
+                    layer.bindPopup(popup).addTo(this.map);
+                    layer.on('click', () => {
+                        layer.openPopup();
+                    });
+                },
+            });
             layer.setStyle({ color: '#00490a' }).addTo(this.map);
             this.map.setMaxBounds(layer.getBounds());
             this.map.fitBounds(layer.getBounds());
@@ -170,9 +194,18 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         });
     }
 
+    deleteLayers(): void {
+        this.map.eachLayer((layer: Layer) => {
+            if (!(layer instanceof TileLayer)) {
+                layer.remove();
+            }
+        });
+    }
+
     deleteVineyard() {
         this.vineyardService.deleteVineyard(this.user.vineyard?.id as number).subscribe(user => {
             if (user) {
+                this.deleteLayers();
                 toast.success('Vineyard deleted successfully!', {
                     position: 'bottom-center',
                 });
