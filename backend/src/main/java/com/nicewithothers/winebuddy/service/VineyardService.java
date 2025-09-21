@@ -5,6 +5,7 @@ import com.nicewithothers.winebuddy.model.Vineyard;
 import com.nicewithothers.winebuddy.model.dto.vineyard.VineyardRequest;
 import com.nicewithothers.winebuddy.repository.UserRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
+import com.nicewithothers.winebuddy.utility.ShapeUtility;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
@@ -26,21 +27,10 @@ public class VineyardService {
     private final UserRepository userRepository;
     private final VineyardRepository vineyardRepository;
     private final UserService userService;
+    private final ShapeUtility shapeUtility;
 
     public Vineyard createVineyard(String username, VineyardRequest vineyardRequest) throws ParseException {
-        GeoJsonReader geoJsonReader = new GeoJsonReader();
-        String json = new JSONObject(vineyardRequest.getCreatedPolygon()).toString();
-        Geometry geometry = geoJsonReader.read(json);
-
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        Coordinate[] coords = geometry.getCoordinates();
-
-        LinearRing linearRing = geometryFactory.createLinearRing(coords);
-        Polygon polygon = geometryFactory.createPolygon(linearRing);
-
-        if (!vineyardRepository.isWithinHungary(polygon)) {
-            throw new ParseException("Vineyard is not within Hungary");
-        }
+        Polygon polygon = shapeUtility.createPolygon(vineyardRequest.getCreatedPolygon());
 
         Vineyard vineyard = Vineyard.builder()
                 .name(vineyardRequest.getName())

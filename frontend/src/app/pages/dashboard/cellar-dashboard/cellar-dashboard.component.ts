@@ -80,6 +80,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
     user!: User;
     map!: Map;
     drawnLayer: FeatureGroup = new FeatureGroup();
+    drawnLayerValidated: boolean = false;
     cellarLayers: FeatureGroup = new FeatureGroup();
     options: MapOptions = {
         layers: [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')],
@@ -133,6 +134,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
             console.log(layer.toGeoJSON());
             this.drawnLayer.clearLayers();
             this.drawnLayer.addLayer(layer);
+            this.validateCellarLayer(this.drawnLayer.toGeoJSON())
         });
 
         this.drawCellars();
@@ -165,8 +167,32 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         return (
             this.cellarForm.get('name')?.invalid ||
             this.cellarForm.get('capacity')?.invalid ||
-            this.drawnLayer.getLayers().length === 0
+            this.drawnLayer.getLayers().length === 0 ||
+            !this.drawnLayerValidated
         );
+    }
+
+    validateCellarLayer(layer: any): void {
+        this.cellarService.validateCellar(layer).subscribe(response => {
+            if (response) {
+                this.drawnLayerValidated = true;
+                this.drawnLayer.setStyle({ color: '#00ff00' });
+                toast.success('Drawn polygon validation successful!', {
+                    position: 'bottom-center',
+                    duration: 2000,
+                });
+            } else {
+                this.drawnLayerValidated = false;
+                this.drawnLayer.setStyle({ color: '#ff0000' });
+                toast.error('Drawn polygon is invalid!', {
+                    position: 'bottom-center',
+                    duration: 2000,
+                });
+                setTimeout(() => {
+                    this.drawnLayer.clearLayers();
+                }, 2000);
+            }
+        });
     }
 
     drawCellars(): void {
@@ -195,7 +221,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
             .addTo(this.map);
     }
 
-    addCellar() {
+    addCellar(): void {
         const cellarRequest: CellarRequest = {
             name: this.cellarForm.get('name')?.value,
             capacity: this.cellarForm.get('capacity')?.value,
@@ -220,7 +246,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         this.drawCellars();
     }
 
-    deleteCellar(id: number) {
+    deleteCellar(id: number): void {
         this.cellarService.deleteCellar(id).subscribe(user => {
             if (user) {
                 this.deleteCellarLayer();

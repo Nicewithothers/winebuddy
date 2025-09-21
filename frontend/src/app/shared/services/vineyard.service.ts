@@ -5,6 +5,7 @@ import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { User } from '../models/User';
 import { Point, PointTuple } from 'leaflet';
+import { VineyardResponse } from '../models/vineyard/VineyardResponse';
 
 @Injectable({
     providedIn: 'root',
@@ -68,5 +69,28 @@ export class VineyardService {
                     throw new Error('Unable to delete Vineyard');
                 }),
             );
+    }
+
+    validateVineyard(layer: any) {
+        const token = sessionStorage.getItem('AuthToken');
+        const headers = new HttpHeaders({ Authorization: `${token}` });
+        return this.http
+            .post(`${this.apiURL}/validateVineyard`, layer, {
+                headers: headers,
+                observe: 'response'
+            })
+            .pipe(
+                map((response) => {
+                    if (response) {
+                        return response.body as boolean;
+                    } else {
+                        throw new Error('Vineyard cannot be validated!');
+                    }
+                }),
+                catchError(err => {
+                    console.error(err);
+                    throw new Error('Vineyard cannot be validated.');
+                })
+            )
     }
 }

@@ -37,6 +37,7 @@ import { HlmDialogImports } from '@spartan-ng/ui-dialog-helm';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { VineyardRequest } from '../../../shared/models/vineyard/VineyardRequest';
 import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
+import { BrnHoverCardImports } from '@spartan-ng/brain/hover-card';
 
 @Component({
     selector: 'app-vineyard-dashboard',
@@ -120,13 +121,13 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
                 const layer = event.layer as GeoJSON;
                 this.vineyardLayer.clearLayers();
                 this.vineyardLayer.addLayer(layer);
+                this.validateVineyardLayer(this.vineyardLayer.toGeoJSON());
             });
         } else {
             const layer = geoJSON(this.user.vineyard!.mapArea, {
                 onEachFeature: (feature, layer) => {
                     const popup: Content = `
                             <ul>
-                                <li>ID: ${this.user.vineyard!.id}</li>
                                 <li>Name: ${this.user.vineyard!.name}</li>
                                 <li>Area: ${this.numberPipe.transform(this.user.vineyard!.area)} km2</li>
                                 <li>Owner: ${this.user.vineyard!.owner.username}</li>
@@ -175,6 +176,27 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         return (
             this.vineyardForm.get('name')?.invalid || this.vineyardLayer.getLayers().length === 0
         );
+    }
+
+    validateVineyardLayer(layer: any): void {
+        this.vineyardService.validateVineyard(layer).subscribe(response => {
+            if (response) {
+                this.vineyardLayer.setStyle({ color: '#00ff00' });
+                toast.success('Drawn polygon validation successful!', {
+                    position: 'bottom-center',
+                    duration: 2000,
+                });
+            } else {
+                this.vineyardLayer.setStyle({ color: '#ff0000' });
+                toast.error('Drawn polygon is invalid!', {
+                    position: 'bottom-center',
+                    duration: 2000,
+                });
+                setTimeout(() => {
+                    this.vineyardLayer.clearLayers();
+                }, 2000);
+            }
+        });
     }
 
     addVineyard(): void {

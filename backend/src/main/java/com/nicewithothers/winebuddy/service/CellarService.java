@@ -5,6 +5,7 @@ import com.nicewithothers.winebuddy.model.Vineyard;
 import com.nicewithothers.winebuddy.model.dto.cellar.CellarRequest;
 import com.nicewithothers.winebuddy.repository.CellarRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
+import com.nicewithothers.winebuddy.utility.ShapeUtility;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
@@ -25,17 +26,10 @@ import java.util.Collections;
 public class CellarService {
     private final CellarRepository cellarRepository;
     private final VineyardRepository vineyardRepository;
+    private final ShapeUtility shapeUtility;
 
     public Cellar createCellar(Vineyard vineyard, CellarRequest cellarRequest) throws ParseException {
-        GeoJsonReader geoJsonReader = new GeoJsonReader();
-        String json = new JSONObject(cellarRequest.getCreatedPolygon()).toString();
-        Geometry geometry = geoJsonReader.read(json);
-
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        Coordinate[] coords = geometry.getCoordinates();
-
-        LinearRing linearRing = geometryFactory.createLinearRing(coords);
-        Polygon polygon = geometryFactory.createPolygon(linearRing);
+        Polygon polygon = shapeUtility.createPolygon(cellarRequest.getCreatedPolygon());
 
         if (!cellarRepository.isWithinVineyard(polygon, vineyard.getId())) {
             throw new ParseException("Cellar is not within your Vineyard!");
