@@ -45,6 +45,7 @@ import { CellarRequest } from '../../../shared/models/cellar/CellarRequest';
 import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { HlmSpinnerComponent } from '@spartan-ng/ui-spinner-helm';
 import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
+import { DialogService } from '../../../shared/services/dialog.service';
 
 @Component({
     selector: 'app-cellar-dashboard',
@@ -93,6 +94,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
     constructor(
         protected authService: AuthService,
         private cellarService: CellarService,
+        protected dialogService: DialogService,
     ) {}
 
     ngOnInit() {
@@ -134,7 +136,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
             console.log(layer.toGeoJSON());
             this.drawnLayer.clearLayers();
             this.drawnLayer.addLayer(layer);
-            this.validateCellarLayer(this.drawnLayer.toGeoJSON())
+            this.validateCellarLayer(this.drawnLayer.toGeoJSON());
         });
 
         this.drawCellars();
@@ -181,6 +183,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
                     position: 'bottom-center',
                     duration: 2000,
                 });
+                this.triggerDialog();
             } else {
                 this.drawnLayerValidated = false;
                 this.drawnLayer.setStyle({ color: '#ff0000' });
@@ -239,6 +242,8 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
                 throw new Error();
             }
         });
+        this.dialogService.setClosedState();
+        this.cellarForm.reset();
     }
 
     deleteCellarLayer(): void {
@@ -260,5 +265,9 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
                 throw new Error();
             }
         });
+    }
+
+    triggerDialog(): void {
+        this.dialogService.setOpenState();
     }
 }

@@ -57,124 +57,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <hlm-dialog>
-                                <div class="flex justify-center w-full h-full">
-                                    <button
-                                        class="h-24 w-24"
-                                        variant="outline"
-                                        brnDialogTrigger
-                                        hlmBtn
-                                    >
-                                        <ng-icon name="lucidePlus" size="40px"></ng-icon>
-                                    </button>
-                                </div>
-                                <hlm-dialog-content *brnDialogContent="let ctx">
-                                    <hlm-dialog-header>
-                                        <h3 class="text-center" hlmDialogTitle>Add cellar</h3>
-                                        <p hlmDialogDescription>
-                                            IMPORTANT: You need to draw inside your vineyard before
-                                            adding!
-                                        </p>
-                                    </hlm-dialog-header>
-                                    <form [formGroup]="cellarForm" (ngSubmit)="addCellar()">
-                                        <div class="flex flex-col items-center gap-y-2">
-                                            <hlm-form-field>
-                                                <input
-                                                    class="w-64"
-                                                    type="text"
-                                                    placeholder="Cellar name"
-                                                    formControlName="name"
-                                                    hlmInput
-                                                />
-                                            </hlm-form-field>
-                                            <hlm-form-field>
-                                                <input
-                                                    class="w-64"
-                                                    type="number"
-                                                    min="0"
-                                                    placeholder="Capacity"
-                                                    formControlName="capacity"
-                                                    hlmInput
-                                                />
-                                            </hlm-form-field>
-                                            <div class="flex gap-6">
-                                                <button
-                                                    variant="destructive"
-                                                    hlmBtn
-                                                    brnDialogClose
-                                                    type="reset"
-                                                    class="cursor-pointer"
-                                                >
-                                                    Close
-                                                </button>
-                                                <button
-                                                    variant="default"
-                                                    hlmBtn
-                                                    type="submit"
-                                                    class="cursor-pointer"
-                                                    [disabled]="this.checkFields()"
-                                                >
-                                                    Create
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </hlm-dialog-content>
-                            </hlm-dialog>
                         } @else {
-                            <hlm-dialog>
-                                <div class="flex justify-center w-full h-full">
-                                    <button
-                                        class="h-48 w-48"
-                                        variant="outline"
-                                        brnDialogTrigger
-                                        hlmBtn
-                                    >
-                                        <ng-icon name="lucidePlus" size="80px"></ng-icon>
-                                    </button>
-                                </div>
-                                <hlm-dialog-content *brnDialogContent="let ctx">
-                                    <hlm-dialog-header>
-                                        <h3 class="text-center" hlmDialogTitle>Add cellar</h3>
-                                        <p hlmDialogDescription>
-                                            IMPORTANT: You need to draw inside your vineyard before
-                                            adding!
-                                        </p>
-                                    </hlm-dialog-header>
-                                    <form [formGroup]="cellarForm" (ngSubmit)="addCellar()">
-                                        <div class="flex flex-col items-center gap-y-2">
-                                            <hlm-form-field>
-                                                <input
-                                                    class="w-64"
-                                                    type="text"
-                                                    placeholder="Vineyard name"
-                                                    formControlName="name"
-                                                    hlmInput
-                                                />
-                                            </hlm-form-field>
-                                            <hlm-form-field>
-                                                <input
-                                                    class="w-64"
-                                                    type="number"
-                                                    min="0"
-                                                    placeholder="Capacity"
-                                                    formControlName="capacity"
-                                                    hlmInput
-                                                />
-                                            </hlm-form-field>
-                                            <button
-                                                variant="default"
-                                                hlmBtn
-                                                type="submit"
-                                                class="cursor-pointer"
-                                                [disabled]="this.checkFields()"
-                                            >
-                                                Create
-                                            </button>
-                                        </div>
-                                    </form>
-                                </hlm-dialog-content>
-                            </hlm-dialog>
+                            <p>You don't have any cellars created.</p>
                         }
                     </div>
                     <div hlmTabsContent="map" class="h-full p-4">
@@ -186,6 +70,60 @@
                             [leafletDrawOptions]="setDrawFeatures()"
                             (leafletMapReady)="onMapReady($event)"
                         ></div>
+                        <hlm-dialog [state]="dialogService._state()">
+                            <hlm-dialog-content *brnDialogContent>
+                                <hlm-dialog-header>
+                                    <h3 class="text-center" hlmDialogTitle>Add cellar</h3>
+                                    <p hlmDialogDescription>
+                                        IMPORTANT: You need to draw inside your vineyard before
+                                        adding!
+                                    </p>
+                                </hlm-dialog-header>
+                                <form [formGroup]="cellarForm" (ngSubmit)="addCellar()">
+                                    <div class="flex flex-col items-center gap-y-2">
+                                        <hlm-form-field>
+                                            <input
+                                                class="w-64"
+                                                type="text"
+                                                placeholder="Cellar name"
+                                                formControlName="name"
+                                                hlmInput
+                                            />
+                                        </hlm-form-field>
+                                        <hlm-form-field>
+                                            <input
+                                                class="w-64"
+                                                type="number"
+                                                min="0"
+                                                placeholder="Capacity"
+                                                formControlName="capacity"
+                                                hlmInput
+                                            />
+                                        </hlm-form-field>
+                                        <div class="flex gap-6">
+                                            <button
+                                                variant="destructive"
+                                                hlmBtn
+                                                type="reset"
+                                                class="cursor-pointer"
+                                                (click)="this.dialogService.setClosedState()"
+                                            >
+                                                Close
+                                            </button>
+                                            <button
+                                                variant="default"
+                                                hlmBtn
+                                                type="submit"
+                                                class="cursor-pointer"
+                                                [disabled]="this.checkFields()"
+                                            >
+                                                Create
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </hlm-dialog-content>
+                        </hlm-dialog>
                     </div>
                 </div>
             </hlm-tabs>

@@ -28,16 +28,22 @@ import { filter, Subscription } from 'rxjs';
 import { toast } from 'ngx-sonner';
 import { BrnContextMenuImports } from '@spartan-ng/brain/menu';
 import { HlmMenuComponent } from '@spartan-ng/ui-menu-helm';
-import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
 import { vineyardForm } from '../../../shared/forms/vineyard.form';
-import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
-import { HlmDialogImports } from '@spartan-ng/ui-dialog-helm';
-import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { VineyardRequest } from '../../../shared/models/vineyard/VineyardRequest';
 import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
-import { BrnHoverCardImports } from '@spartan-ng/brain/hover-card';
+import { DialogService } from '../../../shared/services/dialog.service';
+import {
+    HlmDialogComponent,
+    HlmDialogContentComponent,
+    HlmDialogDescriptionDirective,
+    HlmDialogHeaderComponent,
+    HlmDialogTitleDirective,
+} from '@spartan-ng/ui-dialog-helm';
+import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
+import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 
 @Component({
     selector: 'app-vineyard-dashboard',
@@ -50,13 +56,17 @@ import { BrnHoverCardImports } from '@spartan-ng/brain/hover-card';
         HlmMenuComponent,
         NgIcon,
         ReactiveFormsModule,
-        HlmFormFieldComponent,
         LeafletModule,
         LeafletDrawModule,
+        HlmTabsImports,
+        HlmDialogComponent,
+        HlmDialogContentComponent,
+        HlmDialogDescriptionDirective,
+        HlmDialogHeaderComponent,
+        HlmDialogTitleDirective,
+        HlmFormFieldComponent,
         HlmInputDirective,
         BrnDialogImports,
-        HlmDialogImports,
-        HlmTabsImports,
     ],
     standalone: true,
     providers: [provideIcons({ lucidePlus, lucideMenu, lucideTrash2 })],
@@ -75,18 +85,18 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
     subscriptions: Subscription[] = [];
     datePipe: DateTransformPipe = new DateTransformPipe();
     numberPipe: DecimalPipe = new DecimalPipe('en-US');
-
     vineyardForm: FormGroup = vineyardForm();
+    drawnLayerValidated: boolean = false;
 
     constructor(
         protected authService: AuthService,
         private vineyardService: VineyardService,
+        protected dialogService: DialogService,
     ) {}
 
     ngOnInit() {
         const userSub = this.authService.user$.pipe(filter(user => !!user)).subscribe(user => {
             this.user = user!;
-            console.log('Login: ', user);
             if (this.map) {
                 this.setDrawFeatures();
                 this.initMapFeatures();
@@ -173,20 +183,28 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
     }
 
     checkFields(): boolean {
+        console.log(this.vineyardForm.get('name')?.invalid);
+        console.log(this.vineyardLayer.getLayers().length === 0);
+        console.log(!this.drawnLayerValidated);
         return (
-            this.vineyardForm.get('name')?.invalid || this.vineyardLayer.getLayers().length === 0
+            this.vineyardForm.get('name')?.invalid ||
+            this.vineyardLayer.getLayers().length === 0 ||
+            !this.drawnLayerValidated
         );
     }
 
     validateVineyardLayer(layer: any): void {
         this.vineyardService.validateVineyard(layer).subscribe(response => {
             if (response) {
+                this.drawnLayerValidated = true;
                 this.vineyardLayer.setStyle({ color: '#00ff00' });
                 toast.success('Drawn polygon validation successful!', {
                     position: 'bottom-center',
                     duration: 2000,
                 });
+                this.triggerDialog();
             } else {
+                this.drawnLayerValidated = false;
                 this.vineyardLayer.setStyle({ color: '#ff0000' });
                 toast.error('Drawn polygon is invalid!', {
                     position: 'bottom-center',
@@ -214,6 +232,7 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
                 });
             }
         });
+        this.dialogService.setClosedState();
     }
 
     deleteLayers(): void {
@@ -237,5 +256,9 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
                 });
             }
         });
+    }
+
+    triggerDialog(): void {
+        this.dialogService.setOpenState();
     }
 }

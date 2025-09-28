@@ -63,59 +63,7 @@
                                 </hlm-menu>
                             </ng-template>
                         } @else {
-                            <hlm-dialog>
-                                <div class="flex justify-center w-full h-full">
-                                    <button
-                                        class="h-48 w-48"
-                                        variant="outline"
-                                        brnDialogTrigger
-                                        hlmBtn
-                                    >
-                                        <ng-icon name="lucidePlus" size="80px"></ng-icon>
-                                    </button>
-                                </div>
-                                <hlm-dialog-content *brnDialogContent="let ctx">
-                                    <hlm-dialog-header>
-                                        <h3 class="text-center" hlmDialogTitle>Add vineyard</h3>
-                                        <p hlmDialogDescription>
-                                            IMPORTANT: You need to draw on the map before adding!
-                                        </p>
-                                    </hlm-dialog-header>
-                                    <form [formGroup]="vineyardForm" (ngSubmit)="addVineyard()">
-                                        <div class="flex flex-col items-center gap-y-2">
-                                            <hlm-form-field>
-                                                <input
-                                                    class="w-64"
-                                                    type="text"
-                                                    placeholder="Vineyard name"
-                                                    formControlName="name"
-                                                    hlmInput
-                                                />
-                                            </hlm-form-field>
-                                            <div class="flex gap-6">
-                                                <button
-                                                    variant="destructive"
-                                                    hlmBtn
-                                                    brnDialogClose
-                                                    type="reset"
-                                                    class="cursor-pointer"
-                                                >
-                                                    Close
-                                                </button>
-                                                <button
-                                                    variant="default"
-                                                    hlmBtn
-                                                    type="submit"
-                                                    class="cursor-pointer"
-                                                    [disabled]="this.checkFields()"
-                                                >
-                                                    Create
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </hlm-dialog-content>
-                            </hlm-dialog>
+                            <p>You don't have any vineyards created.</p>
                         }
                     </div>
                     <div hlmTabsContent="map" class="h-full p-4">
@@ -127,6 +75,49 @@
                             [leafletDrawOptions]="setDrawFeatures()"
                             (leafletMapReady)="onMapReady($event)"
                         ></div>
+                        <hlm-dialog [state]="dialogService._state()">
+                            <hlm-dialog-content *brnDialogContent>
+                                <hlm-dialog-header>
+                                    <h3 class="text-center" hlmDialogTitle>Add vineyard</h3>
+                                    <p hlmDialogDescription>
+                                        IMPORTANT: You need to draw on the map before adding!
+                                    </p>
+                                </hlm-dialog-header>
+                                <form [formGroup]="vineyardForm" (ngSubmit)="addVineyard()">
+                                    <div class="flex flex-col items-center gap-y-2">
+                                        <hlm-form-field>
+                                            <input
+                                                class="w-64"
+                                                type="text"
+                                                placeholder="Vineyard name"
+                                                formControlName="name"
+                                                hlmInput
+                                            />
+                                        </hlm-form-field>
+                                        <div class="flex gap-6">
+                                            <button
+                                                variant="destructive"
+                                                hlmBtn
+                                                type="reset"
+                                                class="cursor-pointer"
+                                                (click)="dialogService.setClosedState()"
+                                            >
+                                                Close
+                                            </button>
+                                            <button
+                                                variant="default"
+                                                hlmBtn
+                                                type="submit"
+                                                class="cursor-pointer"
+                                                [disabled]="checkFields()"
+                                            >
+                                                Create
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </hlm-dialog-content>
+                        </hlm-dialog>
                     </div>
                 </div>
             </hlm-tabs>

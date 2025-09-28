@@ -77,10 +77,10 @@ export class VineyardService {
         return this.http
             .post(`${this.apiURL}/validateVineyard`, layer, {
                 headers: headers,
-                observe: 'response'
+                observe: 'response',
             })
             .pipe(
-                map((response) => {
+                map(response => {
                     if (response) {
                         return response.body as boolean;
                     } else {
@@ -90,7 +90,7 @@ export class VineyardService {
                 catchError(err => {
                     console.error(err);
                     throw new Error('Vineyard cannot be validated.');
-                })
-            )
+                }),
+            );
     }
 }

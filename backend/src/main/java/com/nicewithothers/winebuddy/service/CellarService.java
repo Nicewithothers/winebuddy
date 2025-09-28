@@ -31,14 +31,6 @@ public class CellarService {
     public Cellar createCellar(Vineyard vineyard, CellarRequest cellarRequest) throws ParseException {
         Polygon polygon = shapeUtility.createPolygon(cellarRequest.getCreatedPolygon());
 
-        if (!cellarRepository.isWithinVineyard(polygon, vineyard.getId())) {
-            throw new ParseException("Cellar is not within your Vineyard!");
-        }
-
-        if (!cellarRepository.isNotWithinCellars(polygon)) {
-            throw new ParseException("Cellar cannot be within any other cellars!");
-        }
-
         Cellar cellar = Cellar.builder()
                 .name(cellarRequest.getName())
                 .mapArea(polygon)
