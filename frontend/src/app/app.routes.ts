@@ -10,15 +10,32 @@ import { VineyardDashboardComponent } from './pages/dashboard/vineyard-dashboard
 import { CellarDashboardComponent } from './pages/dashboard/cellar-dashboard/cellar-dashboard.component';
 import { BarrelDashboardComponent } from './pages/dashboard/barrel-dashboard/barrel-dashboard.component';
 import { WineDashboardComponent } from './pages/dashboard/wine-dashboard/wine-dashboard.component';
+import { DashboardGuard } from './shared/guards/dashboard.guard';
 
 export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-    { path: 'vineyard-dashboard', component: VineyardDashboardComponent, canActivate: [AuthGuard] },
-    { path: 'cellar-dashboard', component: CellarDashboardComponent, canActivate: [AuthGuard] },
-    { path: 'barrel-dashboard', component: BarrelDashboardComponent, canActivate: [AuthGuard] },
-    { path: 'wine-dashboard', component: WineDashboardComponent, canActivate: [AuthGuard] },
+    {
+        path: 'vineyard-dashboard',
+        component: VineyardDashboardComponent,
+        canActivate: [AuthGuard, DashboardGuard],
+    },
+    {
+        path: 'cellar-dashboard',
+        component: CellarDashboardComponent,
+        canActivate: [AuthGuard, DashboardGuard],
+    },
+    {
+        path: 'barrel-dashboard',
+        component: BarrelDashboardComponent,
+        canActivate: [AuthGuard, DashboardGuard],
+    },
+    {
+        path: 'wine-dashboard',
+        component: WineDashboardComponent,
+        canActivate: [AuthGuard, DashboardGuard],
+    },
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
     { path: 'not-found', component: NotFoundComponent },
     { path: '', component: MainpageComponent },

@@ -27,11 +27,7 @@ import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
 import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
-import {
-    BrnDialogCloseDirective,
-    BrnDialogContentDirective,
-    BrnDialogTriggerDirective,
-} from '@spartan-ng/brain/dialog';
+import { BrnDialogContentDirective } from '@spartan-ng/brain/dialog';
 import {
     HlmDialogComponent,
     HlmDialogContentComponent,
@@ -63,14 +59,12 @@ import { DialogService } from '../../../shared/services/dialog.service';
         LeafletModule,
         LeafletDrawModule,
         BrnDialogContentDirective,
-        BrnDialogTriggerDirective,
         HlmDialogComponent,
         HlmDialogContentComponent,
         HlmDialogDescriptionDirective,
         HlmDialogHeaderComponent,
         HlmDialogTitleDirective,
         HlmSpinnerComponent,
-        BrnDialogCloseDirective,
         HlmTabsImports,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus })],

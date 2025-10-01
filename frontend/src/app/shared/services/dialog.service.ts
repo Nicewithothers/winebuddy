@@ -15,7 +15,9 @@ export class DialogService {
         initialValue: 'closed' as 'open' | 'closed',
     });
 
-    constructor() {}
+    constructor() {
+        this._layerValidation.set(false);
+    }
 
     setOpenState(): void {
         this._layerValidation.set(true);

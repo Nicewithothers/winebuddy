@@ -1,1 +1,169 @@
-<p>barrel-dashboard works!</p>
+@if (this.authService.user$ | async; as user) {
+    <section class="section-container">
+        <div class="flex w-full h-full">
+            <hlm-tabs tab="data" class="w-full h-full">
+                <hlm-tabs-list class="grid w-full grid-cols-2">
+                    <button hlmTabsTrigger="data" class="cursor-pointer">Data view</button>
+                    <button hlmTabsTrigger="map" class="cursor-pointer">Map view</button>
+                </hlm-tabs-list>
+                <div class="w-full h-full flex flex-col justify-center">
+                    <div
+                        hlmTabsContent="data"
+                        class="w-full p-4 flex flex-col justify-center items-center gap-4"
+                    >
+                        @if (user.vineyard!.cellars && user.vineyard!.cellars!.length > 0) {
+                            <hlm-select
+                                (valueChange)="handleCurrentBarrel($event)"
+                                placeholder="Select a cellar"
+                            >
+                                <hlm-select-trigger class="w-[280px]">
+                                    <hlm-select-value>
+                                        <div
+                                            class="flex items-center gap-x-2"
+                                            *brnSelectValue="let value"
+                                        >
+                                            {{ value.name }}
+                                        </div>
+                                    </hlm-select-value>
+                                </hlm-select-trigger>
+                                <hlm-select-content>
+                                    <hlm-select-scroll-up />
+                                    <hlm-select-group>
+                                        <hlm-select-label>Cellars</hlm-select-label>
+                                        @for (cellar of this.user.vineyard!.cellars; track cellar) {
+                                            <hlm-option [value]="cellar">
+                                                {{ cellar.name }}
+                                            </hlm-option>
+                                        }
+                                    </hlm-select-group>
+                                    <hlm-select-scroll-down />
+                                </hlm-select-content>
+                            </hlm-select>
+                            @if (selectedCellar) {
+                                @if (selectedCellar!.barrels!.length > 0) {
+                                    <div class="overflow-x-auto shadow-lg rounded-lg">
+                                        <table class="w-full table-auto border border-gray-200">
+                                            <thead>
+                                                <tr class="dashboard-tr">
+                                                    <th scope="col" class="dashboard-th">Name</th>
+                                                    <th scope="col" class="dashboard-th">
+                                                        Capacity
+                                                    </th>
+                                                    <th scope="col" class="dashboard-th">Area</th>
+                                                    <th scope="col" class="dashboard-th">
+                                                        Owning Date
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (
+                                                    barrel of selectedCellar!.barrels;
+                                                    track barrel
+                                                ) {
+                                                    <tr
+                                                        class="dashboard-tr"
+                                                        [brnCtxMenuTriggerFor]="menu"
+                                                    >
+                                                        <td class="dashboard-td">
+                                                            {{ barrel.name }}
+                                                        </td>
+                                                        <td class="dashboard-td">
+                                                            {{ barrel.volume }}
+                                                        </td>
+                                                    </tr>
+                                                    <ng-template #menu>
+                                                        <hlm-menu>
+                                                            <button
+                                                                variant="destructive"
+                                                                class="w-full"
+                                                                (click)="deleteBarrel(barrel.id)"
+                                                                hlmBtn
+                                                            >
+                                                                <ng-icon
+                                                                    name="lucideTrash2"
+                                                                ></ng-icon>
+                                                                Delete
+                                                            </button>
+                                                        </hlm-menu>
+                                                    </ng-template>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                } @else {
+                                    <h2 hlmH2>This cellar doesn't contain any barrels yet.</h2>
+                                }
+                            }
+                        }
+                    </div>
+                    <div hlmTabsContent="map" class="h-full p-4">
+                        <div
+                            class="h-[75vh] w-full rounded-xl shadow border border-gray-200 z-10"
+                            leaflet
+                            leafletDraw
+                            [leafletOptions]="options"
+                            [leafletDrawOptions]="setDrawFeatures()"
+                            (leafletMapReady)="onMapReady($event)"
+                        ></div>
+                        <hlm-dialog [state]="dialogService._state()">
+                            <hlm-dialog-content *brnDialogContent>
+                                <hlm-dialog-header>
+                                    <h3 class="text-center" hlmDialogTitle>Add cellar</h3>
+                                    <p hlmDialogDescription>
+                                        IMPORTANT: You need to draw inside your vineyard before
+                                        adding!
+                                    </p>
+                                </hlm-dialog-header>
+                                <form [formGroup]="barrelForm" (ngSubmit)="addBarrel()">
+                                    <div class="flex flex-col items-center gap-y-2">
+                                        <hlm-form-field>
+                                            <input
+                                                class="w-64"
+                                                type="text"
+                                                placeholder="Cellar name"
+                                                formControlName="name"
+                                                hlmInput
+                                            />
+                                        </hlm-form-field>
+                                        <hlm-form-field>
+                                            <input
+                                                class="w-64"
+                                                type="number"
+                                                min="0"
+                                                placeholder="Capacity"
+                                                formControlName="capacity"
+                                                hlmInput
+                                            />
+                                        </hlm-form-field>
+                                        <div class="flex gap-6">
+                                            <button
+                                                variant="destructive"
+                                                hlmBtn
+                                                type="reset"
+                                                class="cursor-pointer"
+                                                (click)="this.dialogService.setClosedState()"
+                                            >
+                                                Close
+                                            </button>
+                                            <button
+                                                variant="default"
+                                                hlmBtn
+                                                type="submit"
+                                                class="cursor-pointer"
+                                                [disabled]="this.checkFields()"
+                                            >
+                                                Create
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </hlm-dialog-content>
+                        </hlm-dialog>
+                    </div>
+                </div>
+            </hlm-tabs>
+        </div>
+    </section>
+} @else {
+    <hlm-spinner />
+}

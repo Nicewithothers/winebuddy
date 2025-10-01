@@ -1,8 +1,12 @@
 package com.nicewithothers.winebuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.nicewithothers.winebuddy.model.enums.BarrelSize;
+import com.nicewithothers.winebuddy.model.enums.BarrelType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,9 +28,6 @@ public class Barrel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(columnDefinition = "Geometry(Point,4326)", nullable = false)
     private Point location;
 
@@ -35,6 +36,14 @@ public class Barrel {
 
     @Column(nullable = false)
     private Double maxVolume;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BarrelType barrelType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BarrelSize barrelSize;
 
     @ManyToOne
     @JsonBackReference

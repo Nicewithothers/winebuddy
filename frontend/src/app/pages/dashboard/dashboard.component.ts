@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../../shared/models/User';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../shared/services/auth.service';
-import { Router, RouterLink } from '@angular/router';
-import { AsyncPipe, NgClass, NgStyle } from '@angular/common';
-import { CarouselItem } from '../../shared/models/other/CarouselItems';
+import { RouterLink } from '@angular/router';
+import { NgClass, NgStyle } from '@angular/common';
+import { CarouselItem, carouselItems } from '../../shared/models/other/CarouselItems';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [AsyncPipe, RouterLink, NgClass, NgStyle],
+    imports: [RouterLink, NgClass, NgStyle],
     providers: [],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
@@ -18,11 +18,9 @@ export class DashboardComponent implements OnInit {
     user!: User;
     selectedBackground: CarouselItem | null = null;
     currentSelectedBackground: CarouselItem | null = null;
+    carouselItems: CarouselItem[] = carouselItems;
 
-    constructor(
-        protected authService: AuthService,
-        private router: Router,
-    ) {}
+    constructor(protected authService: AuthService) {}
 
     ngOnInit(): void {
         firstValueFrom(this.authService.user$).then(user => {
@@ -30,32 +28,9 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    carouselItems: CarouselItem[] = [
-        {
-            displayText: 'Vineyard Dashboard',
-            backgroundImage: '/images/dashboard/vineyard.png',
-            route: '/vineyard-dashboard',
-        },
-        {
-            displayText: 'Cellar Dashboard',
-            backgroundImage: '/images/dashboard/cellar.png',
-            route: '/cellar-dashboard',
-        },
-        {
-            displayText: 'Barrel Dashboard',
-            backgroundImage: '/images/dashboard/barrel.png',
-            route: '/barrel-dashboard',
-        },
-        {
-            displayText: 'Wine Dashboard',
-            backgroundImage: '/images/dashboard/wine.png',
-            route: '/wine-dashboard',
-        },
-    ];
-
     setActiveBackground(url: string | null): void {
         if (url) {
-            for (const carouselItem of this.carouselItems) {
+            for (const carouselItem of carouselItems) {
                 if (url === carouselItem.backgroundImage) {
                     this.selectedBackground = carouselItem;
                     this.currentSelectedBackground = carouselItem;

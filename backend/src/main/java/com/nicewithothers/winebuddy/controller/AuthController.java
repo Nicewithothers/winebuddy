@@ -1,7 +1,6 @@
 package com.nicewithothers.winebuddy.controller;
 
 import com.nicewithothers.winebuddy.mapper.UserMapper;
-import com.nicewithothers.winebuddy.model.User;
 import com.nicewithothers.winebuddy.model.dto.user.AuthResponse;
 import com.nicewithothers.winebuddy.model.dto.user.LoginRequest;
 import com.nicewithothers.winebuddy.model.dto.user.RegisterRequest;
@@ -10,7 +9,6 @@ import com.nicewithothers.winebuddy.service.UserService;
 import com.nicewithothers.winebuddy.utility.JwtUtility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -53,7 +50,6 @@ public class AuthController {
                     .build();
             return new ResponseEntity<>(authResponse, headers, HttpStatus.OK);
         } catch (Exception e) {
-            log.error("Error while authenticating user", e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
