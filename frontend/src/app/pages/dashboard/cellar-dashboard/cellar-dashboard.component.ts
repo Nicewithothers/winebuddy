@@ -37,7 +37,7 @@ import {
 } from '@spartan-ng/ui-dialog-helm';
 import { cellarForm } from '../../../shared/forms/cellar.form';
 import { CellarService } from '../../../shared/services/cellar.service';
-import { CellarRequest } from '../../../shared/models/cellar/CellarRequest';
+import { CellarRequest } from '../../../shared/models/requests/CellarRequest';
 import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { HlmSpinnerComponent } from '@spartan-ng/ui-spinner-helm';
 import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
@@ -84,6 +84,8 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
     };
     subscriptions: Subscription[] = [];
     cellarForm: FormGroup = cellarForm();
+    datePipe: DateTransformPipe = new DateTransformPipe();
+    numberPipe: DecimalPipe = new DecimalPipe('en-US');
 
     constructor(
         protected authService: AuthService,
@@ -96,7 +98,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
             this.user = user!;
             if (this.map) {
                 this.setDrawFeatures();
-                this.initVineyardMap();
+                this.initMap();
             }
         });
         this.subscriptions.push(userSub);
@@ -111,11 +113,11 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         this.drawnLayer.addTo(map);
 
         if (this.user) {
-            this.initVineyardMap();
+            this.initMap();
         }
     }
 
-    initVineyardMap() {
+    initMap() {
         const vineyardLayer = geoJSON(this.user.vineyard?.mapArea);
         vineyardLayer
             .setStyle({
@@ -127,13 +129,13 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
 
         this.map.on(Draw.Event.CREATED, (event: LayerEvent) => {
             const layer = event.layer as GeoJSON;
-            console.log(layer.toGeoJSON());
             this.drawnLayer.clearLayers();
             this.drawnLayer.addLayer(layer);
             this.validateCellarLayer(this.drawnLayer.toGeoJSON());
         });
 
         this.drawCellars();
+        this.handleCellarEvent();
     }
 
     setDrawFeatures(): Control.DrawConstructorOptions {
@@ -192,14 +194,25 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         });
     }
 
+    handleCellarEvent(): void {
+        this.cellarLayers.on('click', (event: LayerEvent) => {
+            const layer: GeoJSON = event.propagatedFrom;
+            this.map.fitBounds(layer.getBounds());
+        });
+    }
+
     drawCellars(): void {
         this.user.vineyard!.cellars!.forEach(cellar => {
             this.cellarLayers.addLayer(
                 geoJSON(cellar.mapArea, {
-                    onEachFeature: (feature, layer) => {
+                    onEachFeature: (_feature, layer) => {
                         const popup: Content = `
                             <ul>
-                                <li>${cellar.id}</li>
+                                <li>Name: ${cellar.name}</li>
+                                <li>Area: ${this.numberPipe.transform(cellar.area)} km2</li>
+                                <li>Capacity: ${cellar.capacity}</li>
+                                <li>Owning date: ${this.datePipe.transform(cellar.owningDate)}</li>
+                                <li>Barrels: ${cellar.barrels?.length ?? 0}</li>
                             </ul>
                             `;
                         layer.bindPopup(popup).addTo(this.map);
@@ -263,5 +276,10 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
 
     triggerDialog(): void {
         this.dialogService.setOpenState();
+    }
+
+    closeDialog(): void {
+        this.drawnLayer.clearLayers();
+        this.dialogService.setClosedState();
     }
 }

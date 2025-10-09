@@ -9,20 +9,17 @@ import com.nicewithothers.winebuddy.repository.CellarRepository;
 import com.nicewithothers.winebuddy.repository.UserRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
 import com.nicewithothers.winebuddy.service.CellarService;
-import com.nicewithothers.winebuddy.service.UserService;
-import com.nicewithothers.winebuddy.utility.JwtUtility;
 import com.nicewithothers.winebuddy.utility.ShapeUtility;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,8 +30,6 @@ import java.util.LinkedHashMap;
 @RequiredArgsConstructor
 public class CellarController {
     private final VineyardRepository vineyardRepository;
-    private final JwtUtility jwtUtility;
-    private final UserService userService;
     private final CellarService cellarService;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
@@ -42,9 +37,7 @@ public class CellarController {
     private final CellarRepository cellarRepository;
 
     @PostMapping("/createCellar")
-    public ResponseEntity<UserDto> createCellar(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody CellarRequest cellarRequest) {
-        String username = jwtUtility.extractUsername(token);
-        User user = userService.findByUsername(username);
+    public ResponseEntity<UserDto> createCellar(@AuthenticationPrincipal User user, @RequestBody CellarRequest cellarRequest) {
         try {
             Cellar cellar = cellarService.createCellar(user.getVineyard(), cellarRequest);
             double area = cellarService.calculateArea(cellar);
@@ -59,18 +52,14 @@ public class CellarController {
     }
 
     @DeleteMapping("/deleteCellar/{id}")
-    public ResponseEntity<UserDto> deleteCellar(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        String username = jwtUtility.extractUsername(token);
-        User user = userService.findByUsername(username);
+    public ResponseEntity<UserDto> deleteCellar(@AuthenticationPrincipal User user, @PathVariable Long id) {
         cellarService.deleteVineyardCellar(id, user.getVineyard());
         return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
     }
 
     @PostMapping("/validateCellar")
-    public ResponseEntity<Boolean> validateCellar(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody LinkedHashMap<String, Object> polygon) {
+    public ResponseEntity<Boolean> validateCellar(@AuthenticationPrincipal User user, @RequestBody LinkedHashMap<String, Object> polygon) {
         try {
-            String username = jwtUtility.extractUsername(token);
-            User user = userService.findByUsername(username);
             Polygon createdPolygon = shapeUtility.createPolygon(polygon);
             boolean validated = cellarRepository.isWithinVineyard(createdPolygon, user.getVineyard().getId())
                     && cellarRepository.isNotWithinCellars(createdPolygon);

@@ -1,4 +1,4 @@
-package com.nicewithothers.winebuddy.model.enums;
+package com.nicewithothers.winebuddy.model.enums.grape;
 
 public enum GrapeTaste {
     SWEET,

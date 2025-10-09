@@ -55,6 +55,10 @@ export class DashboardComponent implements OnInit {
                     return !!this.user.vineyard;
                 case '/barrel-dashboard':
                     return !!this.user.vineyard && this.user.vineyard!.cellars!.length > 0;
+                case '/wine-dashboard':
+                    return !!this.user.vineyard &&
+                        this.user.vineyard!.cellars!.length > 0 &&
+                        this.user.vineyard!.cellars!.some(cellar => cellar.barrels && cellar.barrels!.length > 0);
                 default:
                     return false;
             }

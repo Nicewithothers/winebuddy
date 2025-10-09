@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, firstValueFrom, map, Observable, of } from 'rxjs';
-import { RegisterRequest } from '../models/user/RegisterRequest';
-import { LoginRequest } from '../models/user/LoginRequest';
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from '../models/User';
 import { toast } from 'ngx-sonner';
-import { AuthResponse } from '../models/user/AuthResponse';
+import { LoginRequest } from '../models/requests/LoginRequest';
+import { RegisterRequest } from '../models/requests/RegisterRequest';
+import { AuthResponse } from '../models/responses/AuthResponse';
 
 @Injectable({
     providedIn: 'root',
@@ -19,12 +19,7 @@ export class AuthService {
     constructor(
         private http: HttpClient,
         private router: Router,
-    ) {
-        const user = JSON.parse(sessionStorage.getItem('User') || 'null');
-        if (user) {
-            this.userSubject.next(user);
-        }
-    }
+    ) {}
 
     register(credentials: RegisterRequest): Observable<User | null> {
         return this.http
@@ -57,7 +52,6 @@ export class AuthService {
                         const authResponse = response.body as AuthResponse;
                         const user = authResponse.user as User;
                         const token = authResponse.token as string;
-                        sessionStorage.setItem('User', JSON.stringify(user));
                         sessionStorage.setItem('AuthToken', token);
                         this.userSubject.next(user);
                         return user;
@@ -81,5 +75,29 @@ export class AuthService {
                 position: 'bottom-center',
             });
         });
+    }
+
+    initializeUser() {
+        const token = this.getToken();
+        return this.http
+            .get<User>(`${this.authPath}/getUser`, {
+                observe: 'response',
+            })
+            .pipe(
+                tap({
+                    next: user => {
+                        if (token) {
+                            this.userSubject.next(user.body);
+                        } else {
+                            this.userSubject.next(null);
+                        }
+                    },
+                    error: () => this.userSubject.next(null),
+                }),
+            );
+    }
+
+    getToken(): string | null {
+        return sessionStorage.getItem('AuthToken');
     }
 }

@@ -1,8 +1,9 @@
 package com.nicewithothers.winebuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.nicewithothers.winebuddy.model.enums.GrapeTaste;
-import com.nicewithothers.winebuddy.model.enums.GrapeType;
+import com.nicewithothers.winebuddy.model.enums.grape.GrapeColor;
+import com.nicewithothers.winebuddy.model.enums.grape.GrapeTaste;
+import com.nicewithothers.winebuddy.model.enums.grape.GrapeType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,13 +16,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "grape")
@@ -41,7 +44,11 @@ public class Grape {
     @Column(nullable = false)
     private GrapeTaste grapeTaste;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GrapeColor grapeColor;
+
     @JsonManagedReference
-    @OneToMany(mappedBy = "grape", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "grape", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Barrel> barrels;
 }

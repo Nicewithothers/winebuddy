@@ -22,12 +22,6 @@
                                             </td>
                                         </tr>
                                         <tr class="dashboard-tr">
-                                            <th scope="row" class="dashboard-th">Owner</th>
-                                            <td class="dashboard-td">
-                                                {{ user.vineyard.owner.username }}
-                                            </td>
-                                        </tr>
-                                        <tr class="dashboard-tr">
                                             <th scope="row" class="dashboard-th">Area</th>
                                             <td class="dashboard-td">
                                                 {{ user.vineyard.area | number }} km²
@@ -63,7 +57,7 @@
                                 </hlm-menu>
                             </ng-template>
                         } @else {
-                            <p>You don't have any vineyards created.</p>
+                            <p hlmH2>You don't have any vineyards created.</p>
                         }
                     </div>
                     <div hlmTabsContent="map" class="h-full p-4">
@@ -100,7 +94,7 @@
                                                 hlmBtn
                                                 type="reset"
                                                 class="cursor-pointer"
-                                                (click)="dialogService.setClosedState()"
+                                                (click)="closeDialog()"
                                             >
                                                 Close
                                             </button>

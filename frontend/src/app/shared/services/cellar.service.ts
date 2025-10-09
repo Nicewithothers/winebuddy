@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { catchError, map, Observable } from 'rxjs';
 import { User } from '../models/User';
-import { CellarRequest } from '../models/cellar/CellarRequest';
+import { CellarRequest } from '../models/requests/CellarRequest';
 import { GeoJSON } from 'leaflet';
 
 @Injectable({
@@ -18,18 +18,14 @@ export class CellarService {
     ) {}
 
     createCellar(cellar: CellarRequest): Observable<User> {
-        const token = sessionStorage.getItem('AuthToken');
-        const headers = new HttpHeaders({ Authorization: `${token}` });
         return this.http
             .post(`${this.apiURL}/createCellar`, cellar, {
-                headers: headers,
                 observe: 'response',
             })
             .pipe(
                 map((response: any) => {
                     if (response.ok && response.body) {
                         const user = response.body as User;
-                        sessionStorage.setItem('User', JSON.stringify(user));
                         this.authService.userSubject.next(user);
                         return user;
                     } else {
@@ -44,19 +40,15 @@ export class CellarService {
     }
 
     deleteCellar(id: number) {
-        const token = sessionStorage.getItem('AuthToken');
-        const headers = new HttpHeaders({ Authorization: `${token}` });
         return this.http
             .delete(`${this.apiURL}/deleteCellar/` + id, {
                 params: { id },
-                headers: headers,
                 observe: 'response',
             })
             .pipe(
                 map((response: any) => {
                     if (response.ok && response.body) {
                         const user = response.body as User;
-                        sessionStorage.setItem('User', JSON.stringify(user));
                         this.authService.userSubject.next(user);
                         return user;
                     } else {
@@ -71,15 +63,12 @@ export class CellarService {
     }
 
     validateCellar(layer: GeoJSON) {
-        const token = sessionStorage.getItem('AuthToken');
-        const headers = new HttpHeaders({ Authorization: `${token}` });
         return this.http
             .post(`${this.apiURL}/validateCellar`, layer, {
-                headers: headers,
-                observe: 'response'
+                observe: 'response',
             })
             .pipe(
-                map((response) => {
+                map(response => {
                     if (response) {
                         return response.body as boolean;
                     } else {
@@ -89,7 +78,7 @@ export class CellarService {
                 catchError(err => {
                     console.error(err);
                     throw new Error('Vineyard cannot be validated.');
-                })
-            )
+                }),
+            );
     }
 }

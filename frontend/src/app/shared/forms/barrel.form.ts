@@ -2,6 +2,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 export function barrelForm() {
     return new FormGroup({
-        maxVolume: new FormControl('', [Validators.required, Validators.min(0)]),
+        barrelType: new FormControl('', [Validators.required]),
+        barrelSize: new FormControl('', [Validators.required]),
+        maxVolume: new FormControl('', [Validators.required]),
     });
 }

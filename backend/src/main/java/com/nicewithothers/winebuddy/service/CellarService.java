@@ -7,15 +7,8 @@ import com.nicewithothers.winebuddy.repository.CellarRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
 import com.nicewithothers.winebuddy.utility.ShapeUtility;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

@@ -7,15 +7,8 @@ import com.nicewithothers.winebuddy.repository.UserRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
 import com.nicewithothers.winebuddy.utility.ShapeUtility;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,10 +19,10 @@ import java.util.Collections;
 public class VineyardService {
     private final UserRepository userRepository;
     private final VineyardRepository vineyardRepository;
-    private final UserService userService;
     private final ShapeUtility shapeUtility;
+    private final UserService userService;
 
-    public Vineyard createVineyard(String username, VineyardRequest vineyardRequest) throws ParseException {
+    public Vineyard createVineyard(User user, VineyardRequest vineyardRequest) throws ParseException {
         Polygon polygon = shapeUtility.createPolygon(vineyardRequest.getCreatedPolygon());
 
         Vineyard vineyard = Vineyard.builder()
@@ -37,22 +30,22 @@ public class VineyardService {
                 .mapArea(polygon)
                 .area(0.0)
                 .owningDate(Instant.now())
-                .owner(userService.findByUsername(username))
+                .owner(userService.findByUsername(user.getUsername()))
                 .cellars(Collections.emptyList())
                 .build();
         return vineyardRepository.save(vineyard);
     }
 
-    public Double calculateArea(Vineyard vineyard) {
+    public Double getArea(Vineyard vineyard) {
         return vineyardRepository.getAreaMeters(vineyard.getMapArea(), vineyard.getId())/100000;
     }
 
-    public void deleteUserVineyard(User user) {
-        Vineyard vineyard = user.getVineyard();
+    public void deleteUserVineyard(Long id, User user) {
+        Vineyard vineyard = vineyardRepository.findById(id).orElse(null);
         if (vineyard != null) {
             user.setVineyard(null);
-            userRepository.save(user);
             vineyardRepository.delete(vineyard);
+            userRepository.save(user);
         }
     }
 }

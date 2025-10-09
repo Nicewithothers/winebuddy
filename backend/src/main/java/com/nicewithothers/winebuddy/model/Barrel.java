@@ -1,8 +1,9 @@
 package com.nicewithothers.winebuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.nicewithothers.winebuddy.model.enums.BarrelSize;
-import com.nicewithothers.winebuddy.model.enums.BarrelType;
+import com.nicewithothers.winebuddy.model.enums.barrel.BarrelSize;
+import com.nicewithothers.winebuddy.model.enums.barrel.BarrelToast;
+import com.nicewithothers.winebuddy.model.enums.barrel.BarrelType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,11 +15,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.locationtech.jts.geom.Point;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,14 +30,14 @@ public class Barrel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "Geometry(Point,4326)", nullable = false)
-    private Point location;
-
     @Column(nullable = false)
     private Double volume;
 
     @Column(nullable = false)
     private Double maxVolume;
+
+    @Column(nullable = false)
+    private Boolean isFull = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -44,6 +46,10 @@ public class Barrel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BarrelSize barrelSize;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BarrelToast barrelToast;
 
     @ManyToOne
     @JsonBackReference

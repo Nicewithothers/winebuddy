@@ -31,7 +31,7 @@ import { HlmMenuComponent } from '@spartan-ng/ui-menu-helm';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
 import { vineyardForm } from '../../../shared/forms/vineyard.form';
-import { VineyardRequest } from '../../../shared/models/vineyard/VineyardRequest';
+import { VineyardRequest } from '../../../shared/models/requests/VineyardRequest';
 import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
 import { DialogService } from '../../../shared/services/dialog.service';
 import {
@@ -44,6 +44,7 @@ import {
 import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
 import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
+import { HlmH2Directive } from '@spartan-ng/ui-typography-helm';
 
 @Component({
     selector: 'app-vineyard-dashboard',
@@ -67,6 +68,7 @@ import { BrnDialogImports } from '@spartan-ng/brain/dialog';
         HlmFormFieldComponent,
         HlmInputDirective,
         BrnDialogImports,
+        HlmH2Directive,
     ],
     standalone: true,
     providers: [provideIcons({ lucidePlus, lucideMenu, lucideTrash2 })],
@@ -99,7 +101,7 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
             this.user = user!;
             if (this.map) {
                 this.setDrawFeatures();
-                this.initMapFeatures();
+                this.initMap();
             }
         });
         this.subscriptions.push(userSub);
@@ -114,11 +116,11 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         this.vineyardLayer.addTo(map);
 
         if (this.user) {
-            this.initMapFeatures();
+            this.initMap();
         }
     }
 
-    initMapFeatures() {
+    initMap() {
         this.map.setMinZoom(7);
         if (!this.user.vineyard) {
             const hungaryBounds = latLngBounds([
@@ -135,12 +137,11 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
             });
         } else {
             const layer = geoJSON(this.user.vineyard!.mapArea, {
-                onEachFeature: (feature, layer) => {
+                onEachFeature: (_feature, layer) => {
                     const popup: Content = `
                             <ul>
                                 <li>Name: ${this.user.vineyard!.name}</li>
                                 <li>Area: ${this.numberPipe.transform(this.user.vineyard!.area)} km2</li>
-                                <li>Owner: ${this.user.vineyard!.owner.username}</li>
                                 <li>Owning Date: ${this.datePipe.transform(this.user.vineyard!.owningDate)}</li>
                                 <li>Cellars: ${this.user.vineyard!.cellars?.length ?? 0}</li>
                             </ul>
@@ -244,7 +245,7 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
     }
 
     deleteVineyard() {
-        this.vineyardService.deleteVineyard(this.user.vineyard?.id as number).subscribe(user => {
+        this.vineyardService.deleteVineyard(this.user.vineyard!.id as number).subscribe(user => {
             if (user) {
                 this.deleteLayers();
                 toast.success('Vineyard deleted successfully!', {
@@ -260,5 +261,10 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
 
     triggerDialog(): void {
         this.dialogService.setOpenState();
+    }
+
+    closeDialog(): void {
+        this.vineyardLayer.clearLayers();
+        this.dialogService.setClosedState();
     }
 }

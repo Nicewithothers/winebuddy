@@ -2,14 +2,16 @@ package com.nicewithothers.winebuddy.utility;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Jwks;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyPair;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +21,14 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class JwtUtility {
-    private KeyPair secretKey;
+
+    @Value("${jwt.secret}")
+    private String secret;
+    private SecretKey secretKey;
 
     @PostConstruct
     public void init() {
-        secretKey = Jwks.CRV.Ed25519.keyPair().build();
+        secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public String extractUsername(String token) {
@@ -54,7 +59,7 @@ public class JwtUtility {
 
     private Claims exctractClaims(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey.getPublic())
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -72,7 +77,7 @@ public class JwtUtility {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 1 day
-                .signWith(secretKey.getPrivate())
+                .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
 }

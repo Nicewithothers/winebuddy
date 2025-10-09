@@ -1,6 +1,7 @@
 package com.nicewithothers.winebuddy.controller;
 
 import com.nicewithothers.winebuddy.mapper.UserMapper;
+import com.nicewithothers.winebuddy.model.User;
 import com.nicewithothers.winebuddy.model.dto.user.AuthResponse;
 import com.nicewithothers.winebuddy.model.dto.user.LoginRequest;
 import com.nicewithothers.winebuddy.model.dto.user.RegisterRequest;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +31,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        HttpHeaders headers = new HttpHeaders();
         UserDto userDto = userService.registerUser(registerRequest);
-        return new ResponseEntity<>(userDto, headers, HttpStatus.OK);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -49,6 +50,18 @@ public class AuthController {
                     .token(token)
                     .build();
             return new ResponseEntity<>(authResponse, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping("/getUser")
+    public ResponseEntity<UserDto> getUser(@AuthenticationPrincipal User user) {
+        try {
+            if (user != null) {
+                return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
+            }
+            return null;
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

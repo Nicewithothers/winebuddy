@@ -40,8 +40,9 @@ export class ProfileComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        firstValueFrom(this.authService.user$).then(user => {
+        this.authService.user$.subscribe(user => {
             this.user = user;
+            console.log(user);
         });
     }
 

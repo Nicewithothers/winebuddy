@@ -1,3 +1,5 @@
+jwt:
+  secret: Cabernet21!Merlot08Zin34Syrah77Pinot
 spring:
   application:
     name: winebuddy

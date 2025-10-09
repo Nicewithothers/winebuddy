@@ -1,7 +1,7 @@
 package com.nicewithothers.winebuddy.model.dto.vineyard;
 
-import com.nicewithothers.winebuddy.model.Cellar;
-import com.nicewithothers.winebuddy.model.User;
+import com.nicewithothers.winebuddy.model.dto.cellar.CellarDto;
+import com.nicewithothers.winebuddy.model.dto.user.UserDto;
 import lombok.Builder;
 import lombok.Data;
 import org.locationtech.jts.geom.Polygon;
@@ -17,6 +17,6 @@ public class VineyardDto {
     private Polygon mapArea;
     private Instant owningDate;
     private Double area;
-    private User owner;
-    private List<Cellar> cellars;
+    private UserDto owner;
+    private List<CellarDto> cellars;
 }

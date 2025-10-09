@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { VineyardRequest } from '../models/vineyard/VineyardRequest';
-import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { User } from '../models/User';
-import { Point, PointTuple } from 'leaflet';
-import { VineyardResponse } from '../models/vineyard/VineyardResponse';
+import { VineyardRequest } from '../models/requests/VineyardRequest';
+import { VineyardResponse } from '../models/responses/VineyardResponse';
 
 @Injectable({
     providedIn: 'root',
@@ -19,18 +18,14 @@ export class VineyardService {
     ) {}
 
     createVineyard(vineyard: VineyardRequest): Observable<User> {
-        const token = sessionStorage.getItem('AuthToken');
-        const headers = new HttpHeaders({ Authorization: `${token}` });
         return this.http
             .post(`${this.apiURL}/createVineyard`, vineyard, {
-                headers: headers,
                 observe: 'response',
             })
             .pipe(
                 map((response: any) => {
                     if (response.ok && response.body) {
                         const user = response.body as User;
-                        sessionStorage.setItem('User', JSON.stringify(user));
                         this.authService.userSubject.next(user);
                         return user;
                     } else {
@@ -45,19 +40,15 @@ export class VineyardService {
     }
 
     deleteVineyard(id: number) {
-        const token = sessionStorage.getItem('AuthToken');
-        const headers = new HttpHeaders({ Authorization: `${token}` });
         return this.http
             .delete(`${this.apiURL}/deleteVineyard/` + id, {
                 params: { id },
-                headers: headers,
                 observe: 'response',
             })
             .pipe(
                 map((response: any) => {
                     if (response.ok && response.body) {
                         const user = response.body as User;
-                        sessionStorage.setItem('User', JSON.stringify(user));
                         this.authService.userSubject.next(user);
                         return user;
                     } else {
@@ -72,21 +63,12 @@ export class VineyardService {
     }
 
     validateVineyard(layer: any) {
-        const token = sessionStorage.getItem('AuthToken');
-        const headers = new HttpHeaders({ Authorization: `${token}` });
         return this.http
             .post(`${this.apiURL}/validateVineyard`, layer, {
-                headers: headers,
                 observe: 'response',
             })
             .pipe(
-                map(response => {
-                    if (response) {
-                        return response.body as boolean;
-                    } else {
-                        throw new Error('Vineyard cannot be validated!');
-                    }
-                }),
+                map(response => response.body as boolean),
                 catchError(err => {
                     console.error(err);
                     throw new Error('Vineyard cannot be validated.');

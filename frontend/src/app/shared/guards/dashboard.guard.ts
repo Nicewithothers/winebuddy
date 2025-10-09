@@ -30,7 +30,9 @@ export class DashboardGuard implements CanActivate {
                         : (isEligible = false);
                     break;
                 case '/wine-dashboard':
-                    !!user.vineyard && user.vineyard!.cellars!.length > 0
+                    !!user.vineyard &&
+                    user.vineyard!.cellars!.length > 0 &&
+                    user.vineyard!.cellars!.some(cellar => cellar.barrels && cellar.barrels!.length > 0)
                         ? (isEligible = true)
                         : (isEligible = false);
                     break;
