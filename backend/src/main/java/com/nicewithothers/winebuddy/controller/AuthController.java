@@ -37,7 +37,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        HttpHeaders headers = new HttpHeaders();
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
@@ -49,7 +48,7 @@ public class AuthController {
                     .user(userDto)
                     .token(token)
                     .build();
-            return new ResponseEntity<>(authResponse, headers, HttpStatus.OK);
+            return new ResponseEntity<>(authResponse, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

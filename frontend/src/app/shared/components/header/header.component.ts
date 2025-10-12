@@ -1,14 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-    HlmMenuBarComponent,
-    HlmMenuBarItemDirective,
-    HlmMenuComponent,
-    HlmMenuItemDirective,
-} from '@spartan-ng/ui-menu-helm';
 import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import {
     lucideCircleUserRound,
     lucideLayoutGrid,
@@ -17,26 +10,24 @@ import {
     lucideUserRoundPen,
 } from '@ng-icons/lucide';
 import { AuthService } from '../../services/auth.service';
-import { HlmAvatarComponent, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
-import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
+import { BrnMenuImports } from '@spartan-ng/brain/menu';
 import { User } from '../../models/User';
 import { firstValueFrom } from 'rxjs';
+import { HlmMenuImports } from '@spartan-ng/helm/menu';
+import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
 
 @Component({
     selector: 'app-header',
     imports: [
-        HlmMenuBarComponent,
-        HlmMenuBarItemDirective,
         NgOptimizedImage,
         RouterLink,
         NgIcon,
-        HlmIconDirective,
         AsyncPipe,
-        HlmAvatarComponent,
-        HlmAvatarImageDirective,
-        BrnMenuTriggerDirective,
-        HlmMenuItemDirective,
-        HlmMenuComponent,
+        HlmMenuImports,
+        HlmAvatarImports,
+        BrnMenuImports,
+        HlmIconImports,
     ],
     providers: [
         provideIcons({

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { HlmMenuBarComponent } from '@spartan-ng/ui-menu-helm';
+import { HlmMenuImports } from '@spartan-ng/helm/menu';
 
 @Component({
     selector: 'app-footer',
-    imports: [HlmMenuBarComponent],
+    imports: [HlmMenuImports],
     templateUrl: './footer.component.html',
     styleUrl: './footer.component.css',
     standalone: true,

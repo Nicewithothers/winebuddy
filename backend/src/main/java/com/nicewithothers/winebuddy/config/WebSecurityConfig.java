@@ -51,9 +51,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/profiles/**").permitAll()
                         .anyRequest()
                         .authenticated())
-                .sessionManagement(s -> {
-                    s.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                })
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtAuthenticationFilter(userService, jwtUtility), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

@@ -1,6 +1,4 @@
 @import '@angular/cdk/overlay-prebuilt.css';
-
-/* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
 @import '@spartan-ng/brain/hlm-tailwind-preset.css';
 
@@ -12,55 +10,6 @@
 :root {
     font-family: 'Montserrat', 'sans-serif';
 }
-
-/*Original*/
-/*:root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 142.1 76.2% 36.3%;
-    --radius: 0.5rem;
-    color-scheme: light;
-}
-
-.dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 142.1 70.6% 45.3%;
-    --primary-foreground: 144.9 80.4% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142.4 71.8% 29.2%;
-    color-scheme: dark;
-}
-*/
 
 :root {
     --background: 0 0% 100%; /* #d9b99b */
@@ -109,6 +58,54 @@
     color-scheme: dark;
 }
 
+:root {
+    color-scheme: light;
+
+    --background: oklch(100% 0 0); /* white */
+    --foreground: oklch(45% 0.04 165); /* #3e5e4e */
+    --card: oklch(100% 0 0); /* white */
+    --card-foreground: oklch(45% 0.04 165); /* #3e5e4e */
+    --popover: oklch(100% 0 0); /* white */
+    --popover-foreground: oklch(45% 0.04 165); /* #3e5e4e */
+    --primary: oklch(60% 0.08 165); /* #5a9178 */
+    --primary-foreground: oklch(82% 0.05 55); /* #d9b99b */
+    --secondary: oklch(90% 0.04 55); /* lighter beige */
+    --secondary-foreground: oklch(45% 0.04 165); /* #3e5e4e */
+    --muted: oklch(90% 0.04 55); /* light beige */
+    --muted-foreground: oklch(60% 0.02 165); /* desaturated green */
+    --accent: oklch(90% 0.04 55); /* light beige */
+    --accent-foreground: oklch(45% 0.04 165); /* #3e5e4e */
+    --destructive: oklch(55% 0.22 25); /* red */
+    --destructive-foreground: oklch(98% 0 0);
+    --border: oklch(75% 0.05 55); /* slightly darker beige */
+    --input: oklch(75% 0.05 55);
+    --ring: oklch(60% 0.08 165); /* #5a9178 */
+}
+
+:root.dark {
+    color-scheme: dark;
+
+    --background: oklch(45% 0.04 165); /* #3e5e4e */
+    --foreground: oklch(82% 0.05 55); /* #d9b99b */
+    --card: oklch(40% 0.04 165); /* slightly darker green */
+    --card-foreground: oklch(82% 0.05 55); /* #d9b99b */
+    --popover: oklch(40% 0.04 165);
+    --popover-foreground: oklch(82% 0.05 55);
+    --primary: oklch(60% 0.08 165); /* #5a9178 */
+    --primary-foreground: oklch(82% 0.05 55); /* #d9b99b */
+    --secondary: oklch(35% 0.04 165); /* very dark green */
+    --secondary-foreground: oklch(82% 0.05 55);
+    --muted: oklch(35% 0.04 165);
+    --muted-foreground: oklch(75% 0.05 55);
+    --accent: oklch(50% 0.05 55); /* mid-tone beige */
+    --accent-foreground: oklch(82% 0.05 55);
+    --destructive: oklch(48% 0.2 25);
+    --destructive-foreground: oklch(82% 0.05 55);
+    --border: oklch(35% 0.04 165);
+    --input: oklch(35% 0.04 165);
+    --ring: oklch(60% 0.08 165); /* #5a9178 */
+}
+
 @layer base {
     * {
         @apply border-border;
@@ -137,9 +134,4 @@
     .dashboard-td {
         @apply p-3 text-gray-800 bg-white w-2/3;
     }
-}
-
-html,
-body {
-    min-height: 100%;
 }

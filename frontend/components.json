@@ -1,3 +1,5 @@
 {
-    "componentsPath": "libs/ui"
+  "componentsPath": "src/app/shared/components/spartan",
+  "buildable": true,
+  "generateAs": "library"
 }

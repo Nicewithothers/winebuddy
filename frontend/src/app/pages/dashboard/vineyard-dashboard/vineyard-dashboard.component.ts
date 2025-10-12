@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { DateTransformPipe } from '../../../shared/pipes/datetransform.pipe';
-import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMenu, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { User } from '../../../shared/models/User';
@@ -26,25 +25,20 @@ import { AuthService } from '../../../shared/services/auth.service';
 import { VineyardService } from '../../../shared/services/vineyard.service';
 import { filter, Subscription } from 'rxjs';
 import { toast } from 'ngx-sonner';
-import { BrnContextMenuImports } from '@spartan-ng/brain/menu';
-import { HlmMenuComponent } from '@spartan-ng/ui-menu-helm';
+import { BrnMenuImports } from '@spartan-ng/brain/menu';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
 import { vineyardForm } from '../../../shared/forms/vineyard.form';
 import { VineyardRequest } from '../../../shared/models/requests/VineyardRequest';
-import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
 import { DialogService } from '../../../shared/services/dialog.service';
-import {
-    HlmDialogComponent,
-    HlmDialogContentComponent,
-    HlmDialogDescriptionDirective,
-    HlmDialogHeaderComponent,
-    HlmDialogTitleDirective,
-} from '@spartan-ng/ui-dialog-helm';
-import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
-import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
-import { HlmH2Directive } from '@spartan-ng/ui-typography-helm';
+import { HlmTabsImports } from '@spartan-ng/helm/tabs';
+import { HlmMenuImports } from '@spartan-ng/helm/menu';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmTypographyImports } from '@spartan-ng/helm/typography';
+import { HlmDialogImports } from '@spartan-ng/helm/dialog';
+import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
+import { HlmInputImports } from '@spartan-ng/helm/input';
 
 @Component({
     selector: 'app-vineyard-dashboard',
@@ -52,23 +46,20 @@ import { HlmH2Directive } from '@spartan-ng/ui-typography-helm';
         AsyncPipe,
         DateTransformPipe,
         DecimalPipe,
-        HlmButtonDirective,
-        BrnContextMenuImports,
-        HlmMenuComponent,
         NgIcon,
         ReactiveFormsModule,
         LeafletModule,
         LeafletDrawModule,
         HlmTabsImports,
-        HlmDialogComponent,
-        HlmDialogContentComponent,
-        HlmDialogDescriptionDirective,
-        HlmDialogHeaderComponent,
-        HlmDialogTitleDirective,
-        HlmFormFieldComponent,
-        HlmInputDirective,
         BrnDialogImports,
-        HlmH2Directive,
+        HlmTabsImports,
+        BrnMenuImports,
+        HlmMenuImports,
+        HlmButtonImports,
+        HlmTypographyImports,
+        HlmDialogImports,
+        HlmFormFieldImports,
+        HlmInputImports,
     ],
     standalone: true,
     providers: [provideIcons({ lucidePlus, lucideMenu, lucideTrash2 })],

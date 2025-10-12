@@ -1,17 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
-import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
-import { BrnContextMenuImports } from '@spartan-ng/brain/menu';
-import { HlmMenuComponent } from '@spartan-ng/ui-menu-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
-import { HlmDialogImports } from '@spartan-ng/ui-dialog-helm';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
-import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
-import { HlmSpinnerComponent } from '@spartan-ng/ui-spinner-helm';
 import { User } from '../../../shared/models/User';
 import {
     Content,
@@ -28,35 +20,43 @@ import { filter, Subscription } from 'rxjs';
 import { AuthService } from '../../../shared/services/auth.service';
 import { barrelForm } from '../../../shared/forms/barrel.form';
 import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
-import { HlmH2Directive } from '@spartan-ng/ui-typography-helm';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
-import { BrnSelectImports } from '@spartan-ng/brain/select';
-import { HlmSelectImports } from '@spartan-ng/ui-select-helm';
 import { Cellar } from '../../../shared/models/Cellar';
 import { BarrelTypeTransform } from '../../../shared/models/enums/BarrelType';
 import { BarrelSizeTransform } from '../../../shared/models/enums/BarrelSize';
 import { DateTransformPipe } from '../../../shared/pipes/datetransform.pipe';
+import { HlmTabsImports } from '@spartan-ng/helm/tabs';
+import { HlmSelectImports } from '@spartan-ng/helm/select';
+import { BrnSelectImports } from '@spartan-ng/brain/select';
+import { BrnMenuImports } from '@spartan-ng/brain/menu';
+import { HlmMenuImports } from '@spartan-ng/helm/menu';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmTypographyImports } from '@spartan-ng/helm/typography';
+import { HlmDialogImports } from '@spartan-ng/helm/dialog';
+import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
+import { HlmInputImports } from '@spartan-ng/helm/input';
+import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 
 @Component({
     selector: 'app-barrel-dashboard',
     imports: [
         AsyncPipe,
-        HlmTabsImports,
-        BrnContextMenuImports,
-        HlmMenuComponent,
         NgIcon,
-        HlmButtonDirective,
         LeafletModule,
         LeafletDrawModule,
-        HlmDialogImports,
         ReactiveFormsModule,
-        HlmFormFieldComponent,
-        HlmInputDirective,
-        HlmSpinnerComponent,
-        HlmH2Directive,
         BrnDialogImports,
-        BrnSelectImports,
+        HlmTabsImports,
         HlmSelectImports,
+        BrnSelectImports,
+        BrnMenuImports,
+        HlmMenuImports,
+        HlmButtonImports,
+        HlmTypographyImports,
+        HlmDialogImports,
+        HlmFormFieldImports,
+        HlmInputImports,
+        HlmSpinnerImports,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus })],
     templateUrl: './barrel-dashboard.component.html',

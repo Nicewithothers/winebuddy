@@ -15,7 +15,7 @@
         </div>
         @if (this.authService.user$ | async; as user) {
             <div>
-                <hlm-avatar variant="large">
+                <hlm-avatar>
                     <img
                         [src]="user?.profileURL ? user!.profileURL : 'images/anonymous.png'"
                         [brnMenuTriggerFor]="userOptions"

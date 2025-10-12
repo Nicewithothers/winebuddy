@@ -97,7 +97,7 @@ export class AuthService {
             );
     }
 
-    getToken(): string | null {
+    private getToken(): string | null {
         return sessionStorage.getItem('AuthToken');
     }
 }

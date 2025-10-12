@@ -1,36 +1,28 @@
 import { Component } from '@angular/core';
-import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
-import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@spartan-ng/brain/forms';
 import { lucideKeyRound, lucideUser } from '@ng-icons/lucide';
-import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
-import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import {
-    HlmCardContentDirective,
-    HlmCardDirective,
-    HlmCardHeaderDirective,
-    HlmCardTitleDirective,
-} from '@spartan-ng/ui-card-helm';
 import { loginForm } from '../../shared/forms/login.forms';
 import { AuthService } from '../../shared/services/auth.service';
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
+import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
+import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
+import { HlmInputImports } from '@spartan-ng/helm/input';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
 
 @Component({
     selector: 'app-login',
     imports: [
-        HlmFormFieldComponent,
-        HlmInputDirective,
         NgIcon,
-        HlmIconDirective,
-        HlmButtonDirective,
         ReactiveFormsModule,
-        HlmCardDirective,
-        HlmCardHeaderDirective,
-        HlmCardTitleDirective,
-        HlmCardContentDirective,
+        HlmCardImports,
+        HlmIconImports,
+        HlmFormFieldImports,
+        HlmInputImports,
+        HlmButtonImports,
     ],
     providers: [
         provideIcons({ lucideUser, lucideKeyRound }),

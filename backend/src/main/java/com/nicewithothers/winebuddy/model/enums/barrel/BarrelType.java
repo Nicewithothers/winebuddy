@@ -6,4 +6,7 @@ public enum BarrelType {
     HUNGARIAN_OAK,
     SLAVONIAN_OAK,
     GERMAN_OAK,
+    ACACIA,
+    CHERRY,
+    PINE
 }

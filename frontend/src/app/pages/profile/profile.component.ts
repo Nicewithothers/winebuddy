@@ -1,31 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../shared/services/auth.service';
 import { AsyncPipe } from '@angular/common';
-import {
-    HlmCardContentDirective,
-    HlmCardDirective,
-    HlmCardHeaderDirective,
-    HlmCardTitleDirective,
-} from '@spartan-ng/ui-card-helm';
-import { HlmAvatarComponent, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
-import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { FileService } from '../../shared/services/file.service';
-import { firstValueFrom } from 'rxjs';
 import { User } from '../../shared/models/User';
 import { toast } from 'ngx-sonner';
+import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
 
 @Component({
     selector: 'app-profile',
-    imports: [
-        HlmCardDirective,
-        HlmCardContentDirective,
-        HlmCardHeaderDirective,
-        HlmCardTitleDirective,
-        AsyncPipe,
-        HlmAvatarComponent,
-        HlmAvatarImageDirective,
-        HlmButtonDirective,
-    ],
+    imports: [AsyncPipe, HlmCardImports, HlmAvatarImports, HlmButtonImports],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.css',
 })
@@ -42,7 +27,6 @@ export class ProfileComponent implements OnInit {
     ngOnInit() {
         this.authService.user$.subscribe(user => {
             this.user = user;
-            console.log(user);
         });
     }
 

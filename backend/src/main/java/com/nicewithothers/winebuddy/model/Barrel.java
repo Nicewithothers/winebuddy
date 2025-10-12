@@ -2,7 +2,6 @@ package com.nicewithothers.winebuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.nicewithothers.winebuddy.model.enums.barrel.BarrelSize;
-import com.nicewithothers.winebuddy.model.enums.barrel.BarrelToast;
 import com.nicewithothers.winebuddy.model.enums.barrel.BarrelType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,9 +35,6 @@ public class Barrel {
     @Column(nullable = false)
     private Double maxVolume;
 
-    @Column(nullable = false)
-    private Boolean isFull = false;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BarrelType barrelType;
@@ -46,10 +42,6 @@ public class Barrel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BarrelSize barrelSize;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private BarrelToast barrelToast;
 
     @ManyToOne
     @JsonBackReference

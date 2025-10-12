@@ -5,10 +5,11 @@ import { AuthService } from '../../shared/services/auth.service';
 import { RouterLink } from '@angular/router';
 import { NgClass, NgStyle } from '@angular/common';
 import { CarouselItem, carouselItems } from '../../shared/models/other/CarouselItems';
+import { HlmTypographyImports } from '@spartan-ng/helm/typography';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [RouterLink, NgClass, NgStyle],
+    imports: [RouterLink, NgClass, NgStyle, HlmTypographyImports],
     providers: [],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
@@ -56,9 +57,13 @@ export class DashboardComponent implements OnInit {
                 case '/barrel-dashboard':
                     return !!this.user.vineyard && this.user.vineyard!.cellars!.length > 0;
                 case '/wine-dashboard':
-                    return !!this.user.vineyard &&
+                    return (
+                        !!this.user.vineyard &&
                         this.user.vineyard!.cellars!.length > 0 &&
-                        this.user.vineyard!.cellars!.some(cellar => cellar.barrels && cellar.barrels!.length > 0);
+                        this.user.vineyard!.cellars!.some(
+                            cellar => cellar.barrels && cellar.barrels!.length > 0,
+                        )
+                    );
                 default:
                     return false;
             }

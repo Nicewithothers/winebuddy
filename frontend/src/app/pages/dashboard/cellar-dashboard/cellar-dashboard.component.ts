@@ -19,29 +19,22 @@ import { AuthService } from '../../../shared/services/auth.service';
 import { toast } from 'ngx-sonner';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { DateTransformPipe } from '../../../shared/pipes/datetransform.pipe';
-import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
-import { BrnContextMenuImports } from '@spartan-ng/brain/menu';
-import { HlmMenuComponent } from '@spartan-ng/ui-menu-helm';
+import { BrnMenuImports } from '@spartan-ng/brain/menu';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { HlmFormFieldComponent } from '@spartan-ng/ui-formfield-helm';
-import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
-import { BrnDialogContentDirective } from '@spartan-ng/brain/dialog';
-import {
-    HlmDialogComponent,
-    HlmDialogContentComponent,
-    HlmDialogDescriptionDirective,
-    HlmDialogHeaderComponent,
-    HlmDialogTitleDirective,
-} from '@spartan-ng/ui-dialog-helm';
 import { cellarForm } from '../../../shared/forms/cellar.form';
 import { CellarService } from '../../../shared/services/cellar.service';
 import { CellarRequest } from '../../../shared/models/requests/CellarRequest';
 import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
-import { HlmSpinnerComponent } from '@spartan-ng/ui-spinner-helm';
-import { HlmTabsImports } from '@spartan-ng/ui-tabs-helm';
 import { DialogService } from '../../../shared/services/dialog.service';
+import { HlmTabsImports } from '@spartan-ng/helm/tabs';
+import { HlmMenuImports } from '@spartan-ng/helm/menu';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmDialogImports } from '@spartan-ng/helm/dialog';
+import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
+import { HlmInputImports } from '@spartan-ng/helm/input';
+import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 
 @Component({
     selector: 'app-cellar-dashboard',
@@ -49,23 +42,19 @@ import { DialogService } from '../../../shared/services/dialog.service';
         AsyncPipe,
         DateTransformPipe,
         DecimalPipe,
-        HlmButtonDirective,
-        BrnContextMenuImports,
-        HlmMenuComponent,
         NgIcon,
         ReactiveFormsModule,
-        HlmFormFieldComponent,
-        HlmInputDirective,
         LeafletModule,
         LeafletDrawModule,
-        BrnDialogContentDirective,
-        HlmDialogComponent,
-        HlmDialogContentComponent,
-        HlmDialogDescriptionDirective,
-        HlmDialogHeaderComponent,
-        HlmDialogTitleDirective,
-        HlmSpinnerComponent,
         HlmTabsImports,
+        HlmTabsImports,
+        BrnMenuImports,
+        HlmMenuImports,
+        HlmButtonImports,
+        HlmDialogImports,
+        HlmFormFieldImports,
+        HlmInputImports,
+        HlmSpinnerImports,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus })],
     templateUrl: './cellar-dashboard.component.html',
