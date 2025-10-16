@@ -1,0 +1,49 @@
+<table hlmTable>
+    <caption hlmCaption>
+        Details of your
+        {{
+            this.urlCleaner(this.router.url)
+        }}
+    </caption>
+    @if (this.authService.user$ | async; as user) {
+        @if (inputVineyard) {
+            <thead hlmTHead>
+                <tr hlmTr>
+                    <th hlmTh>Name</th>
+                    <th hlmTh>Area</th>
+                    <th hlmTh>Cellars</th>
+                    <th hlmTh>Owning date</th>
+                </tr>
+            </thead>
+            <tbody hlmTBody>
+                <tr hlmTr>
+                    <td hlmTd>{{ inputVineyard.name }}</td>
+                    <td hlmTd>{{ inputVineyard.area | number: '1.0-1' }} km²</td>
+                    <td hlmTd>{{ inputVineyard.cellars?.length ?? 0 }}</td>
+                    <td hlmTd>{{ inputVineyard.owningDate | date }}</td>
+                </tr>
+            </tbody>
+        } @else if (inputCellar) {
+            <thead hlmTHead>
+                <tr hlmTr>
+                    <th hlmTh>Name</th>
+                    <th hlmTh>Area</th>
+                    <th hlmTh>Capacity</th>
+                    <th hlmTh>Owning date</th>
+                </tr>
+            </thead>
+            <tbody hlmTBody>
+                @if (user.vineyard!.cellars && user.vineyard!.cellars!.length > 0) {
+                    <tr hlmTr>
+                        <td hlmTd>{{ inputCellar.name }}</td>
+                        <td hlmTd>{{ inputCellar.area | number: '1.0-1' }} km²</td>
+                        <td hlmTd>
+                            {{ inputCellar.barrels?.length ?? 0 }}/{{ inputCellar.capacity }}
+                        </td>
+                        <td hlmTd>{{ inputCellar.owningDate | date }}</td>
+                    </tr>
+                }
+            </tbody>
+        }
+    }
+</table>

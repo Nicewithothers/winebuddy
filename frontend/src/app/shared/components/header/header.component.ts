@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -11,8 +11,6 @@ import {
 } from '@ng-icons/lucide';
 import { AuthService } from '../../services/auth.service';
 import { BrnMenuImports } from '@spartan-ng/brain/menu';
-import { User } from '../../models/User';
-import { firstValueFrom } from 'rxjs';
 import { HlmMenuImports } from '@spartan-ng/helm/menu';
 import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
@@ -42,16 +40,8 @@ import { HlmIconImports } from '@spartan-ng/helm/icon';
     styleUrl: './header.component.css',
     standalone: true,
 })
-export class HeaderComponent implements OnInit {
-    user!: User;
-
+export class HeaderComponent {
     constructor(protected authService: AuthService) {}
-
-    ngOnInit() {
-        firstValueFrom(this.authService.user$).then(user => {
-            this.user = user;
-        });
-    }
 
     signOut(): void {
         this.authService.logout();

@@ -45,14 +45,10 @@
                                         <table class="w-full table-auto border border-gray-200">
                                             <thead>
                                                 <tr class="dashboard-tr">
-                                                    <th scope="col" class="dashboard-th">Name</th>
-                                                    <th scope="col" class="dashboard-th">
-                                                        Capacity
-                                                    </th>
-                                                    <th scope="col" class="dashboard-th">Area</th>
-                                                    <th scope="col" class="dashboard-th">
-                                                        Owning Date
-                                                    </th>
+                                                    <th scope="col" class="dashboard-th">Type</th>
+                                                    <th scope="col" class="dashboard-th">Size</th>
+                                                    <th scope="col" class="dashboard-th">Volume</th>
+                                                    <th scope="col" class="dashboard-th">Grape</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -65,7 +61,21 @@
                                                         [brnCtxMenuTriggerFor]="menu"
                                                     >
                                                         <td class="dashboard-td">
-                                                            {{ barrel.volume }}
+                                                            {{
+                                                                barrel.barrelType
+                                                                    | enum: barrelTypes
+                                                            }}
+                                                        </td>
+                                                        <td class="dashboard-td">
+                                                            {{ barrel.barrelSize }}
+                                                        </td>
+                                                        <td class="dashboard-td">
+                                                            {{ barrel.volume }}/{{
+                                                                barrel.maxVolume
+                                                            }}
+                                                        </td>
+                                                        <td class="dashboard-td">
+                                                            {{ barrel.grape ?? 'asd' }}
                                                         </td>
                                                     </tr>
                                                     <ng-template #menu>
@@ -73,7 +83,7 @@
                                                             <button
                                                                 variant="destructive"
                                                                 class="w-full"
-                                                                (click)="deleteBarrel()"
+                                                                (click)="deleteBarrel(barrel.id)"
                                                                 hlmBtn
                                                             >
                                                                 <ng-icon
@@ -90,86 +100,112 @@
                                 } @else {
                                     <h2 hlmH2>This cellar doesn't contain any barrels yet.</h2>
                                 }
-                              <hlm-dialog>
-                                <div class="flex justify-center w-full h-full">
-                                  <button class="h-24 w-24" variant="outline" brnDialogTrigger hlmBtn>
-                                    <ng-icon name="lucidePlus" size="40px"></ng-icon>
-                                  </button>
-                                </div>
-                                <hlm-dialog-content *brnDialogContent>
-                                  <hlm-dialog-header>
-                                    <h3 class="text-center" hlmDialogTitle>Add barrel</h3>
-                                    <p hlmDialogDescription>
-                                      Adding barrel to {{ selectedCellar.name }}
-                                      Current capacity: {{ selectedCellar.barrels!.length }}/{{ selectedCellar.capacity }}
-                                    </p>
-                                  </hlm-dialog-header>
-                                  <form [formGroup]="barrelForm" (ngSubmit)="addBarrel()">
-                                    <div class="flex flex-col items-center gap-y-2">
-                                      <hlm-form-field>
-                                        <input
-                                          class="w-64"
-                                          type="text"
-                                          list="barrelTypes"
-                                          placeholder="Barrel Type"
-                                          formControlName="barrelType"
-                                          hlmInput
-                                        />
-                                        <datalist id="barrelTypes">
-                                          @for (type of barrelTypes; track type) {
-                                            <option [value]="type"></option>
-                                          }
-                                        </datalist>
-                                      </hlm-form-field>
-                                      <hlm-form-field>
-                                        <input
-                                          class="w-64"
-                                          type="text"
-                                          list="barrelSize"
-                                          placeholder="Barrel Size"
-                                          formControlName="barrelSize"
-                                          hlmInput
-                                        />
-                                        <datalist id="barrelSize">
-                                          @for (size of barrelSizes; track size) {
-                                            <option [value]="size"></option>
-                                          }
-                                        </datalist>
-                                      </hlm-form-field>
-                                      <hlm-form-field>
-                                        <input
-                                          class="w-64"
-                                          type="number"
-                                          min="0"
-                                          placeholder="Maximum volume"
-                                          formControlName="maxVolume"
-                                          hlmInput
-                                        />
-                                      </hlm-form-field>
-                                      <div class="flex gap-6">
+                                <hlm-dialog>
+                                    <div class="flex justify-center w-full h-full">
                                         <button
-                                          variant="destructive"
-                                          hlmBtn
-                                          type="reset"
-                                          class="cursor-pointer"
-                                          brnDialogClose
+                                            class="h-24 w-24"
+                                            variant="outline"
+                                            brnDialogTrigger
+                                            hlmBtn
                                         >
-                                          Close
+                                            <ng-icon name="lucidePlus" size="40px"></ng-icon>
                                         </button>
-                                        <button
-                                          variant="default"
-                                          hlmBtn
-                                          type="submit"
-                                          class="cursor-pointer"
-                                          [disabled]="this.checkFields()"
-                                        >
-                                          Create
-                                        </button>
-                                      </div>
                                     </div>
-                                  </form>
-                                </hlm-dialog-content>
-                              </hlm-dialog>
+                                    <hlm-dialog-content *brnDialogContent>
+                                        <hlm-dialog-header>
+                                            <h3 class="text-center" hlmDialogTitle>Add barrel</h3>
+                                            <p hlmDialogDescription>
+                                                Adding barrel to {{ selectedCellar.name }}
+                                                <br />
+                                                Current capacity:
+                                                {{ selectedCellar.barrels!.length }}/{{
+                                                    selectedCellar.capacity
+                                                }}
+                                            </p>
+                                        </hlm-dialog-header>
+                                        <form
+                                            [formGroup]="barrelForm"
+                                            (ngSubmit)="addBarrel(selectedCellar.id)"
+                                        >
+                                            <div class="flex flex-col items-center gap-y-2">
+                                                <hlm-form-field>
+                                                    <brn-select
+                                                        class="inline-block"
+                                                        placeholder="Select a barrel type"
+                                                        formControlName="barrelType"
+                                                    >
+                                                        <hlm-select-trigger class="w-64">
+                                                            <hlm-select-value />
+                                                        </hlm-select-trigger>
+                                                        <hlm-select-content>
+                                                            <hlm-select-label
+                                                                >Barrel types</hlm-select-label
+                                                            >
+                                                            @for (
+                                                                barrelType of barrelTypes;
+                                                                track barrelType
+                                                            ) {
+                                                                <hlm-option
+                                                                    [value]="barrelType.value"
+                                                                    >{{
+                                                                        barrelType.label
+                                                                    }}</hlm-option
+                                                                >
+                                                            }
+                                                        </hlm-select-content>
+                                                    </brn-select>
+                                                </hlm-form-field>
+                                                <hlm-form-field>
+                                                    <brn-select
+                                                        class="inline-block"
+                                                        placeholder="Select a barrel type"
+                                                        formControlName="barrelSize"
+                                                    >
+                                                        <hlm-select-trigger class="w-64">
+                                                            <hlm-select-value />
+                                                        </hlm-select-trigger>
+                                                        <hlm-select-content>
+                                                            <hlm-select-label
+                                                                >Barrel sizes</hlm-select-label
+                                                            >
+                                                            @for (
+                                                                barrelSize of barrelSizes;
+                                                                track barrelSize
+                                                            ) {
+                                                                <hlm-option
+                                                                    [value]="barrelSize.value"
+                                                                    >{{
+                                                                        barrelSize.label
+                                                                    }}</hlm-option
+                                                                >
+                                                            }
+                                                        </hlm-select-content>
+                                                    </brn-select>
+                                                </hlm-form-field>
+                                                <div class="flex gap-6">
+                                                    <button
+                                                        variant="destructive"
+                                                        hlmBtn
+                                                        type="reset"
+                                                        class="cursor-pointer"
+                                                        brnDialogClose
+                                                    >
+                                                        Close
+                                                    </button>
+                                                    <button
+                                                        variant="default"
+                                                        hlmBtn
+                                                        type="submit"
+                                                        class="cursor-pointer"
+                                                        [disabled]="this.checkFields()"
+                                                    >
+                                                        Create
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </hlm-dialog-content>
+                                </hlm-dialog>
                             }
                         }
                     </div>

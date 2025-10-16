@@ -1,1 +1,37 @@
-<p>mainpage works!</p>
+<section class="section-container">
+    <div class="flex flex-row h-full">
+        <div class="flex-1 flex flex-col items-center justify-center">
+            <img
+                class="w-1/2"
+                ngSrc="/images/winebuddy_logo.png"
+                alt="winebuddy_logo"
+                width="847"
+                height="643"
+            />
+            <p hlmH3>Vineyard manager application</p>
+        </div>
+        <div class="flex flex-1 items-center justify-center p-4">
+            <hlm-carousel
+                class="w-full max-w-lg pointer-events-none"
+                [plugins]="plugins"
+                [options]="options"
+            >
+                <hlm-carousel-content>
+                    @for (item of carouselItems; track item) {
+                        <hlm-carousel-item>
+                            <div class="p-1 w-[500px] h-[500px]">
+                                <img
+                                    [ngSrc]="item.backgroundImage"
+                                    [alt]="item.name"
+                                    class="relative"
+                                    fill
+                                    priority
+                                />
+                            </div>
+                        </hlm-carousel-item>
+                    }
+                </hlm-carousel-content>
+            </hlm-carousel>
+        </div>
+    </div>
+</section>

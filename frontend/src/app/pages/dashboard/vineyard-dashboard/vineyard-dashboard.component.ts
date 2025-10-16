@@ -1,11 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AsyncPipe, DecimalPipe } from '@angular/common';
-import { DateTransformPipe } from '../../../shared/pipes/datetransform.pipe';
+import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideMenu, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideMenu, lucidePlus, lucideTrash2, lucideX } from '@ng-icons/lucide';
 import { User } from '../../../shared/models/User';
 import {
-    Content,
     Control,
     Draw,
     FeatureGroup,
@@ -25,50 +22,52 @@ import { AuthService } from '../../../shared/services/auth.service';
 import { VineyardService } from '../../../shared/services/vineyard.service';
 import { filter, Subscription } from 'rxjs';
 import { toast } from 'ngx-sonner';
-import { BrnMenuImports } from '@spartan-ng/brain/menu';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
 import { vineyardForm } from '../../../shared/forms/vineyard.form';
 import { VineyardRequest } from '../../../shared/models/requests/VineyardRequest';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
-import { HlmTabsImports } from '@spartan-ng/helm/tabs';
-import { HlmMenuImports } from '@spartan-ng/helm/menu';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
-import { HlmTypographyImports } from '@spartan-ng/helm/typography';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
 import { HlmInputImports } from '@spartan-ng/helm/input';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
+import { BrnAlertDialogImports } from '@spartan-ng/brain/alert-dialog';
+import { AsyncPipe } from '@angular/common';
+import { CustomcardComponent } from '../../../shared/components/customcard/customcard.component';
+import { BrnMenuImports } from '@spartan-ng/brain/menu';
+import { HlmMenuImports } from '@spartan-ng/helm/menu';
 
 @Component({
     selector: 'app-vineyard-dashboard',
     imports: [
-        AsyncPipe,
-        DateTransformPipe,
-        DecimalPipe,
-        NgIcon,
         ReactiveFormsModule,
         LeafletModule,
         LeafletDrawModule,
-        HlmTabsImports,
         BrnDialogImports,
-        HlmTabsImports,
-        BrnMenuImports,
-        HlmMenuImports,
         HlmButtonImports,
-        HlmTypographyImports,
         HlmDialogImports,
         HlmFormFieldImports,
         HlmInputImports,
+        NgIcon,
+        HlmIcon,
+        HlmAlertDialogImports,
+        BrnAlertDialogImports,
+        AsyncPipe,
+        BrnMenuImports,
+        HlmMenuImports,
     ],
     standalone: true,
-    providers: [provideIcons({ lucidePlus, lucideMenu, lucideTrash2 })],
+    providers: [provideIcons({ lucidePlus, lucideMenu, lucideTrash2, lucideX })],
     templateUrl: './vineyard-dashboard.component.html',
     styleUrl: './vineyard-dashboard.component.css',
 })
 export class VineyardDashboardComponent implements OnInit, OnDestroy {
     user!: User;
     map!: Map;
+    control!: Control.Draw;
     vineyardLayer: FeatureGroup = new FeatureGroup();
     options: MapOptions = {
         layers: [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')],
@@ -76,8 +75,6 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         center: latLng([47.1625, 19.5033]),
     };
     subscriptions: Subscription[] = [];
-    datePipe: DateTransformPipe = new DateTransformPipe();
-    numberPipe: DecimalPipe = new DecimalPipe('en-US');
     vineyardForm: FormGroup = vineyardForm();
     drawnLayerValidated: boolean = false;
 
@@ -85,14 +82,15 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         protected authService: AuthService,
         private vineyardService: VineyardService,
         protected dialogService: DialogService,
+        private vcr: ViewContainerRef,
     ) {}
 
     ngOnInit() {
         const userSub = this.authService.user$.pipe(filter(user => !!user)).subscribe(user => {
             this.user = user!;
             if (this.map) {
-                this.setDrawFeatures();
                 this.initMap();
+                this.updateDrawControl();
             }
         });
         this.subscriptions.push(userSub);
@@ -108,6 +106,13 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
 
         if (this.user) {
             this.initMap();
+        }
+    }
+
+    onDrawReady(drawControl: Control.Draw) {
+        this.control = drawControl;
+        if (this.map) {
+            this.updateDrawControl();
         }
     }
 
@@ -129,18 +134,13 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         } else {
             const layer = geoJSON(this.user.vineyard!.mapArea, {
                 onEachFeature: (_feature, layer) => {
-                    const popup: Content = `
-                            <ul>
-                                <li>Name: ${this.user.vineyard!.name}</li>
-                                <li>Area: ${this.numberPipe.transform(this.user.vineyard!.area)} km2</li>
-                                <li>Owning Date: ${this.datePipe.transform(this.user.vineyard!.owningDate)}</li>
-                                <li>Cellars: ${this.user.vineyard!.cellars?.length ?? 0}</li>
-                            </ul>
-                        `;
-                    layer.bindPopup(popup).addTo(this.map);
-                    layer.on('click', () => {
-                        layer.openPopup();
-                    });
+                    const card = this.vcr.createComponent(CustomcardComponent);
+                    card.setInput('inputVineyard', this.user.vineyard!);
+                    card.changeDetectorRef.detectChanges();
+                    let popupalt = document.createElement('div');
+                    popupalt.appendChild(card.location.nativeElement);
+                    layer.bindPopup(popupalt, { closeButton: false }).addTo(this.map);
+                    layer.on('click', event => layer.openPopup(event.latlng));
                 },
             });
             layer.setStyle({ color: '#00490a' }).addTo(this.map);
@@ -149,7 +149,7 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         }
     }
 
-    setDrawFeatures(): Control.DrawConstructorOptions {
+    getDrawFeatures(): Control.DrawConstructorOptions {
         return {
             position: 'bottomleft',
             draw: !this.user.vineyard
@@ -174,10 +174,19 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         };
     }
 
+    updateDrawControl(): void {
+        if (!this.control || !this.map) {
+            return;
+        }
+
+        this.map.removeControl(this.control);
+
+        const options = this.getDrawFeatures();
+        this.control = new Control.Draw(options);
+        this.map.addControl(this.control);
+    }
+
     checkFields(): boolean {
-        console.log(this.vineyardForm.get('name')?.invalid);
-        console.log(this.vineyardLayer.getLayers().length === 0);
-        console.log(!this.drawnLayerValidated);
         return (
             this.vineyardForm.get('name')?.invalid ||
             this.vineyardLayer.getLayers().length === 0 ||

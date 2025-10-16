@@ -3,13 +3,13 @@ import { User } from '../../shared/models/User';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../shared/services/auth.service';
 import { RouterLink } from '@angular/router';
-import { NgClass, NgStyle } from '@angular/common';
-import { CarouselItem, carouselItems } from '../../shared/models/other/CarouselItems';
+import { NgClass, NgOptimizedImage, NgStyle } from '@angular/common';
+import { DashboardItem, dashboardItems } from '../../shared/models/other/DashboardItem';
 import { HlmTypographyImports } from '@spartan-ng/helm/typography';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [RouterLink, NgClass, NgStyle, HlmTypographyImports],
+    imports: [RouterLink, NgClass, NgStyle, HlmTypographyImports, NgOptimizedImage],
     providers: [],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
@@ -17,9 +17,9 @@ import { HlmTypographyImports } from '@spartan-ng/helm/typography';
 })
 export class DashboardComponent implements OnInit {
     user!: User;
-    selectedBackground: CarouselItem | null = null;
-    currentSelectedBackground: CarouselItem | null = null;
-    carouselItems: CarouselItem[] = carouselItems;
+    selectedBackground: DashboardItem | null = null;
+    currentSelectedBackground: DashboardItem | null = null;
+    carouselItems: DashboardItem[] = dashboardItems;
 
     constructor(protected authService: AuthService) {}
 
@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
 
     setActiveBackground(url: string | null): void {
         if (url) {
-            for (const carouselItem of carouselItems) {
+            for (const carouselItem of dashboardItems) {
                 if (url === carouselItem.backgroundImage) {
                     this.selectedBackground = carouselItem;
                     this.currentSelectedBackground = carouselItem;
@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    checkAccessibleItems(item: CarouselItem): boolean {
+    checkAccessibleItems(item: DashboardItem): boolean {
         if (this.user) {
             switch (item.route) {
                 case '/vineyard-dashboard':

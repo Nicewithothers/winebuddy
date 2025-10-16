@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
             return true;
         }
         this.router.navigate(['/login']).then(() => {
-            toast.error('You need to be logged in to acces this page, please log in first!', {
+            toast.error('You need to be logged in to access this page, please log in first!', {
                 position: 'bottom-center',
             });
         });

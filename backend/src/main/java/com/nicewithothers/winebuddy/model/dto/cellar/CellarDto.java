@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 public class CellarDto {
+    private Long id;
     private String name;
     private Polygon mapArea;
     private Double area;

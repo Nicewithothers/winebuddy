@@ -1,21 +1,22 @@
 <header>
     <hlm-menu-bar
-        class="flex flex-row items-center justify-between fixed top-0 left-0 right-0 h-16 w-full z-5 shadow-lg px-4"
+        class="flex flex-row items-center justify-between fixed top-0 left-0 right-0 h-16 w-full z-100 shadow-lg px-4"
     >
         <div class="flex h-full items-center">
-            <img
-                ngSrc="/images/winebuddy_logo_small.png"
-                alt="winebuddy_logo_small"
-                width="361"
-                height="461"
-                routerLink="/"
-                class="h-full max-h-full w-full object-contain cursor-pointer"
-                priority
-            />
+            <button routerLink="/" class="h-full">
+                <img
+                    ngSrc="/images/winebuddy_logo_small.png"
+                    alt="winebuddy_logo_small"
+                    width="361"
+                    height="461"
+                    class="max-h-full w-full cursor-pointer object-contain"
+                    priority
+                />
+            </button>
         </div>
         @if (this.authService.user$ | async; as user) {
             <div>
-                <hlm-avatar>
+                <hlm-avatar class="size-12">
                     <img
                         [src]="user?.profileURL ? user!.profileURL : 'images/anonymous.png'"
                         [brnMenuTriggerFor]="userOptions"
@@ -51,11 +52,15 @@
             </div>
         } @else {
             <div class="flex flex-row gap-2">
-                <button hlmMenuBarItem routerLink="/login" class="btn-menubar cursor-pointer">
+                <button hlmMenuBarItem routerLink="/login" class="btn-menubar cursor-pointer gap-1">
                     <ng-icon hlm name="lucideLogIn" />
                     Login
                 </button>
-                <button hlmMenuBarItem routerLink="/register" class="btn-menubar cursor-pointer">
+                <button
+                    hlmMenuBarItem
+                    routerLink="/register"
+                    class="btn-menubar cursor-pointer gap-1"
+                >
                     <ng-icon hlm name="lucideUserRoundPen" />
                     Register
                 </button>

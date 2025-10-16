@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { User } from '../../../shared/models/User';
 import {
-    Content,
     Control,
     Draw,
     FeatureGroup,
@@ -17,52 +16,107 @@ import { filter, Subscription } from 'rxjs';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
 import { toast } from 'ngx-sonner';
-import { AsyncPipe, DecimalPipe } from '@angular/common';
-import { DateTransformPipe } from '../../../shared/pipes/datetransform.pipe';
-import { BrnMenuImports } from '@spartan-ng/brain/menu';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
 import { cellarForm } from '../../../shared/forms/cellar.form';
 import { CellarService } from '../../../shared/services/cellar.service';
 import { CellarRequest } from '../../../shared/models/requests/CellarRequest';
-import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideMenu, lucidePlus, lucideTrash2, lucideX } from '@ng-icons/lucide';
 import { DialogService } from '../../../shared/services/dialog.service';
-import { HlmTabsImports } from '@spartan-ng/helm/tabs';
-import { HlmMenuImports } from '@spartan-ng/helm/menu';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
 import { HlmInputImports } from '@spartan-ng/helm/input';
-import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
+import { CustomcardComponent } from '../../../shared/components/customcard/customcard.component';
+import { AsyncPipe } from '@angular/common';
+import { BrnAlertDialogContent, BrnAlertDialogTrigger } from '@spartan-ng/brain/alert-dialog';
+import {
+    HlmAlertDialog,
+    HlmAlertDialogActionButton,
+    HlmAlertDialogCancelButton,
+    HlmAlertDialogContent,
+    HlmAlertDialogDescription,
+    HlmAlertDialogFooter,
+    HlmAlertDialogHeader,
+    HlmAlertDialogTitle,
+} from '@spartan-ng/helm/alert-dialog';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { HlmMenu, HlmMenuItem } from '@spartan-ng/helm/menu';
+import { BrnMenuImports } from '@spartan-ng/brain/menu';
+import {
+    BrnSelect,
+    BrnSelectContent,
+    BrnSelectScrollDown,
+    BrnSelectScrollUp,
+    BrnSelectValue,
+    BrnSelectValueTemplate,
+} from '@spartan-ng/brain/select';
+import {
+    HlmSelect,
+    HlmSelectContent,
+    HlmSelectGroup,
+    HlmSelectLabel,
+    HlmSelectOption,
+    HlmSelectScrollDown,
+    HlmSelectScrollUp,
+    HlmSelectTrigger,
+    HlmSelectValue,
+} from '@spartan-ng/helm/select';
+import { Cellar } from '../../../shared/models/Cellar';
 
 @Component({
     selector: 'app-cellar-dashboard',
     imports: [
-        AsyncPipe,
-        DateTransformPipe,
-        DecimalPipe,
-        NgIcon,
         ReactiveFormsModule,
         LeafletModule,
         LeafletDrawModule,
-        HlmTabsImports,
-        HlmTabsImports,
-        BrnMenuImports,
-        HlmMenuImports,
         HlmButtonImports,
         HlmDialogImports,
         HlmFormFieldImports,
         HlmInputImports,
-        HlmSpinnerImports,
+        BrnDialogImports,
+        AsyncPipe,
+        BrnAlertDialogContent,
+        BrnAlertDialogTrigger,
+        HlmAlertDialog,
+        HlmAlertDialogActionButton,
+        HlmAlertDialogCancelButton,
+        HlmAlertDialogContent,
+        HlmAlertDialogDescription,
+        HlmAlertDialogFooter,
+        HlmAlertDialogHeader,
+        HlmAlertDialogTitle,
+        HlmIcon,
+        HlmMenu,
+        HlmMenuItem,
+        NgIcon,
+        BrnMenuImports,
+        BrnSelect,
+        BrnSelectContent,
+        BrnSelectScrollDown,
+        BrnSelectScrollUp,
+        BrnSelectValue,
+        BrnSelectValueTemplate,
+        HlmSelect,
+        HlmSelectContent,
+        HlmSelectGroup,
+        HlmSelectLabel,
+        HlmSelectOption,
+        HlmSelectScrollDown,
+        HlmSelectScrollUp,
+        HlmSelectTrigger,
+        HlmSelectValue,
     ],
-    providers: [provideIcons({ lucideTrash2, lucidePlus })],
+    providers: [provideIcons({ lucideTrash2, lucidePlus, lucideMenu, lucideX })],
     templateUrl: './cellar-dashboard.component.html',
     styleUrl: './cellar-dashboard.component.css',
 })
 export class CellarDashboardComponent implements OnInit, OnDestroy {
     user!: User;
     map!: Map;
+    control!: Control.Draw;
     drawnLayer: FeatureGroup = new FeatureGroup();
     drawnLayerValidated: boolean = false;
     cellarLayers: FeatureGroup = new FeatureGroup();
@@ -73,21 +127,21 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
     };
     subscriptions: Subscription[] = [];
     cellarForm: FormGroup = cellarForm();
-    datePipe: DateTransformPipe = new DateTransformPipe();
-    numberPipe: DecimalPipe = new DecimalPipe('en-US');
+    currentCellar: Cellar | null = null;
 
     constructor(
         protected authService: AuthService,
         private cellarService: CellarService,
         protected dialogService: DialogService,
+        private vcr: ViewContainerRef,
     ) {}
 
     ngOnInit() {
         const userSub = this.authService.user$.pipe(filter(user => !!user)).subscribe(user => {
             this.user = user!;
             if (this.map) {
-                this.setDrawFeatures();
                 this.initMap();
+                this.updateDrawControl();
             }
         });
         this.subscriptions.push(userSub);
@@ -106,8 +160,15 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         }
     }
 
+    onDrawReady(drawControl: Control.Draw) {
+        this.control = drawControl;
+        if (this.map) {
+            this.updateDrawControl();
+        }
+    }
+
     initMap() {
-        const vineyardLayer = geoJSON(this.user.vineyard?.mapArea);
+        const vineyardLayer = geoJSON(this.user.vineyard!.mapArea);
         vineyardLayer
             .setStyle({
                 color: '#008515',
@@ -127,7 +188,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         this.handleCellarEvent();
     }
 
-    setDrawFeatures(): Control.DrawConstructorOptions {
+    getDrawFeatures(): Control.DrawConstructorOptions {
         return {
             position: 'bottomleft',
             draw: {
@@ -190,24 +251,22 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         });
     }
 
+    handleCurrentCellar(newCellar: Cellar): void {
+        this.currentCellar = newCellar;
+    }
+
     drawCellars(): void {
         this.user.vineyard!.cellars!.forEach(cellar => {
             this.cellarLayers.addLayer(
                 geoJSON(cellar.mapArea, {
                     onEachFeature: (_feature, layer) => {
-                        const popup: Content = `
-                            <ul>
-                                <li>Name: ${cellar.name}</li>
-                                <li>Area: ${this.numberPipe.transform(cellar.area)} km2</li>
-                                <li>Capacity: ${cellar.capacity}</li>
-                                <li>Owning date: ${this.datePipe.transform(cellar.owningDate)}</li>
-                                <li>Barrels: ${cellar.barrels?.length ?? 0}</li>
-                            </ul>
-                            `;
-                        layer.bindPopup(popup).addTo(this.map);
-                        layer.on('click', () => {
-                            layer.openPopup();
-                        });
+                        const card = this.vcr.createComponent(CustomcardComponent);
+                        card.setInput('inputCellar', cellar);
+                        card.changeDetectorRef.detectChanges();
+                        let popupalt = document.createElement('div');
+                        popupalt.appendChild(card.location.nativeElement);
+                        layer.bindPopup(popupalt).addTo(this.map);
+                        layer.on('click', event => layer.openPopup(event.latlng));
                     },
                 }),
             );
@@ -218,6 +277,18 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
                 color: '#5b2100',
             })
             .addTo(this.map);
+    }
+
+    updateDrawControl(): void {
+        if (!this.control || !this.map) {
+            return;
+        }
+
+        this.map.removeControl(this.control);
+
+        const options = this.getDrawFeatures();
+        this.control = new Control.Draw(options);
+        this.map.addControl(this.control);
     }
 
     addCellar(): void {

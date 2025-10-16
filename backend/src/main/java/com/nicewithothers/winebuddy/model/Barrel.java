@@ -14,9 +14,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -24,16 +27,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "barrel")
+@Builder
 public class Barrel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private Double volume;
+    private Integer volume;
 
     @Column(nullable = false)
-    private Double maxVolume;
+    private Integer maxVolume;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,6 +46,9 @@ public class Barrel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BarrelSize barrelSize;
+
+    @Column(nullable = false, updatable = false)
+    private Instant owningDate;
 
     @ManyToOne
     @JsonBackReference

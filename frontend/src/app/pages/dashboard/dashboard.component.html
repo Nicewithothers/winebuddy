@@ -25,13 +25,16 @@
                         (mouseenter)="setActiveBackground(item.backgroundImage)"
                         (mouseleave)="setActiveBackground(null)"
                     >
-                        <img
-                            [src]="item.backgroundImage"
-                            [alt]="item.displayText"
-                            [routerLink]="this.checkAccessibleItems(item) ? item.route : null"
-                            [class.opacity-50]="!this.checkAccessibleItems(item)"
-                            class="w-full h-full object-cover"
-                        />
+                        <div class="relative h-full">
+                            <img
+                                [ngSrc]="item.backgroundImage"
+                                [alt]="item.displayText"
+                                [routerLink]="this.checkAccessibleItems(item) ? item.route : null"
+                                [class.opacity-50]="!this.checkAccessibleItems(item)"
+                                class="w-full h-full object-cover"
+                                fill
+                            />
+                        </div>
                     </div>
                     <div>
                         <p hlmH3 [class.opacity-50]="!this.checkAccessibleItems(item)">

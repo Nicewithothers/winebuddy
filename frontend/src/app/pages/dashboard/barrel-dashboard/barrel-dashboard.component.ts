@@ -22,8 +22,6 @@ import { barrelForm } from '../../../shared/forms/barrel.form';
 import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { Cellar } from '../../../shared/models/Cellar';
-import { BarrelTypeTransform } from '../../../shared/models/enums/BarrelType';
-import { BarrelSizeTransform } from '../../../shared/models/enums/BarrelSize';
 import { DateTransformPipe } from '../../../shared/pipes/datetransform.pipe';
 import { HlmTabsImports } from '@spartan-ng/helm/tabs';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
@@ -34,8 +32,13 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmTypographyImports } from '@spartan-ng/helm/typography';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
-import { HlmInputImports } from '@spartan-ng/helm/input';
 import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
+import { barrelTypes } from '../../../shared/models/enums/barrel/BarrelType';
+import { barrelSizes } from '../../../shared/models/enums/barrel/BarrelSize';
+import { BarrelRequest } from '../../../shared/models/requests/BarrelRequest';
+import { BarrelService } from '../../../shared/services/barrel.service';
+import { toast } from 'ngx-sonner';
+import { EnumPipe } from '../../../shared/pipes/enum.pipe';
 
 @Component({
     selector: 'app-barrel-dashboard',
@@ -55,8 +58,8 @@ import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
         HlmTypographyImports,
         HlmDialogImports,
         HlmFormFieldImports,
-        HlmInputImports,
         HlmSpinnerImports,
+        EnumPipe,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus })],
     templateUrl: './barrel-dashboard.component.html',
@@ -74,12 +77,15 @@ export class BarrelDashboardComponent implements OnInit, OnDestroy {
     subscriptions: Subscription[] = [];
     barrelForm: FormGroup = barrelForm();
     selectedCellar: Cellar | null = null;
-    barrelTypes = Object.values(BarrelTypeTransform);
-    barrelSizes = Object.values(BarrelSizeTransform);
     datePipe: DateTransformPipe = new DateTransformPipe();
     numberPipe: DecimalPipe = new DecimalPipe('en-US');
+    barrelTypes = barrelTypes;
+    barrelSizes = barrelSizes;
 
-    constructor(protected authService: AuthService) {}
+    constructor(
+        protected authService: AuthService,
+        private barrelService: BarrelService,
+    ) {}
 
     ngOnInit() {
         const userSub = this.authService.user$.pipe(filter(user => !!user)).subscribe(user => {
@@ -165,7 +171,41 @@ export class BarrelDashboardComponent implements OnInit, OnDestroy {
         this.selectedCellar = newCellar;
     }
 
-    addBarrel(): void {}
+    addBarrel(id: number): void {
+        const barrelType = this.barrelForm.get('barrelType')?.value;
+        const barrelSize = this.barrelForm.get('barrelSize')?.value;
+        const barrelRequest: BarrelRequest = {
+            cellarId: id,
+            barrelType: barrelType,
+            barrelSize: barrelSize,
+        };
+        this.barrelService.createBarrel(barrelRequest).subscribe(user => {
+            if (user) {
+                this.updateCurrentCellar(this.selectedCellar);
+                toast.success('Barrel creation successful!', {
+                    position: 'bottom-center',
+                    duration: 2000,
+                });
+            } else {
+                toast.error('Barrel creation failed!', {
+                    position: 'bottom-center',
+                    duration: 2000,
+                });
+            }
+        });
+    }
 
-    deleteBarrel(): void {}
+    updateCurrentCellar(currentCellar: Cellar | null): void {
+        if (currentCellar) {
+            this.user!.vineyard!.cellars!.forEach(cellar => {
+                if (cellar.id === currentCellar.id) {
+                    this.selectedCellar = cellar;
+                }
+                return;
+            });
+        }
+        return;
+    }
+
+    deleteBarrel(id: number): void {}
 }

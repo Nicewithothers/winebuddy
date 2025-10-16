@@ -6,11 +6,12 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { TokenInterceptor } from './shared/interceptors/token.interceptor';
 import { AuthService } from './shared/services/auth.service';
+import { tokenInterceptor } from './shared/interceptors/token.interceptor';
+import { errorInterceptor } from './shared/interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -21,12 +22,7 @@ export const appConfig: ApplicationConfig = {
             const auth = inject(AuthService);
             return auth.initializeUser();
         }),
-        provideHttpClient(withInterceptorsFromDi()),
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: TokenInterceptor,
-            multi: true,
-        },
+        provideHttpClient(withInterceptors([errorInterceptor, tokenInterceptor])),
         provideCharts(withDefaultRegisterables()),
     ],
 };
