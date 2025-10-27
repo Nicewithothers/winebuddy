@@ -28,11 +28,7 @@ export class AuthService {
             })
             .pipe(
                 map((response: any) => {
-                    if (response.ok && response.body) {
-                        return response.body as User;
-                    } else {
-                        throw new Error('Registration failed');
-                    }
+                    return response.body as User;
                 }),
                 catchError(err => {
                     console.error(err);
@@ -52,7 +48,7 @@ export class AuthService {
                         const authResponse = response.body as AuthResponse;
                         const user = authResponse.user as User;
                         const token = authResponse.token as string;
-                        sessionStorage.setItem('AuthToken', token);
+                        localStorage.setItem('AuthToken', token);
                         this.userSubject.next(user);
                         return user;
                     } else {
@@ -68,7 +64,7 @@ export class AuthService {
     }
 
     logout(): void {
-        sessionStorage.clear();
+        localStorage.clear();
         this.userSubject.next(null);
         this.router.navigate(['/']).then(() => {
             toast.success('Logged out successfully!', {
@@ -98,6 +94,6 @@ export class AuthService {
     }
 
     private getToken(): string | null {
-        return sessionStorage.getItem('AuthToken');
+        return localStorage.getItem('AuthToken');
     }
 }

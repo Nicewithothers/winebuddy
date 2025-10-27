@@ -10,11 +10,11 @@ import java.util.Optional;
 
 public interface CellarRepository extends JpaRepository<Cellar, Long> {
     @Query(value = """
-            select st_within(:mapArea, v.map_area)
+            select st_within(:cellarArea, v.map_area)
             from vineyard v
             where v.id = :vineyardId
             """, nativeQuery = true)
-    Boolean isWithinVineyard(@Param("mapArea") Polygon mapArea, @Param("vineyardId") Long vineyardId);
+    Boolean isWithinVineyard(@Param("cellarArea") Polygon cellarArea, @Param("vineyardId") Long vineyardId);
 
     @Query(value= """
             select not exists (
@@ -26,11 +26,11 @@ public interface CellarRepository extends JpaRepository<Cellar, Long> {
     Boolean isNotWithinCellars(@Param("cellarGeom") Polygon cellarGeom);
 
     @Query(value = """
-            select st_area(cast(:mapArea as geography))
+            select st_area((:cellarArea)::geography)
             from cellar c
             where c.id = :cellarId
             """, nativeQuery = true)
-    Double getAreaMeters(@Param("mapArea") Polygon mapArea, @Param("cellarId") Long cellarId);
+    Double getAreaMeters(@Param("cellarArea") Polygon cellarArea, @Param("cellarId") Long cellarId);
 
     Optional<Cellar> findCellarById(Long id);
 }

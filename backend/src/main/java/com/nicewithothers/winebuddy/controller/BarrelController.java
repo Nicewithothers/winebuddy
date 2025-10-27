@@ -40,7 +40,6 @@ public class BarrelController {
                     .orElseThrow();
             currentCellar.getBarrels().add(barrel);
             cellarRepository.save(currentCellar);
-            //userRepository.save(user);
             return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

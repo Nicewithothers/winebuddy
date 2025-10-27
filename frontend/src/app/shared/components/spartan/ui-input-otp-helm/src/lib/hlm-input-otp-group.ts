@@ -3,13 +3,13 @@ import { hlm } from '@spartan-ng/helm/utils';
 import type { ClassValue } from 'clsx';
 
 @Directive({
-	selector: '[hlmInputOtpGroup]',
-	host: {
-		'[class]': '_computedClass()',
-	},
+    selector: '[hlmInputOtpGroup]',
+    host: {
+        '[class]': '_computedClass()',
+    },
 })
 export class HlmInputOtpGroup {
-	public readonly userClass = input<ClassValue>('', { alias: 'class' });
+    public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
-	protected readonly _computedClass = computed(() => hlm('flex items-center', this.userClass()));
+    protected readonly _computedClass = computed(() => hlm('flex items-center', this.userClass()));
 }

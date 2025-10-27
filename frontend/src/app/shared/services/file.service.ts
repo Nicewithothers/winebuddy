@@ -26,9 +26,8 @@ export class FileService {
                 map((response: any) => {
                     if (response.ok && response.body) {
                         const user = response.body as User;
-                        sessionStorage.setItem('User', JSON.stringify(user));
                         this.authService.userSubject.next(user);
-                        return response.body as User;
+                        return user;
                     } else {
                         throw new Error('Unable to upload file');
                     }

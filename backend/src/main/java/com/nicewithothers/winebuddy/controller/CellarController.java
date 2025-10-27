@@ -44,7 +44,6 @@ public class CellarController {
             cellar.setArea(area);
             user.getVineyard().getCellars().add(cellar);
             vineyardRepository.save(user.getVineyard());
-            userRepository.save(user);
             return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

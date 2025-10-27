@@ -16,13 +16,15 @@
         </div>
         @if (this.authService.user$ | async; as user) {
             <div>
-                <hlm-avatar class="size-12">
+                <hlm-avatar class="w-12 h-12 relative">
                     <img
-                        [src]="user?.profileURL ? user!.profileURL : 'images/anonymous.png'"
+                        [ngSrc]="user.profileURL ? user!.profileURL : '/images/anonymous.png'"
                         [brnMenuTriggerFor]="userOptions"
                         class="cursor-pointer"
                         alt="profile_picture"
                         hlmAvatarImage
+                        fill
+                        priority
                     />
                 </hlm-avatar>
                 <ng-template #userOptions>

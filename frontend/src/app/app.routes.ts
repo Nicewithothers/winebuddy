@@ -11,6 +11,7 @@ import { CellarDashboardComponent } from './pages/dashboard/cellar-dashboard/cel
 import { BarrelDashboardComponent } from './pages/dashboard/barrel-dashboard/barrel-dashboard.component';
 import { WineDashboardComponent } from './pages/dashboard/wine-dashboard/wine-dashboard.component';
 import { DashboardGuard } from './shared/guards/dashboard.guard';
+import { GrapevineDashboardComponent } from './pages/dashboard/grapevine-dashboard/grapevine-dashboard.component';
 
 export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
@@ -24,6 +25,11 @@ export const routes: Routes = [
     {
         path: 'cellar-dashboard',
         component: CellarDashboardComponent,
+        canActivate: [AuthGuard, DashboardGuard],
+    },
+    {
+        path: 'grapevine-dashboard',
+        component: GrapevineDashboardComponent,
         canActivate: [AuthGuard, DashboardGuard],
     },
     {

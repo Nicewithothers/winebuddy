@@ -33,7 +33,7 @@
                 </tr>
             </thead>
             <tbody hlmTBody>
-                @if (user.vineyard!.cellars && user.vineyard!.cellars!.length > 0) {
+                @if (user.vineyard?.cellars && user.vineyard!.cellars!.length > 0) {
                     <tr hlmTr>
                         <td hlmTd>{{ inputCellar.name }}</td>
                         <td hlmTd>{{ inputCellar.area | number: '1.0-1' }} km²</td>
@@ -41,6 +41,101 @@
                             {{ inputCellar.barrels?.length ?? 0 }}/{{ inputCellar.capacity }}
                         </td>
                         <td hlmTd>{{ inputCellar.owningDate | date }}</td>
+                    </tr>
+                }
+            </tbody>
+        } @else if (inputGrapevine) {
+            <thead hlmTHead>
+                <tr hlmTr>
+                    <th hlmTh>Length</th>
+                    <th hlmTh>Created</th>
+                    @if (!inputGrapevine.grape) {
+                        <th hlmTh>Action</th>
+                    }
+                </tr>
+            </thead>
+            <tbody hlmTBody>
+                @if (user.vineyard?.grapevines && user.vineyard!.grapevines!.length > 0) {
+                    <tr hlmTr>
+                        <td hlmTd>{{ inputGrapevine.length | number: '1.0-0' }} km</td>
+                        <td hlmTd>{{ inputGrapevine.created | date }}</td>
+                        @if (!inputGrapevine.grape) {
+                            <td hlmTd>
+                                <hlm-dialog>
+                                    <button
+                                        hlmBtn
+                                        variant="ghost"
+                                        class="cursor-pointer"
+                                        brnDialogTrigger
+                                    >
+                                        <ng-icon hlm size="sm" name="lucideGrape" />
+                                    </button>
+
+                                    <hlm-dialog-content *brnDialogContent>
+                                        <hlm-dialog-header>
+                                            <h4 hlmDialogTitle>Add grape to grapevine</h4>
+                                            <p hlmDialogDescription>
+                                                Select which grape you want to plant.
+                                            </p>
+                                        </hlm-dialog-header>
+                                        <form
+                                            [formGroup]="grapevineForm"
+                                            (ngSubmit)="addGrapeToGrapevine(inputGrapevine.id)"
+                                        >
+                                            <div class="flex flex-col items-center gap-y-2">
+                                                <hlm-form-field>
+                                                    <brn-select
+                                                        class="inline-block"
+                                                        placeholder="Select a grape"
+                                                        formControlName="grapeType"
+                                                    >
+                                                        <hlm-select-trigger class="w-64">
+                                                            <hlm-select-value />
+                                                        </hlm-select-trigger>
+                                                        <hlm-select-content>
+                                                            <hlm-select-label
+                                                                >Grape types</hlm-select-label
+                                                            >
+                                                            @for (
+                                                                grapeType of grapeTypes;
+                                                                track grapeType
+                                                            ) {
+                                                                <hlm-option
+                                                                    [value]="grapeType.value"
+                                                                    >{{
+                                                                        grapeType.label
+                                                                    }}</hlm-option
+                                                                >
+                                                            }
+                                                        </hlm-select-content>
+                                                    </brn-select>
+                                                </hlm-form-field>
+                                                <div class="flex gap-6">
+                                                    <button
+                                                        variant="destructive"
+                                                        hlmBtn
+                                                        type="reset"
+                                                        class="cursor-pointer"
+                                                        brnDialogClose
+                                                    >
+                                                        Close
+                                                    </button>
+                                                    <button
+                                                        variant="default"
+                                                        hlmBtn
+                                                        type="submit"
+                                                        class="cursor-pointer"
+                                                        [disabled]="this.checkFields()"
+                                                    >
+                                                        Create
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </hlm-dialog-content>
+                                </hlm-dialog>
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>

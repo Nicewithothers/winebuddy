@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -37,5 +36,5 @@ public class Cellar extends BaseLocation {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "cellar", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Barrel> barrels = new ArrayList<>();
+    private List<Barrel> barrels;
 }

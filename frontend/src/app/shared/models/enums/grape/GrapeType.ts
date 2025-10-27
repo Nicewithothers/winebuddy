@@ -1,11 +1,16 @@
 export enum GrapeType {
-    CHARDONNAY = 'CHARDONNAY',
-    SAUVIGNON_BLANC = 'SAUVIGNON_BLANC',
-    SYRAH = 'SYRAH',
-    CABERNET_SAUVIGNON = 'CABERNET_SAUVIGNON',
-    CABERNET_FRANC = 'CABERNET_FRANC',
-    MERLOT = 'MERLOT',
-    PINOT_NOIR = 'PINOT_NOIR',
-    RIESLING = 'RIESLING',
-    MUSCAT = 'MUSCAT',
+    CHARDONNAY = 'Chardonnay',
+    SAUVIGNON_BLANC = 'Sauvignon Blanc',
+    SYRAH = 'Syrah',
+    CABERNET_SAUVIGNON = 'Cabernet Sauvignon',
+    CABERNET_FRANC = 'Cabernet Franc',
+    MERLOT = 'Merlot',
+    PINOT_NOIR = 'Pinot Noir',
+    RIESLING = 'Riesling',
+    MUSCAT = 'Muscat',
 }
+
+export const grapeTypes = Object.entries(GrapeType).map(([value, label]) => ({
+    value: value,
+    label: label,
+}));

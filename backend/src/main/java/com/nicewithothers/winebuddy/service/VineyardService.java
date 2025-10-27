@@ -32,6 +32,7 @@ public class VineyardService {
                 .owningDate(Instant.now())
                 .owner(userService.findByUsername(user.getUsername()))
                 .cellars(Collections.emptyList())
+                .grapevines(Collections.emptyList())
                 .build();
         return vineyardRepository.save(vineyard);
     }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMenu, lucidePlus, lucideTrash2, lucideX } from '@ng-icons/lucide';
 import { User } from '../../../shared/models/User';
@@ -20,7 +20,6 @@ import {
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
 import { VineyardService } from '../../../shared/services/vineyard.service';
-import { filter, Subscription } from 'rxjs';
 import { toast } from 'ngx-sonner';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
@@ -64,7 +63,7 @@ import { HlmMenuImports } from '@spartan-ng/helm/menu';
     templateUrl: './vineyard-dashboard.component.html',
     styleUrl: './vineyard-dashboard.component.css',
 })
-export class VineyardDashboardComponent implements OnInit, OnDestroy {
+export class VineyardDashboardComponent implements OnInit {
     user!: User;
     map!: Map;
     control!: Control.Draw;
@@ -74,7 +73,6 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
         zoom: 7,
         center: latLng([47.1625, 19.5033]),
     };
-    subscriptions: Subscription[] = [];
     vineyardForm: FormGroup = vineyardForm();
     drawnLayerValidated: boolean = false;
 
@@ -86,18 +84,13 @@ export class VineyardDashboardComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        const userSub = this.authService.user$.pipe(filter(user => !!user)).subscribe(user => {
-            this.user = user!;
+        this.authService.user$.subscribe(user => {
+            this.user = user;
             if (this.map) {
                 this.initMap();
                 this.updateDrawControl();
             }
         });
-        this.subscriptions.push(userSub);
-    }
-
-    ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     onMapReady(map: Map) {

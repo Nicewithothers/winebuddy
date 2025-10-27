@@ -1,12 +1,12 @@
 import { Barrel } from './Barrel';
-import { GrapeType } from './enums/grape/GrapeType';
-import { GrapeTaste } from './enums/grape/GrapeTaste';
+import { Grapevine } from './Grapevine';
 
 export interface Grape {
     id: number;
-    name: string;
-    grapeType: GrapeType;
-    grapeTaste: GrapeTaste;
-    region: string;
+    grapeType: string;
+    grapeSweetness: number;
+    grapeColor: string;
+    grapeGrowthTime: number;
     barrels: Barrel[] | null;
+    grapevines: Grapevine[] | null;
 }

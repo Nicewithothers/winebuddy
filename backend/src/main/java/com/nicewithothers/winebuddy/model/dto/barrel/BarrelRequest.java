@@ -9,6 +9,6 @@ import lombok.Data;
 @Builder
 public class BarrelRequest {
     private Long cellarId;
-    private BarrelType barrelType;
     private BarrelSize barrelSize;
+    private BarrelType barrelType;
 }

@@ -16,6 +16,11 @@ export const dashboardItems: DashboardItem[] = [
         route: '/cellar-dashboard',
     },
     {
+        displayText: 'Grapevine Dashboard',
+        backgroundImage: '/images/dashboard/grapevine.png',
+        route: '/grapevine-dashboard',
+    },
+    {
         displayText: 'Barrel Dashboard',
         backgroundImage: '/images/dashboard/barrel.png',
         route: '/barrel-dashboard',

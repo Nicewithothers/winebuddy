@@ -1,0 +1,65 @@
+<section class="section-container">
+    <div class="w-full h-full flex flex-col justify-center p-4">
+        <div
+            class="h-[80vh] w-full rounded-xl shadow border border-gray-200 z-10"
+            leaflet
+            leafletDraw
+            [leafletOptions]="options"
+            [leafletDrawOptions]="getDrawFeatures()"
+            (leafletMapReady)="onMapReady($event)"
+            (leafletDrawReady)="onDrawReady($event)"
+        >
+            @if (this.authService.user$ | async; as user) {
+                @if (user.vineyard!.grapevines && user.vineyard!.grapevines!.length > 0) {
+                    <div class="leaflet-top leaflet-right p-4">
+                        <button
+                            hlmBtn
+                            variant="default"
+                            size="sm"
+                            class="pointer-events-auto cursor-pointer"
+                            [brnMenuTriggerFor]="actionMenu"
+                        >
+                            <ng-icon hlm name="lucideMenu" size="sm"></ng-icon>
+                        </button>
+                    </div>
+                    <ng-template #actionMenu>
+                        <hlm-menu>
+                            <button variant="destructive" class="cursor-pointer" hlmMenuItem>
+                                <ng-icon hlm size="sm" name="lucideX" />
+                                Delete cellar
+                            </button>
+                        </hlm-menu>
+                    </ng-template>
+                }
+            }
+        </div>
+        <hlm-dialog [state]="dialogService._state()">
+            <hlm-dialog-content *brnDialogContent>
+                <hlm-dialog-header>
+                    <h3 class="text-center" hlmDialogTitle>Add grapevine</h3>
+                    <p hlmDialogDescription>
+                        IMPORTANT: You need to draw inside your vineyard before adding!
+                    </p>
+                </hlm-dialog-header>
+                <form (ngSubmit)="addGrapevine()">
+                    <div class="flex flex-col items-center gap-y-2">
+                        <div class="flex gap-6">
+                            <button
+                                variant="destructive"
+                                hlmBtn
+                                type="reset"
+                                class="cursor-pointer"
+                                (click)="this.closeDialog()"
+                            >
+                                Close
+                            </button>
+                            <button variant="default" hlmBtn type="submit" class="cursor-pointer">
+                                Create
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </hlm-dialog-content>
+        </hlm-dialog>
+    </div>
+</section>

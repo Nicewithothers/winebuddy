@@ -32,13 +32,12 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmTypographyImports } from '@spartan-ng/helm/typography';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
-import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 import { barrelTypes } from '../../../shared/models/enums/barrel/BarrelType';
 import { barrelSizes } from '../../../shared/models/enums/barrel/BarrelSize';
 import { BarrelRequest } from '../../../shared/models/requests/BarrelRequest';
 import { BarrelService } from '../../../shared/services/barrel.service';
 import { toast } from 'ngx-sonner';
-import { EnumPipe } from '../../../shared/pipes/enum.pipe';
+import { HlmTableImports } from '@spartan-ng/helm/table';
 
 @Component({
     selector: 'app-barrel-dashboard',
@@ -58,8 +57,7 @@ import { EnumPipe } from '../../../shared/pipes/enum.pipe';
         HlmTypographyImports,
         HlmDialogImports,
         HlmFormFieldImports,
-        HlmSpinnerImports,
-        EnumPipe,
+        HlmTableImports,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus })],
     templateUrl: './barrel-dashboard.component.html',

@@ -4,7 +4,6 @@ import { catchError, map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { User } from '../models/User';
 import { VineyardRequest } from '../models/requests/VineyardRequest';
-import { VineyardResponse } from '../models/responses/VineyardResponse';
 
 @Injectable({
     providedIn: 'root',

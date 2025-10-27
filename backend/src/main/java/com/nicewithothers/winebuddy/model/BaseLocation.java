@@ -5,14 +5,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.locationtech.jts.geom.Polygon;
 
 import java.time.Instant;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @SuperBuilder
 @MappedSuperclass
@@ -21,7 +23,7 @@ public abstract class BaseLocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(columnDefinition = "Geometry(Polygon,4326)", nullable = false)

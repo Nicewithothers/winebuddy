@@ -16,7 +16,7 @@ public interface VineyardRepository extends JpaRepository<Vineyard, Long> {
     Boolean isWithinHungary(@Param("mapArea") Polygon mapArea);
 
     @Query(value = """
-            SELECT st_area(cast(:mapArea as geography))
+            SELECT st_area((:mapArea)::geography)
             from vineyard v
             where v.id = :vineyardId
             """, nativeQuery = true)

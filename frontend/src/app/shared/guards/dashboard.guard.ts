@@ -25,6 +25,7 @@ export class DashboardGuard implements CanActivate {
                     !!user.vineyard ? (isEligible = true) : (isEligible = false);
                     break;
                 case '/barrel-dashboard':
+                case '/grapevine-dashboard':
                     !!user.vineyard && user.vineyard!.cellars!.length > 0
                         ? (isEligible = true)
                         : (isEligible = false);
@@ -32,7 +33,10 @@ export class DashboardGuard implements CanActivate {
                 case '/wine-dashboard':
                     !!user.vineyard &&
                     user.vineyard!.cellars!.length > 0 &&
-                    user.vineyard!.cellars!.some(cellar => cellar.barrels && cellar.barrels!.length > 0)
+                    user.vineyard!.cellars!.some(
+                        cellar => cellar.barrels && cellar.barrels!.length > 0,
+                    ) &&
+                    user.vineyard!.grapevines!.length > 0
                         ? (isEligible = true)
                         : (isEligible = false);
                     break;

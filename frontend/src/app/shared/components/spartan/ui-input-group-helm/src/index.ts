@@ -10,4 +10,10 @@ export * from './lib/hlm-prefix-addon';
 export * from './lib/hlm-suffix';
 export * from './lib/hlm-suffix-addon';
 
-export const HlmInputGroupImports = [HlmInputGroup, HlmSuffixAddon, HlmPrefixAddon, HlmPrefix, HlmSuffix] as const;
+export const HlmInputGroupImports = [
+    HlmInputGroup,
+    HlmSuffixAddon,
+    HlmPrefixAddon,
+    HlmPrefix,
+    HlmSuffix,
+] as const;

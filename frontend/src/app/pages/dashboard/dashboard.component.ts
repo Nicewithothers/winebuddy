@@ -19,7 +19,7 @@ export class DashboardComponent implements OnInit {
     user!: User;
     selectedBackground: DashboardItem | null = null;
     currentSelectedBackground: DashboardItem | null = null;
-    carouselItems: DashboardItem[] = dashboardItems;
+    dashboardItems: DashboardItem[] = dashboardItems;
 
     constructor(protected authService: AuthService) {}
 
@@ -55,6 +55,7 @@ export class DashboardComponent implements OnInit {
                 case '/cellar-dashboard':
                     return !!this.user.vineyard;
                 case '/barrel-dashboard':
+                case '/grapevine-dashboard':
                     return !!this.user.vineyard && this.user.vineyard!.cellars!.length > 0;
                 case '/wine-dashboard':
                     return (
@@ -62,7 +63,8 @@ export class DashboardComponent implements OnInit {
                         this.user.vineyard!.cellars!.length > 0 &&
                         this.user.vineyard!.cellars!.some(
                             cellar => cellar.barrels && cellar.barrels!.length > 0,
-                        )
+                        ) &&
+                        this.user.vineyard!.grapevines!.some(grapevine => grapevine)
                     );
                 default:
                     return false;

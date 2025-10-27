@@ -6,9 +6,7 @@ import com.nicewithothers.winebuddy.model.dto.user.RegisterRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
 import com.nicewithothers.winebuddy.model.enums.Roles;
 import com.nicewithothers.winebuddy.repository.UserRepository;
-import com.nicewithothers.winebuddy.repository.VineyardRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor

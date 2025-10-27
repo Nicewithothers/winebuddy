@@ -1,0 +1,25 @@
+<table hlmTable>
+    <caption hlmCaption>
+        Details of grapevine's grape
+    </caption>
+    @if (inputGrapevine && inputGrapevine.grape) {
+        <thead hlmTHead>
+            <tr hlmTr>
+                <th hlmTh>Type</th>
+                <th hlmTh>Sweetness</th>
+                <th hlmTh>Color</th>
+                <th hlmTh>Time left</th>
+            </tr>
+        </thead>
+        <tbody hlmTBody>
+            <tr hlmTr>
+                <td hlmTd>{{ inputGrapevine.grape!.grapeType }} km</td>
+                <td hlmTd>{{ inputGrapevine.grape!.grapeSweetness }}</td>
+                <td hlmTd>{{ inputGrapevine.grape!.grapeColor }}</td>
+                <td hlmTd>{{ this.timeRemaining }}</td>
+            </tr>
+        </tbody>
+    } @else {
+        <p hlmP>No grapes are planted here.</p>
+    }
+</table>

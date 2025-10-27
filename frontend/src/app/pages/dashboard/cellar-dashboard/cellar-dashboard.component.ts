@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { User } from '../../../shared/models/User';
 import {
     Control,
@@ -12,7 +12,6 @@ import {
     MapOptions,
     tileLayer,
 } from 'leaflet';
-import { filter, Subscription } from 'rxjs';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
 import { toast } from 'ngx-sonner';
@@ -31,40 +30,15 @@ import { HlmInputImports } from '@spartan-ng/helm/input';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { CustomcardComponent } from '../../../shared/components/customcard/customcard.component';
 import { AsyncPipe } from '@angular/common';
-import { BrnAlertDialogContent, BrnAlertDialogTrigger } from '@spartan-ng/brain/alert-dialog';
-import {
-    HlmAlertDialog,
-    HlmAlertDialogActionButton,
-    HlmAlertDialogCancelButton,
-    HlmAlertDialogContent,
-    HlmAlertDialogDescription,
-    HlmAlertDialogFooter,
-    HlmAlertDialogHeader,
-    HlmAlertDialogTitle,
-} from '@spartan-ng/helm/alert-dialog';
+import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 import { HlmIcon } from '@spartan-ng/helm/icon';
-import { HlmMenu, HlmMenuItem } from '@spartan-ng/helm/menu';
+import { HlmMenuImports } from '@spartan-ng/helm/menu';
 import { BrnMenuImports } from '@spartan-ng/brain/menu';
-import {
-    BrnSelect,
-    BrnSelectContent,
-    BrnSelectScrollDown,
-    BrnSelectScrollUp,
-    BrnSelectValue,
-    BrnSelectValueTemplate,
-} from '@spartan-ng/brain/select';
-import {
-    HlmSelect,
-    HlmSelectContent,
-    HlmSelectGroup,
-    HlmSelectLabel,
-    HlmSelectOption,
-    HlmSelectScrollDown,
-    HlmSelectScrollUp,
-    HlmSelectTrigger,
-    HlmSelectValue,
-} from '@spartan-ng/helm/select';
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Cellar } from '../../../shared/models/Cellar';
+import { HlmSelectImports } from '@spartan-ng/helm/select';
+import { BrnAlertDialogImports } from '@spartan-ng/brain/alert-dialog';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'app-cellar-dashboard',
@@ -78,42 +52,20 @@ import { Cellar } from '../../../shared/models/Cellar';
         HlmInputImports,
         BrnDialogImports,
         AsyncPipe,
-        BrnAlertDialogContent,
-        BrnAlertDialogTrigger,
-        HlmAlertDialog,
-        HlmAlertDialogActionButton,
-        HlmAlertDialogCancelButton,
-        HlmAlertDialogContent,
-        HlmAlertDialogDescription,
-        HlmAlertDialogFooter,
-        HlmAlertDialogHeader,
-        HlmAlertDialogTitle,
+        HlmAlertDialogImports,
         HlmIcon,
-        HlmMenu,
-        HlmMenuItem,
+        HlmMenuImports,
         NgIcon,
         BrnMenuImports,
-        BrnSelect,
-        BrnSelectContent,
-        BrnSelectScrollDown,
-        BrnSelectScrollUp,
-        BrnSelectValue,
-        BrnSelectValueTemplate,
-        HlmSelect,
-        HlmSelectContent,
-        HlmSelectGroup,
-        HlmSelectLabel,
-        HlmSelectOption,
-        HlmSelectScrollDown,
-        HlmSelectScrollUp,
-        HlmSelectTrigger,
-        HlmSelectValue,
+        BrnSelectImports,
+        HlmSelectImports,
+        BrnAlertDialogImports,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus, lucideMenu, lucideX })],
     templateUrl: './cellar-dashboard.component.html',
     styleUrl: './cellar-dashboard.component.css',
 })
-export class CellarDashboardComponent implements OnInit, OnDestroy {
+export class CellarDashboardComponent implements OnInit {
     user!: User;
     map!: Map;
     control!: Control.Draw;
@@ -125,7 +77,6 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
         zoom: 7,
         center: latLng([47.1625, 19.5033]),
     };
-    subscriptions: Subscription[] = [];
     cellarForm: FormGroup = cellarForm();
     currentCellar: Cellar | null = null;
 
@@ -137,18 +88,13 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        const userSub = this.authService.user$.pipe(filter(user => !!user)).subscribe(user => {
-            this.user = user!;
+        this.authService.user$.subscribe(user => {
+            this.user = user;
             if (this.map) {
                 this.initMap();
                 this.updateDrawControl();
             }
         });
-        this.subscriptions.push(userSub);
-    }
-
-    ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     onMapReady(map: Map) {
@@ -181,6 +127,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
             const layer = event.layer as GeoJSON;
             this.drawnLayer.clearLayers();
             this.drawnLayer.addLayer(layer);
+            console.log(this.drawnLayer.toGeoJSON());
             this.validateCellarLayer(this.drawnLayer.toGeoJSON());
         });
 
@@ -302,6 +249,7 @@ export class CellarDashboardComponent implements OnInit, OnDestroy {
                 toast.success('Cellar created successfully!', {
                     position: 'bottom-center',
                 });
+                this.drawnLayerValidated = false;
             } else {
                 toast.error('Cellar creation failed!', {
                     position: 'bottom-center',

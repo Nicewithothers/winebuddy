@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../shared/services/auth.service';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { FileService } from '../../shared/services/file.service';
 import { User } from '../../shared/models/User';
 import { toast } from 'ngx-sonner';
@@ -10,7 +10,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 
 @Component({
     selector: 'app-profile',
-    imports: [AsyncPipe, HlmCardImports, HlmAvatarImports, HlmButtonImports],
+    imports: [AsyncPipe, HlmCardImports, HlmAvatarImports, HlmButtonImports, NgOptimizedImage],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.css',
 })
