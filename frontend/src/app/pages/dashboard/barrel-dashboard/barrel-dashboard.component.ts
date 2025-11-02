@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
@@ -16,7 +16,6 @@ import {
     MapOptions,
     tileLayer,
 } from 'leaflet';
-import { filter, Subscription } from 'rxjs';
 import { AuthService } from '../../../shared/services/auth.service';
 import { barrelForm } from '../../../shared/forms/barrel.form';
 import { lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
@@ -63,7 +62,7 @@ import { HlmTableImports } from '@spartan-ng/helm/table';
     templateUrl: './barrel-dashboard.component.html',
     styleUrl: './barrel-dashboard.component.css',
 })
-export class BarrelDashboardComponent implements OnInit, OnDestroy {
+export class BarrelDashboardComponent implements OnInit {
     user!: User;
     map!: Map;
     cellarLayers: FeatureGroup = new FeatureGroup();
@@ -72,7 +71,6 @@ export class BarrelDashboardComponent implements OnInit, OnDestroy {
         zoom: 7,
         center: latLng([47.1625, 19.5033]),
     };
-    subscriptions: Subscription[] = [];
     barrelForm: FormGroup = barrelForm();
     selectedCellar: Cellar | null = null;
     datePipe: DateTransformPipe = new DateTransformPipe();
@@ -86,17 +84,12 @@ export class BarrelDashboardComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        const userSub = this.authService.user$.pipe(filter(user => !!user)).subscribe(user => {
-            this.user = user!;
+        this.authService.user$.subscribe(user => {
+            this.user = user;
             if (this.map) {
                 this.initMap();
             }
         });
-        this.subscriptions.push(userSub);
-    }
-
-    ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     onMapReady(map: Map) {

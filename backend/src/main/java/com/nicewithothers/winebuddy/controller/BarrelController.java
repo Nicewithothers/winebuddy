@@ -7,7 +7,6 @@ import com.nicewithothers.winebuddy.model.User;
 import com.nicewithothers.winebuddy.model.dto.barrel.BarrelRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
 import com.nicewithothers.winebuddy.repository.CellarRepository;
-import com.nicewithothers.winebuddy.repository.UserRepository;
 import com.nicewithothers.winebuddy.service.BarrelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,6 @@ import java.util.Objects;
 public class BarrelController {
     private final BarrelService barrelService;
     private final CellarRepository cellarRepository;
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @PostMapping("/createBarrel")
