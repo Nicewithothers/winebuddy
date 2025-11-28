@@ -14,6 +14,7 @@ import { BrnMenuImports } from '@spartan-ng/brain/menu';
 import { HlmMenuImports } from '@spartan-ng/helm/menu';
 import { HlmAvatarImports } from '@spartan-ng/helm/avatar';
 import { HlmIconImports } from '@spartan-ng/helm/icon';
+import { toast } from 'ngx-sonner';
 
 @Component({
     selector: 'app-header',
@@ -44,6 +45,10 @@ export class HeaderComponent {
     constructor(protected authService: AuthService) {}
 
     signOut(): void {
-        this.authService.logout();
+        this.authService.logout().subscribe(() => {
+            toast.success('Logged out successfully!', {
+                position: 'bottom-center',
+            });
+        });
     }
 }

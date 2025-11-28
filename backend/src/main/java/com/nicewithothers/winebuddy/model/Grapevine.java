@@ -38,6 +38,9 @@ public class Grapevine {
     @Column(nullable = false)
     private Double length;
 
+    @Column(nullable = false)
+    private boolean isMature;
+
     @Column(nullable = false, updatable = false)
     private Instant created;
 

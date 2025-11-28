@@ -3,10 +3,9 @@ package com.nicewithothers.winebuddy.controller;
 import com.nicewithothers.winebuddy.mapper.UserMapper;
 import com.nicewithothers.winebuddy.model.Grapevine;
 import com.nicewithothers.winebuddy.model.User;
-import com.nicewithothers.winebuddy.model.dto.grapevine.GrapevineRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
-import com.nicewithothers.winebuddy.model.enums.grape.GrapeType;
 import com.nicewithothers.winebuddy.repository.GrapevineRepository;
+import com.nicewithothers.winebuddy.repository.UserRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
 import com.nicewithothers.winebuddy.service.GrapevineService;
 import com.nicewithothers.winebuddy.utility.ShapeUtility;
@@ -16,6 +15,7 @@ import org.locationtech.jts.io.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +34,7 @@ public class GrapevineController {
     private final ShapeUtility shapeUtility;
     private final GrapevineRepository grapevineRepository;
     private final VineyardRepository vineyardRepository;
+    private final UserRepository userRepository;
 
     @PostMapping("/createGrapevine")
     public ResponseEntity<UserDto> createGrapevine(@AuthenticationPrincipal User user, @RequestBody LinkedHashMap<String, Object> createdLinestring) {
@@ -68,6 +69,22 @@ public class GrapevineController {
                                                        @AuthenticationPrincipal User user,
                                                        @RequestBody String grapeType) {
         grapevineService.setGrapeToGrapevine(id, grapeType);
-        return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
+        User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+        return new ResponseEntity<>(userMapper.toUserDto(updatedUser), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteGrapevine/{id}")
+    public ResponseEntity<UserDto> deleteGrapevine(@PathVariable Long id,
+                                                    @AuthenticationPrincipal User user) {
+        grapevineService.deleteGrapevine(id, user.getVineyard());
+        User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+        return new ResponseEntity<>(userMapper.toUserDto(updatedUser), HttpStatus.OK);
+    }
+
+    @PostMapping("/harvestGrapevine/{id}")
+    public ResponseEntity<UserDto> harvestGrapevine(@PathVariable Long id,
+                                                    @AuthenticationPrincipal User user) {
+        grapevineService.harvestGrapevine(id);
+        return null;
     }
 }

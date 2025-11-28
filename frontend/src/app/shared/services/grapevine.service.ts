@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { catchError, map, Observable } from 'rxjs';
+import { catchError, map, Observable, Subject } from 'rxjs';
 import { User } from '../models/User';
-import { GrapevineRequest } from '../models/requests/GrapevineRequest';
 import { GeoJSON } from 'leaflet';
 
 @Injectable({
@@ -65,6 +64,25 @@ export class GrapevineService {
                 catchError(err => {
                     console.error(err);
                     throw new Error('Grapevine cannot be validated.');
+                }),
+            );
+    }
+
+    deleteGrapevine(id: number) {
+        return this.http
+            .delete(`${this.apiURL}/deleteGrapevine/${id}`, {
+                params: { id },
+                observe: 'response',
+            })
+            .pipe(
+                map((response: any) => {
+                    const user = response.body as User;
+                    this.authService.userSubject.next(user);
+                    return user;
+                }),
+                catchError(err => {
+                    console.error(err);
+                    throw new Error('Unable to delete grape');
                 }),
             );
     }

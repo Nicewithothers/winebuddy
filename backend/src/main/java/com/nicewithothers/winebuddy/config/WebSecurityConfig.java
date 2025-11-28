@@ -4,7 +4,6 @@ import com.nicewithothers.winebuddy.filter.JwtAuthenticationFilter;
 import com.nicewithothers.winebuddy.service.UserService;
 import com.nicewithothers.winebuddy.utility.JwtUtility;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,12 +27,6 @@ import java.util.List;
 public class WebSecurityConfig {
     private final UserService userService;
     private final JwtUtility jwtUtility;
-    private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -48,6 +40,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/files/**").permitAll()
                         .requestMatchers("/api/vineyard/**").permitAll()
+                        .requestMatchers("/api/cellar/**").permitAll()
+                        .requestMatchers("/api/barrel/**").permitAll()
+                        .requestMatchers("/api/grapevine/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/profiles/**").permitAll()
                         .anyRequest()
                         .authenticated())

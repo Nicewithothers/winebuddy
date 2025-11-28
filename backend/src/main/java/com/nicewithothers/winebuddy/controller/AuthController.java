@@ -6,11 +6,11 @@ import com.nicewithothers.winebuddy.model.dto.user.AuthResponse;
 import com.nicewithothers.winebuddy.model.dto.user.LoginRequest;
 import com.nicewithothers.winebuddy.model.dto.user.RegisterRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
+import com.nicewithothers.winebuddy.service.TokenService;
 import com.nicewithothers.winebuddy.service.UserService;
 import com.nicewithothers.winebuddy.utility.JwtUtility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +28,7 @@ public class AuthController {
     private final UserService userService;
     private final JwtUtility jwtUtility;
     private final UserMapper userMapper;
+    private final TokenService tokenService;
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -55,14 +56,27 @@ public class AuthController {
     }
 
     @GetMapping("/getUser")
-    public ResponseEntity<UserDto> getUser(@AuthenticationPrincipal User user) {
-        try {
-            if (user != null) {
-                return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
-            }
-            return null;
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<AuthResponse> getUser(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.OK);
         }
+        try {
+            String token = tokenService.getOrGenerateNewToken(user);
+            AuthResponse authResponse = AuthResponse.builder()
+                    .user(userMapper.toUserDto(user))
+                    .token(token)
+                    .build();
+            return new ResponseEntity<>(authResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal User user) {
+        if (user != null) {
+            tokenService.invalidateToken(user);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

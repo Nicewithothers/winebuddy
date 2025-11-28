@@ -49,18 +49,17 @@
                 <tr hlmTr>
                     <th hlmTh>Length</th>
                     <th hlmTh>Created</th>
-                    @if (!inputGrapevine.grape) {
-                        <th hlmTh>Action</th>
-                    }
+                    <th hlmTh>Action</th>
                 </tr>
             </thead>
             <tbody hlmTBody>
                 @if (user.vineyard?.grapevines && user.vineyard!.grapevines!.length > 0) {
                     <tr hlmTr>
                         <td hlmTd>{{ inputGrapevine.length | number: '1.0-1' }} km</td>
-                        <td hlmTd>{{ inputGrapevine.created | date }}</td>
-                        @if (!inputGrapevine.grape) {
-                            <td hlmTd>
+                        <td hlmTd>{{ inputGrapevine.created | datetransform }}</td>
+
+                        <td hlmTd>
+                            @if (!inputGrapevine.grape) {
                                 <hlm-dialog>
                                     <button
                                         hlmBtn
@@ -134,8 +133,55 @@
                                         </form>
                                     </hlm-dialog-content>
                                 </hlm-dialog>
-                            </td>
-                        }
+                            } @else {
+                                @if (!inputGrapevine.grape.isMature) {
+                                    <button
+                                        hlmBtn
+                                        variant="ghost"
+                                        class="cursor-pointer"
+                                        [brnAlertDialogTriggerFor]="deleteDialog"
+                                    >
+                                        <ng-icon hlm size="sm" name="lucideX" />
+                                    </button>
+                                    <hlm-alert-dialog #deleteDialog>
+                                        <hlm-alert-dialog-content *brnAlertDialogContent="let ctx">
+                                            <hlm-alert-dialog-header>
+                                                <h3 hlmAlertDialogTitle>Are you sure?</h3>
+                                                <p hlmAlertDialogDescription>
+                                                    If you remove, all of your progress will be
+                                                    gone!
+                                                </p>
+                                            </hlm-alert-dialog-header>
+                                            <hlm-alert-dialog-footer>
+                                                <button
+                                                    class="cursor-pointer"
+                                                    hlmAlertDialogCancel
+                                                    (click)="ctx.close()"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    class="cursor-pointer"
+                                                    hlmAlertDialogAction
+                                                    (click)="deleteGrapevine(inputGrapevine.id)"
+                                                >
+                                                    Continue
+                                                </button>
+                                            </hlm-alert-dialog-footer>
+                                        </hlm-alert-dialog-content>
+                                    </hlm-alert-dialog>
+                                } @else {
+                                    <button
+                                        hlmBtn
+                                        variant="outline"
+                                        class="cursor-pointer"
+                                        (click)="harvestGrapevine(inputGrapevine.id)"
+                                    >
+                                        <ng-icon hlm size="sm" name="lucideCheck" />
+                                    </button>
+                                }
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>

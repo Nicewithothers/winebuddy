@@ -12,53 +12,6 @@
 }
 
 :root {
-    --background: 0 0% 100%; /* #d9b99b */
-    --foreground: 158 16% 24%; /* #3e5e4e */
-    --card: 0 0% 100%; /* #d9b99b */
-    --card-foreground: 158 16% 24%; /* #3e5e4e */
-    --popover: 0 0% 100%; /* #d9b99b */
-    --popover-foreground: 158 16% 24%; /* #3e5e4e */
-    --primary: 151 23% 45%; /* #5a9178 */
-    --primary-foreground: 33 41% 76%; /* #d9b99b */
-    --secondary: 33 41% 86%; /* lighter #d9b99b */
-    --secondary-foreground: 158 16% 24%; /* #3e5e4e */
-    --muted: 33 41% 86%; /* light beige */
-    --muted-foreground: 158 10% 50%; /* desaturated green */
-    --accent: 33 41% 86%; /* light beige */
-    --accent-foreground: 158 16% 24%; /* #3e5e4e */
-    --destructive: 0 60% 50%; /* preserved red for visibility */
-    --destructive-foreground: 0 0% 98%;
-    --border: 33 41% 66%; /* slightly darker beige */
-    --input: 33 41% 66%;
-    --ring: 151 23% 45%; /* #5a9178 */
-    --radius: 0.5rem;
-    color-scheme: light;
-}
-
-.dark {
-    --background: 158 16% 24%; /* #3e5e4e */
-    --foreground: 33 41% 76%; /* #d9b99b */
-    --card: 158 16% 20%; /* slightly darker green */
-    --card-foreground: 33 41% 76%; /* #d9b99b */
-    --popover: 158 16% 20%;
-    --popover-foreground: 33 41% 76%;
-    --primary: 151 23% 45%; /* #5a9178 */
-    --primary-foreground: 33 41% 76%; /* #d9b99b */
-    --secondary: 158 16% 18%; /* very dark green */
-    --secondary-foreground: 33 41% 76%;
-    --muted: 158 16% 18%;
-    --muted-foreground: 33 41% 66%;
-    --accent: 33 41% 30%; /* mid-tone beige */
-    --accent-foreground: 33 41% 76%;
-    --destructive: 0 60% 40%;
-    --destructive-foreground: 33 41% 76%;
-    --border: 158 16% 18%;
-    --input: 158 16% 18%;
-    --ring: 151 23% 45%; /* #5a9178 */
-    color-scheme: dark;
-}
-
-:root {
     color-scheme: light;
 
     --background: oklch(100% 0 0); /* white */
@@ -78,6 +31,7 @@
     --destructive: oklch(55% 0.22 25); /* red */
     --destructive-foreground: oklch(98% 0 0);
     --border: oklch(75% 0.05 55); /* slightly darker beige */
+    --radius: 0.5rem;
     --input: oklch(75% 0.05 55);
     --ring: oklch(60% 0.08 165); /* #5a9178 */
 }
@@ -102,6 +56,7 @@
     --destructive: oklch(48% 0.2 25);
     --destructive-foreground: oklch(82% 0.05 55);
     --border: oklch(35% 0.04 165);
+    --radius: 0.5rem;
     --input: oklch(35% 0.04 165);
     --ring: oklch(60% 0.08 165); /* #5a9178 */
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, ComponentRef, OnInit, ViewContainerRef } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
@@ -18,8 +18,9 @@ import {
     geoJSON,
     latLng,
     LayerEvent,
-    Map,
+    Map as LeafletMap,
     MapOptions,
+    TileLayer,
     tileLayer,
 } from 'leaflet';
 import { AuthService } from '../../../shared/services/auth.service';
@@ -28,7 +29,7 @@ import { toast } from 'ngx-sonner';
 import { CustomcardComponent } from '../../../shared/components/customcard/customcard.component';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { GrapevineService } from '../../../shared/services/grapevine.service';
-import { lucideGrape, lucideMenu, lucideX } from '@ng-icons/lucide';
+import { lucideGrape, lucideMenu, lucideRefreshCcw, lucideX } from '@ng-icons/lucide';
 import { CustomtooltipComponent } from '../../../shared/components/customtooltip/customtooltip.component';
 
 @Component({
@@ -47,13 +48,13 @@ import { CustomtooltipComponent } from '../../../shared/components/customtooltip
         BrnMenuImports,
         HlmDialogImports,
     ],
-    providers: [provideIcons({ lucideGrape, lucideMenu, lucideX })],
+    providers: [provideIcons({ lucideGrape, lucideMenu, lucideX, lucideRefreshCcw })],
     templateUrl: './grapevine-dashboard.component.html',
     styleUrl: './grapevine-dashboard.component.css',
 })
 export class GrapevineDashboardComponent implements OnInit {
     user!: User;
-    map!: Map;
+    map!: LeafletMap;
     control!: Control.Draw;
     drawnGrapevine: FeatureGroup = new FeatureGroup();
     drawnGrapevineValidated: boolean = false;
@@ -82,7 +83,7 @@ export class GrapevineDashboardComponent implements OnInit {
         });
     }
 
-    onMapReady(map: Map) {
+    onMapReady(map: LeafletMap) {
         this.map = map;
         this.drawnGrapevine.addTo(map);
 
@@ -112,7 +113,6 @@ export class GrapevineDashboardComponent implements OnInit {
             const layer = event.layer as GeoJSON;
             this.drawnGrapevine.clearLayers();
             this.drawnGrapevine.addLayer(layer);
-            console.log(this.drawnGrapevine.toGeoJSON());
             this.validateGrapevineLayer(this.drawnGrapevine.toGeoJSON());
         });
 
@@ -215,7 +215,7 @@ export class GrapevineDashboardComponent implements OnInit {
                         layer.on('click', event => layer.openPopup(event.latlng));
 
                         // Tooltip
-                        let tooltip: any = null;
+                        let tooltip: ComponentRef<CustomtooltipComponent>;
                         let tooltipalt: HTMLElement | null = null;
 
                         layer.on('mouseover', event => {
@@ -231,7 +231,6 @@ export class GrapevineDashboardComponent implements OnInit {
                             layer.unbindTooltip();
                             if (tooltip) {
                                 tooltip.destroy();
-                                tooltip = null;
                             }
                             tooltipalt = null;
                         });
@@ -246,6 +245,19 @@ export class GrapevineDashboardComponent implements OnInit {
                 weight: 6,
             })
             .addTo(this.map);
+    }
+
+    refreshMap(): void {
+        this.map.eachLayer(layer => {
+            if (!(layer instanceof TileLayer)) {
+                this.map.removeLayer(layer);
+            }
+        });
+        this.cellarLayers.clearLayers();
+        this.grapevineLayers.clearLayers();
+
+        this.drawCellars();
+        this.drawGrapevines();
     }
 
     updateDrawControl(): void {
@@ -266,6 +278,7 @@ export class GrapevineDashboardComponent implements OnInit {
                 toast.success('Grapevine created successfully!', {
                     position: 'bottom-center',
                 });
+                this.closeDialog();
             } else {
                 toast.error('Grapevine creation failed!', {
                     position: 'bottom-center',
@@ -273,7 +286,6 @@ export class GrapevineDashboardComponent implements OnInit {
                 throw new Error();
             }
         });
-        this.dialogService.setClosedState();
     }
 
     deleteGrapevine(id: number): void {}

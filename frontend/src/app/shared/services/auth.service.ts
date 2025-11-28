@@ -63,32 +63,45 @@ export class AuthService {
             );
     }
 
-    logout(): void {
-        localStorage.clear();
-        this.userSubject.next(null);
-        this.router.navigate(['/']).then(() => {
-            toast.success('Logged out successfully!', {
-                position: 'bottom-center',
-            });
-        });
+    logout() {
+        const token = this.getToken();
+        return this.http
+            .post<void>(`${this.authPath}/logout`, token, {
+                observe: 'response',
+            })
+            .pipe(
+                tap({
+                    next: () => {
+                        localStorage.clear();
+                        this.userSubject.next(null);
+                    },
+                    error: err => {
+                        console.error(err);
+                    },
+                }),
+            );
     }
 
     initializeUser() {
         const token = this.getToken();
         return this.http
-            .get<User>(`${this.authPath}/getUser`, {
+            .get<AuthResponse>(`${this.authPath}/getUser`, {
                 observe: 'response',
             })
             .pipe(
-                tap({
-                    next: user => {
-                        if (token) {
-                            this.userSubject.next(user.body);
-                        } else {
-                            this.userSubject.next(null);
+                map(response => {
+                    if (token && response.ok) {
+                        const authResponse = response.body as AuthResponse;
+                        const responseToken = authResponse.token as string;
+                        const user = authResponse.user as User;
+                        if (token !== responseToken) {
+                            localStorage.removeItem('AuthToken');
+                            localStorage.setItem('AuthToken', responseToken);
                         }
-                    },
-                    error: () => this.userSubject.next(null),
+                        this.userSubject.next(user);
+                    } else {
+                        this.userSubject.next(null);
+                    }
                 }),
             );
     }

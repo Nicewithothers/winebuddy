@@ -1,67 +1,158 @@
 @if (this.authService.user$ | async; as user) {
     <section class="section-container">
-        <div class="flex flex-col justify-center items-center h-full">
-            <div hlmCard>
-                <div class="flex justify-center items-center" hlmCardHeader>
-                    <h1 hlmCardTitle>Profile of {{ user.username }}</h1>
-                </div>
-                <div class="flex flex-row justify-around items-center" hlmCardContent>
-                    <div class="flex flex-col basis-xl object-cover">
-                        <div class="flex flex-col">
-                            <hlm-avatar
-                                class="w-[64px] h-[64px] shrink-0 relative"
-                                (click)="openImageDialog()"
-                            >
-                                @if (selectedPreviewImage === null) {
-                                    <img
-                                        [ngSrc]="
-                                            user.profileURL
-                                                ? user.profileURL
-                                                : '/images/anonymous.png'
-                                        "
-                                        class="cursor-pointer"
-                                        alt="profile_picture"
-                                        hlmAvatarImage
-                                        fill
-                                        priority
+        <div class="flex w-full h-full">
+            <hlm-tabs tab="profile" class="w-full h-full">
+                <hlm-tabs-list class="grid w-1/2 grid-cols-2 mx-auto">
+                    <button hlmTabsTrigger="profile" class="cursor-pointer">Profile</button>
+                    <button hlmTabsTrigger="statistics" class="cursor-pointer">Statistics</button>
+                </hlm-tabs-list>
+                <div class="flex flex-col justify-center h-full">
+                    <div hlmTabsContent="profile" class="mx-auto w-1/2">
+                        <div hlmCard>
+                            <div class="flex justify-center items-center" hlmCardHeader>
+                                <h1 hlmCardTitle>Profile of {{ user.username }}</h1>
+                            </div>
+                            <div class="flex flex-row justify-around items-center" hlmCardContent>
+                                <div class="flex flex-col basis-xl object-cover">
+                                    <div class="flex flex-col justify-center gap-y-4">
+                                        <hlm-avatar
+                                            class="w-[92px] h-[92px] shrink-0 relative"
+                                            (click)="openImageDialog()"
+                                        >
+                                            @if (selectedPreviewImage === null) {
+                                                <img
+                                                    [ngSrc]="
+                                                        user.profileURL
+                                                            ? user.profileURL
+                                                            : '/images/anonymous.png'
+                                                    "
+                                                    class="cursor-pointer"
+                                                    alt="profile_picture"
+                                                    hlmAvatarImage
+                                                    fill
+                                                    priority
+                                                />
+                                            } @else {
+                                                <img
+                                                    [src]="selectedPreviewImage"
+                                                    class="cursor-pointer"
+                                                    alt="profile_picture"
+                                                    hlmAvatarImage
+                                                />
+                                            }
+                                        </hlm-avatar>
+                                        <div>
+                                            <button
+                                                class="cursor-pointer"
+                                                type="button"
+                                                (click)="uploadProfile()"
+                                                hlmBtn
+                                            >
+                                                Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input
+                                        id="picture"
+                                        type="file"
+                                        accept="image/*"
+                                        class="hidden"
+                                        (change)="onImageSelected($event)"
                                     />
-                                } @else {
-                                    <img
-                                        [src]="selectedPreviewImage"
-                                        class="cursor-pointer"
-                                        alt="profile_picture"
-                                        hlmAvatarImage
-                                    />
-                                }
-                            </hlm-avatar>
+                                </div>
+                                <div class="flex flex-col items-center gap-6">
+                                    <div>
+                                        <p hlmP>Email: {{ user.email }}</p>
+                                        <p hlmP>Has vineyard: {{ user.vineyard ? 'Yes' : 'No' }}</p>
+                                        <p hlmP>Created: {{ user.created | datetransform }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <input
-                            id="picture"
-                            type="file"
-                            accept="image/*"
-                            class="hidden"
-                            (change)="onImageSelected($event)"
-                        />
                     </div>
-                    <div class="flex flex-col items-center gap-6">
-                        <div>
-                            <p>Email: {{ user.email }}</p>
-                            <p>sdadadsadsa</p>
-                            <p>sdadadsadsa</p>
-                        </div>
-                        <div>
-                            <button
-                                class="cursor-pointer"
-                                type="button"
-                                (click)="uploadProfile()"
-                                hlmBtn
-                            >
-                                Upload
-                            </button>
+                    <div hlmTabsContent="statistics" class="flex flex-col items-center">
+                        <div
+                            class="flex flex-row flex-wrap justify-between items-center gap-12 max-w-[1200px] [&>div]:w-[300px] [&>div]:h-[300px]"
+                        >
+                            @if (user.vineyard?.grapevines) {
+                                <div>
+                                    <canvas
+                                        baseChart
+                                        type="pie"
+                                        [data]="grapevinePieData"
+                                        [options]="grapevinePieOptions"
+                                    ></canvas>
+                                </div>
+                            } @else {
+                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
+                            }
+                            @if (user.vineyard?.cellars) {
+                                <div>
+                                    <canvas
+                                        baseChart
+                                        type="bar"
+                                        [data]="cellarBarData"
+                                        [options]="cellarBarOptions"
+                                    ></canvas>
+                                </div>
+                            } @else {
+                                <h4 hlmH4>Create at least one cellar for a chart.</h4>
+                            }
+                            @if (user.vineyard?.grapevines) {
+                                <div>
+                                    <canvas
+                                        baseChart
+                                        type="pie"
+                                        [data]="grapevinePieData"
+                                        [options]="grapevinePieOptions"
+                                    ></canvas>
+                                </div>
+                            } @else {
+                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
+                            }
+                            @if (user.vineyard?.grapevines) {
+                                <div>
+                                    <canvas
+                                        baseChart
+                                        type="pie"
+                                        [data]="grapevinePieData"
+                                        [options]="grapevinePieOptions"
+                                    ></canvas>
+                                </div>
+                            } @else {
+                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
+                            }
+                            @if (
+                                user.vineyard?.grapevines?.length &&
+                                user.vineyard!.grapevines!.length > 0
+                            ) {
+                                <div>
+                                    <canvas
+                                        baseChart
+                                        type="pie"
+                                        [data]="grapevinePieData"
+                                        [options]="grapevinePieOptions"
+                                    ></canvas>
+                                </div>
+                            } @else {
+                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
+                            }
+                            @if (user.vineyard?.grapevines) {
+                                <div>
+                                    <canvas
+                                        baseChart
+                                        type="pie"
+                                        [data]="grapevinePieData"
+                                        [options]="grapevinePieOptions"
+                                    ></canvas>
+                                </div>
+                            } @else {
+                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
+                            }
                         </div>
                     </div>
                 </div>
-            </div>
+            </hlm-tabs>
         </div>
     </section>
 }

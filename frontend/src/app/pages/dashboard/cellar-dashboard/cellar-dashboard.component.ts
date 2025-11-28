@@ -127,7 +127,6 @@ export class CellarDashboardComponent implements OnInit {
             const layer = event.layer as GeoJSON;
             this.drawnLayer.clearLayers();
             this.drawnLayer.addLayer(layer);
-            console.log(this.drawnLayer.toGeoJSON());
             this.validateCellarLayer(this.drawnLayer.toGeoJSON());
         });
 

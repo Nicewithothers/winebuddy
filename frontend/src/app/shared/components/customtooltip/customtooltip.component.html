@@ -1,5 +1,5 @@
 <table hlmTable>
-    <caption hlmCaption>
+    <caption hlmCaption *ngIf="inputGrapevine?.grape">
         Details of grapevine's grape
     </caption>
     @if (inputGrapevine && inputGrapevine.grape) {
@@ -13,9 +13,9 @@
         </thead>
         <tbody hlmTBody>
             <tr hlmTr>
-                <td hlmTd>{{ inputGrapevine.grape!.grapeType }} km</td>
+                <td hlmTd>{{ inputGrapevine.grape!.grapeType | enum: GrapeType }}</td>
                 <td hlmTd>{{ inputGrapevine.grape!.grapeSweetness }}</td>
-                <td hlmTd>{{ inputGrapevine.grape!.grapeColor }}</td>
+                <td hlmTd>{{ inputGrapevine.grape!.grapeColor | enum: GrapeColor }}</td>
                 <td hlmTd>{{ this.timeRemaining }}</td>
             </tr>
         </tbody>
