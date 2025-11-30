@@ -14,7 +14,7 @@ import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { lucideCheck, lucideGrape, lucideX } from '@ng-icons/lucide';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { grapevineForm } from '../../forms/grapevine.form';
+import { grapevineForm } from '../../forms/grapevine/grapevine.form';
 import { HlmFormField } from '@spartan-ng/helm/form-field';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { grapeTypes } from '../../models/enums/grape/GrapeType';
@@ -23,6 +23,8 @@ import { toast } from 'ngx-sonner';
 import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 import { BrnAlertDialogContent, BrnAlertDialogTrigger } from '@spartan-ng/brain/alert-dialog';
+import { grapevineHarvestForm } from '../../forms/grapevine/grapevine-harvest.form';
+import { GrapevineHarvestRequest } from '../../models/requests/grapevine/GrapevineHarvestRequest';
 
 @Component({
     selector: 'app-cellarcard',
@@ -56,6 +58,8 @@ export class CustomcardComponent {
     @Input() inputGrapevine!: Grapevine | null;
 
     grapevineForm: FormGroup = grapevineForm();
+    grapevineHarvestForm: FormGroup = grapevineHarvestForm();
+    selectedCellarForHarvest: Cellar | null = null;
     protected readonly grapeTypes = grapeTypes;
 
     constructor(
@@ -97,9 +101,35 @@ export class CustomcardComponent {
         });
     }
 
-    harvestGrapevine(id: number): void {}
+    harvestGrapevine(id: number, grapeType: string): void {
+        const harvestGrapevineRequest: GrapevineHarvestRequest = {
+            grapeType: grapeType,
+            cellarId: this.selectedCellarForHarvest!.id,
+        };
+        console.log(harvestGrapevineRequest);
+        this.grapevineService.harvestGrapevine(id, harvestGrapevineRequest).subscribe(user => {
+            if (user) {
+                toast.success('Grapevine harvested successfully!', {
+                    position: 'bottom-center',
+                });
+            } else {
+                toast.error('Grapevine harvest failed!', {
+                    position: 'bottom-center',
+                });
+            }
+        });
+    }
 
-    checkFields(): boolean {
+    checkGrapevineFields(): boolean {
         return !this.grapevineForm.valid;
+    }
+
+    checkGrapevineHarvestFields(): boolean {
+        return !this.grapevineHarvestForm.valid && this.selectedCellarForHarvest === null;
+    }
+
+    handleCurrentCellar(newCellar: Cellar): void {
+        this.selectedCellarForHarvest = newCellar;
+        console.log(this.selectedCellarForHarvest);
     }
 }

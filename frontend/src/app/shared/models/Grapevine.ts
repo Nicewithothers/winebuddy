@@ -5,6 +5,7 @@ export interface Grapevine {
     geometry: any;
     length: number;
     created: string;
+    isMature: boolean;
     grapeDueDate: string;
     grape: Grape | null;
 }

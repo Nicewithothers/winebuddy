@@ -3,6 +3,7 @@ package com.nicewithothers.winebuddy.controller;
 import com.nicewithothers.winebuddy.mapper.UserMapper;
 import com.nicewithothers.winebuddy.model.Grapevine;
 import com.nicewithothers.winebuddy.model.User;
+import com.nicewithothers.winebuddy.model.dto.grapevine.GrapevineHarvestRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
 import com.nicewithothers.winebuddy.repository.GrapevineRepository;
 import com.nicewithothers.winebuddy.repository.UserRepository;
@@ -83,8 +84,10 @@ public class GrapevineController {
 
     @PostMapping("/harvestGrapevine/{id}")
     public ResponseEntity<UserDto> harvestGrapevine(@PathVariable Long id,
-                                                    @AuthenticationPrincipal User user) {
-        grapevineService.harvestGrapevine(id);
-        return null;
+                                                    @AuthenticationPrincipal User user,
+                                                    @RequestBody GrapevineHarvestRequest harvestRequest) throws Exception {
+        grapevineService.harvestGrapevine(id, harvestRequest);
+        User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+        return new ResponseEntity<>(userMapper.toUserDto(updatedUser), HttpStatus.OK);
     }
 }

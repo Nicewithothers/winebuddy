@@ -7,7 +7,6 @@ export interface Grape {
     grapeSweetness: number;
     grapeColor: string;
     grapeGrowthTime: number;
-    isMature: boolean;
     barrels: Barrel[] | null;
     grapevines: Grapevine[] | null;
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AsyncPipe, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
     lucideCircleUserRound,
@@ -42,12 +42,17 @@ import { toast } from 'ngx-sonner';
     standalone: true,
 })
 export class HeaderComponent {
-    constructor(protected authService: AuthService) {}
+    constructor(
+        protected authService: AuthService,
+        private router: Router,
+    ) {}
 
     signOut(): void {
         this.authService.logout().subscribe(() => {
-            toast.success('Logged out successfully!', {
-                position: 'bottom-center',
+            this.router.navigate(['/']).then(() => {
+                toast.success('Logged out successfully!', {
+                    position: 'bottom-center',
+                });
             });
         });
     }

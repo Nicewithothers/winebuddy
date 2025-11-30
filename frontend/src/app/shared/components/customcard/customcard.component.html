@@ -57,9 +57,114 @@
                     <tr hlmTr>
                         <td hlmTd>{{ inputGrapevine.length | number: '1.0-1' }} km</td>
                         <td hlmTd>{{ inputGrapevine.created | datetransform }}</td>
+                        @if (!inputGrapevine.grape) {
+                            <hlm-dialog>
+                                <button
+                                    hlmBtn
+                                    variant="ghost"
+                                    class="cursor-pointer"
+                                    brnDialogTrigger
+                                >
+                                    <ng-icon hlm size="sm" name="lucideGrape" />
+                                </button>
 
-                        <td hlmTd>
-                            @if (!inputGrapevine.grape) {
+                                <hlm-dialog-content *brnDialogContent>
+                                    <hlm-dialog-header>
+                                        <h4 hlmDialogTitle>Add grape to grapevine</h4>
+                                        <p hlmDialogDescription>
+                                            Select which grape you want to plant.
+                                        </p>
+                                    </hlm-dialog-header>
+                                    <form
+                                        [formGroup]="grapevineForm"
+                                        (ngSubmit)="addGrapeToGrapevine(inputGrapevine.id)"
+                                    >
+                                        <div class="flex flex-col items-center gap-y-2">
+                                            <hlm-form-field>
+                                                <brn-select
+                                                    class="inline-block"
+                                                    placeholder="Select a grape"
+                                                    formControlName="grapeType"
+                                                >
+                                                    <hlm-select-trigger class="w-64">
+                                                        <hlm-select-value />
+                                                    </hlm-select-trigger>
+                                                    <hlm-select-content>
+                                                        <hlm-select-label
+                                                            >Grape types</hlm-select-label
+                                                        >
+                                                        @for (
+                                                            grapeType of grapeTypes;
+                                                            track grapeType
+                                                        ) {
+                                                            <hlm-option [value]="grapeType.value">{{
+                                                                grapeType.label
+                                                            }}</hlm-option>
+                                                        }
+                                                    </hlm-select-content>
+                                                </brn-select>
+                                            </hlm-form-field>
+                                            <div class="flex gap-6">
+                                                <button
+                                                    variant="destructive"
+                                                    hlmBtn
+                                                    type="reset"
+                                                    class="cursor-pointer"
+                                                    brnDialogClose
+                                                >
+                                                    Close
+                                                </button>
+                                                <button
+                                                    variant="default"
+                                                    hlmBtn
+                                                    type="submit"
+                                                    class="cursor-pointer"
+                                                    [disabled]="this.checkGrapevineFields()"
+                                                >
+                                                    Create
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </hlm-dialog-content>
+                            </hlm-dialog>
+                        } @else {
+                            @if (!inputGrapevine.isMature) {
+                                <button
+                                    hlmBtn
+                                    variant="ghost"
+                                    class="cursor-pointer"
+                                    [brnAlertDialogTriggerFor]="deleteDialog"
+                                >
+                                    <ng-icon hlm size="sm" name="lucideX" />
+                                </button>
+                                <hlm-alert-dialog #deleteDialog>
+                                    <hlm-alert-dialog-content *brnAlertDialogContent="let ctx">
+                                        <hlm-alert-dialog-header>
+                                            <h3 hlmAlertDialogTitle>Are you sure?</h3>
+                                            <p hlmAlertDialogDescription>
+                                                If you remove, all of your progress will be gone!
+                                            </p>
+                                        </hlm-alert-dialog-header>
+                                        <hlm-alert-dialog-footer>
+                                            <button
+                                                class="cursor-pointer"
+                                                hlmAlertDialogCancel
+                                                (click)="ctx.close()"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                class="cursor-pointer"
+                                                hlmAlertDialogAction
+                                                (click)="deleteGrapevine(inputGrapevine.id)"
+                                            >
+                                                Continue
+                                            </button>
+                                        </hlm-alert-dialog-footer>
+                                    </hlm-alert-dialog-content>
+                                </hlm-alert-dialog>
+                            } @else {
                                 <hlm-dialog>
                                     <button
                                         hlmBtn
@@ -67,44 +172,47 @@
                                         class="cursor-pointer"
                                         brnDialogTrigger
                                     >
-                                        <ng-icon hlm size="sm" name="lucideGrape" />
+                                        <ng-icon hlm size="sm" name="lucideCheck" />
                                     </button>
 
                                     <hlm-dialog-content *brnDialogContent>
                                         <hlm-dialog-header>
-                                            <h4 hlmDialogTitle>Add grape to grapevine</h4>
+                                            <h4 hlmDialogTitle>Harvest grapevine</h4>
                                             <p hlmDialogDescription>
-                                                Select which grape you want to plant.
+                                                Select which cellar you want to harvest.
                                             </p>
                                         </hlm-dialog-header>
                                         <form
-                                            [formGroup]="grapevineForm"
-                                            (ngSubmit)="addGrapeToGrapevine(inputGrapevine.id)"
+                                            [formGroup]="grapevineHarvestForm"
+                                            (ngSubmit)="
+                                                harvestGrapevine(
+                                                    inputGrapevine.id,
+                                                    inputGrapevine.grape.grapeType
+                                                )
+                                            "
                                         >
                                             <div class="flex flex-col items-center gap-y-2">
                                                 <hlm-form-field>
                                                     <brn-select
                                                         class="inline-block"
-                                                        placeholder="Select a grape"
-                                                        formControlName="grapeType"
+                                                        placeholder="Select a cellar"
+                                                        formControlName="cellarName"
+                                                        (valueChange)="handleCurrentCellar($event)"
                                                     >
                                                         <hlm-select-trigger class="w-64">
                                                             <hlm-select-value />
                                                         </hlm-select-trigger>
                                                         <hlm-select-content>
                                                             <hlm-select-label
-                                                                >Grape types</hlm-select-label
+                                                                >Cellars</hlm-select-label
                                                             >
                                                             @for (
-                                                                grapeType of grapeTypes;
-                                                                track grapeType
+                                                                cellar of user.vineyard!.cellars;
+                                                                track cellar
                                                             ) {
-                                                                <hlm-option
-                                                                    [value]="grapeType.value"
-                                                                    >{{
-                                                                        grapeType.label
-                                                                    }}</hlm-option
-                                                                >
+                                                                <hlm-option [value]="cellar">{{
+                                                                    cellar.name
+                                                                }}</hlm-option>
                                                             }
                                                         </hlm-select-content>
                                                     </brn-select>
@@ -124,7 +232,9 @@
                                                         hlmBtn
                                                         type="submit"
                                                         class="cursor-pointer"
-                                                        [disabled]="this.checkFields()"
+                                                        [disabled]="
+                                                            this.checkGrapevineHarvestFields()
+                                                        "
                                                     >
                                                         Create
                                                     </button>
@@ -133,55 +243,8 @@
                                         </form>
                                     </hlm-dialog-content>
                                 </hlm-dialog>
-                            } @else {
-                                @if (!inputGrapevine.grape.isMature) {
-                                    <button
-                                        hlmBtn
-                                        variant="ghost"
-                                        class="cursor-pointer"
-                                        [brnAlertDialogTriggerFor]="deleteDialog"
-                                    >
-                                        <ng-icon hlm size="sm" name="lucideX" />
-                                    </button>
-                                    <hlm-alert-dialog #deleteDialog>
-                                        <hlm-alert-dialog-content *brnAlertDialogContent="let ctx">
-                                            <hlm-alert-dialog-header>
-                                                <h3 hlmAlertDialogTitle>Are you sure?</h3>
-                                                <p hlmAlertDialogDescription>
-                                                    If you remove, all of your progress will be
-                                                    gone!
-                                                </p>
-                                            </hlm-alert-dialog-header>
-                                            <hlm-alert-dialog-footer>
-                                                <button
-                                                    class="cursor-pointer"
-                                                    hlmAlertDialogCancel
-                                                    (click)="ctx.close()"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button
-                                                    class="cursor-pointer"
-                                                    hlmAlertDialogAction
-                                                    (click)="deleteGrapevine(inputGrapevine.id)"
-                                                >
-                                                    Continue
-                                                </button>
-                                            </hlm-alert-dialog-footer>
-                                        </hlm-alert-dialog-content>
-                                    </hlm-alert-dialog>
-                                } @else {
-                                    <button
-                                        hlmBtn
-                                        variant="outline"
-                                        class="cursor-pointer"
-                                        (click)="harvestGrapevine(inputGrapevine.id)"
-                                    >
-                                        <ng-icon hlm size="sm" name="lucideCheck" />
-                                    </button>
-                                }
                             }
-                        </td>
+                        }
                     </tr>
                 }
             </tbody>

@@ -41,7 +41,9 @@ public class CellarController {
         try {
             Cellar cellar = cellarService.createCellar(user.getVineyard(), cellarRequest);
             double area = cellarService.calculateArea(cellar);
+            int capacity = cellarService.calculateCapacity(area);
             cellar.setArea(area);
+            cellar.setCapacity(capacity);
             user.getVineyard().getCellars().add(cellar);
             vineyardRepository.save(user.getVineyard());
             return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);

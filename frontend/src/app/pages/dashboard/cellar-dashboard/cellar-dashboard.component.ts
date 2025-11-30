@@ -240,7 +240,6 @@ export class CellarDashboardComponent implements OnInit {
     addCellar(): void {
         const cellarRequest: CellarRequest = {
             name: this.cellarForm.get('name')?.value,
-            capacity: this.cellarForm.get('capacity')?.value,
             createdPolygon: this.drawnLayer.toGeoJSON(),
         };
         this.cellarService.createCellar(cellarRequest).subscribe(user => {

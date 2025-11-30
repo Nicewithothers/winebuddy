@@ -28,7 +28,7 @@ public class CellarService {
                 .name(cellarRequest.getName())
                 .mapArea(polygon)
                 .area(0.0)
-                .capacity(cellarRequest.getCapacity())
+                .capacity(0)
                 .owningDate(Instant.now())
                 .vineyard(vineyardRepository.getReferenceById(vineyard.getId()))
                 .barrels(Collections.emptyList())
@@ -37,7 +37,11 @@ public class CellarService {
     }
 
     public Double calculateArea(Cellar cellar) {
-        return cellarRepository.getAreaMeters(cellar.getMapArea(), cellar.getId())/100000;
+        return cellarRepository.getAreaMeters(cellar.getMapArea(), cellar.getId())/100000; // m² -> km²
+    }
+
+    public Integer calculateCapacity(double calculatedArea) {
+        return (int) Math.ceil(calculatedArea / 3);
     }
 
     public void deleteVineyardCellar(Long id, Vineyard vineyard) {

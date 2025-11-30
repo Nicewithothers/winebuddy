@@ -39,7 +39,7 @@ public class Grapevine {
     private Double length;
 
     @Column(nullable = false)
-    private boolean isMature;
+    private Boolean isMature;
 
     @Column(nullable = false, updatable = false)
     private Instant created;

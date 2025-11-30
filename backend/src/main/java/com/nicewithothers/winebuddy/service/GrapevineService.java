@@ -1,9 +1,12 @@
 package com.nicewithothers.winebuddy.service;
 
+import com.nicewithothers.winebuddy.model.Barrel;
 import com.nicewithothers.winebuddy.model.Grape;
 import com.nicewithothers.winebuddy.model.Grapevine;
 import com.nicewithothers.winebuddy.model.Vineyard;
+import com.nicewithothers.winebuddy.model.dto.grapevine.GrapevineHarvestRequest;
 import com.nicewithothers.winebuddy.model.enums.grape.GrapeType;
+import com.nicewithothers.winebuddy.repository.BarrelRepository;
 import com.nicewithothers.winebuddy.repository.GrapeRepository;
 import com.nicewithothers.winebuddy.repository.GrapevineRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
@@ -29,6 +32,8 @@ public class GrapevineService {
     private final ShapeUtility shapeUtility;
     private final VineyardRepository vineyardRepository;
     private final GrapeRepository grapeRepository;
+    private final BarrelService barrelService;
+    private final BarrelRepository barrelRepository;
 
     public Grapevine createGrapevine(Vineyard vineyard, LinkedHashMap<String, Object> createdLinestring) throws ParseException {
         LineString lineString = shapeUtility.createLineString(createdLinestring);
@@ -79,28 +84,61 @@ public class GrapevineService {
 
         for (Grapevine grapevine : validGrapevines) {
             if (now.isAfter(grapevine.getGrapeDueDate())) {
-                grapevine.setMature(true);
+                grapevine.setIsMature(true);
                 grapevineRepository.save(grapevine);
             }
         }
         log.debug("Grapevine maturity check completed with {} changes.", validGrapevines.size());
     }
 
-    public void harvestGrapevine(Long grapevineId) {
+    public Integer calculateGrapeVolume(Grapevine grapevine) {
+        return (int) Math.ceil(((grapevine.getLength() * 1000) / 2) * 5); // km -> m, vines 2 meter spacing, 5 kg per vine.
+    }
+
+    public void harvestGrapevine(Long grapevineId, GrapevineHarvestRequest harvestRequest) throws Exception {
         Grapevine grapevine = grapevineRepository.findById(grapevineId).orElseThrow(() -> new RuntimeException("Grapevine not found"));
+        List<Barrel> fillableBarrels = barrelService.getEligibleBarrels(harvestRequest.getCellarId(), harvestRequest.getGrapeType());
+        int fillableBarrelVolume = fillableBarrels.stream()
+                .mapToInt(barrel -> barrel.getMaxVolume() - barrel.getVolume())
+                .sum();
+        int harvestedGrapeVolume = calculateGrapeVolume(grapevine);
+        if (harvestedGrapeVolume > fillableBarrelVolume) {
+            throw new Exception("Not enough space in barrels to harvest the grapes.");
+        }
+
+        while (harvestedGrapeVolume > 0) {
+            for (Barrel barrel : fillableBarrels) {
+                int availableVolume = barrel.getMaxVolume() - barrel.getVolume();
+                if (availableVolume > 0) {
+                    if (harvestedGrapeVolume <= availableVolume) {
+                        barrel.setVolume(barrel.getVolume() + harvestedGrapeVolume);
+                        harvestedGrapeVolume = 0;
+                    } else {
+                        barrel.setVolume(barrel.getMaxVolume());
+                        harvestedGrapeVolume -= availableVolume;
+                    }
+                    barrel.setGrape(grapevine.getGrape());
+                    barrelRepository.save(barrel);
+                }
+                if (harvestedGrapeVolume == 0) {
+                    break;
+                }
+            }
+        }
+
         grapevine.setGrape(null);
         grapevine.setGrapeDueDate(null);
-        grapevine.setMature(false);
+        grapevine.setIsMature(false);
         grapevineRepository.save(grapevine);
     }
 
-    public void harvestGrapevinesForUser(Long vineyardId) {
+    public void harvestGrapevinesForUser(Long vineyardId, GrapevineHarvestRequest harvestRequest) throws Exception {
         List<Grapevine> userGrapevines = grapevineRepository.findAll().stream()
-                .filter(gv -> gv.getVineyard().getId().equals(vineyardId) && gv.getGrape() != null && gv.isMature())
+                .filter(gv -> gv.getVineyard().getId().equals(vineyardId) && gv.getGrape() != null && gv.getIsMature())
                 .toList();
 
         for (Grapevine grapevine : userGrapevines) {
-            harvestGrapevine(grapevine.getId());
+            harvestGrapevine(grapevine.getId(), harvestRequest);
         }
     }
 }

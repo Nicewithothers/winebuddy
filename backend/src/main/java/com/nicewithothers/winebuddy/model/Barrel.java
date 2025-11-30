@@ -1,6 +1,7 @@
 package com.nicewithothers.winebuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.nicewithothers.winebuddy.model.enums.barrel.BarrelSize;
 import com.nicewithothers.winebuddy.model.enums.barrel.BarrelType;
 import jakarta.persistence.Column;
@@ -51,7 +52,7 @@ public class Barrel {
     private Instant owningDate;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonIgnoreProperties(value = {"barrels", "wines", "grapevines"})
     @JoinColumn(name = "grape_id", referencedColumnName = "id")
     private Grape grape;
 

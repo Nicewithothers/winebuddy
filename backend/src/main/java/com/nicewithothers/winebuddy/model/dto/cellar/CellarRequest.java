@@ -9,6 +9,5 @@ import java.util.LinkedHashMap;
 @Builder
 public class CellarRequest {
     private String name;
-    private Integer capacity;
     private LinkedHashMap<String, Object> createdPolygon;
 }

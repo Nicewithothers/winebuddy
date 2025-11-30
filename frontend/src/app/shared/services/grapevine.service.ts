@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { catchError, map, Observable, Subject } from 'rxjs';
 import { User } from '../models/User';
 import { GeoJSON } from 'leaflet';
+import { GrapevineHarvestRequest } from '../models/requests/grapevine/GrapevineHarvestRequest';
 
 @Injectable({
     providedIn: 'root',
@@ -83,6 +84,25 @@ export class GrapevineService {
                 catchError(err => {
                     console.error(err);
                     throw new Error('Unable to delete grape');
+                }),
+            );
+    }
+
+    harvestGrapevine(id: number, harvestRequest: GrapevineHarvestRequest) {
+        return this.http
+            .post<User>(`${this.apiURL}/harvestGrapevine/${id}`, harvestRequest, {
+                observe: 'response',
+                params: { id },
+            })
+            .pipe(
+                map(response => {
+                    const user = response.body as User;
+                    this.authService.userSubject.next(user);
+                    return user;
+                }),
+                catchError(err => {
+                    console.error(err);
+                    throw new Error('Unable to harvest grapevine');
                 }),
             );
     }

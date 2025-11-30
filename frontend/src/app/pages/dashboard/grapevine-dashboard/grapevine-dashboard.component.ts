@@ -17,6 +17,7 @@ import {
     GeoJSON,
     geoJSON,
     latLng,
+    Layer,
     LayerEvent,
     Map as LeafletMap,
     MapOptions,
@@ -31,6 +32,7 @@ import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { GrapevineService } from '../../../shared/services/grapevine.service';
 import { lucideGrape, lucideMenu, lucideRefreshCcw, lucideX } from '@ng-icons/lucide';
 import { CustomtooltipComponent } from '../../../shared/components/customtooltip/customtooltip.component';
+import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 
 @Component({
     selector: 'app-grapevine-dashboard',
@@ -47,6 +49,7 @@ import { CustomtooltipComponent } from '../../../shared/components/customtooltip
         ReactiveFormsModule,
         BrnMenuImports,
         HlmDialogImports,
+        HlmSpinnerImports,
     ],
     providers: [provideIcons({ lucideGrape, lucideMenu, lucideX, lucideRefreshCcw })],
     templateUrl: './grapevine-dashboard.component.html',
