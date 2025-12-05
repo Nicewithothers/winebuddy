@@ -1,6 +1,6 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { NgIcon, provideIcons } from '@ng-icons/core';
+import { NG_ICON_DIRECTIVES, provideIcons } from '@ng-icons/core';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { LeafletDrawModule } from '@bluehalo/ngx-leaflet-draw';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -36,18 +36,25 @@ import {
     FlexRenderDirective,
 } from '@tanstack/angular-table';
 import { Barrel } from '../../../shared/models/Barrel';
-import { BrnMenuImports } from '@spartan-ng/brain/menu';
-import { HlmMenuImports } from '@spartan-ng/helm/menu';
 import { EnumPipe } from '../../../shared/pipes/enum.pipe';
-import { max } from 'rxjs';
-import { Grape } from '../../../shared/models/Grape';
-import { GrapeType } from '../../../shared/models/enums/grape/GrapeType';
+import { GrapeType, grapeTypes } from '../../../shared/models/enums/grape/GrapeType';
+import { DialogService } from '../../../shared/services/dialog.service';
+import { HlmIconImports } from '@spartan-ng/helm/icon';
+import { BrnAlertDialogImports } from '@spartan-ng/brain/alert-dialog';
+import {
+    HlmAlertDialogActionButton,
+    HlmAlertDialogCancelButton,
+    HlmAlertDialogDescription,
+    HlmAlertDialogFooter,
+    HlmAlertDialogHeader,
+    HlmAlertDialogImports,
+    HlmAlertDialogTitle,
+} from '@spartan-ng/helm/alert-dialog';
 
 @Component({
     selector: 'app-barrel-dashboard',
     imports: [
         AsyncPipe,
-        NgIcon,
         LeafletModule,
         LeafletDrawModule,
         ReactiveFormsModule,
@@ -59,9 +66,18 @@ import { GrapeType } from '../../../shared/models/enums/grape/GrapeType';
         HlmDialogImports,
         HlmFormFieldImports,
         HlmTableImports,
-        BrnMenuImports,
-        HlmMenuImports,
         FlexRenderDirective,
+        NG_ICON_DIRECTIVES,
+        EnumPipe,
+        HlmIconImports,
+        BrnAlertDialogImports,
+        HlmAlertDialogActionButton,
+        HlmAlertDialogCancelButton,
+        HlmAlertDialogDescription,
+        HlmAlertDialogFooter,
+        HlmAlertDialogHeader,
+        HlmAlertDialogTitle,
+        HlmAlertDialogImports,
     ],
     providers: [provideIcons({ lucideTrash2, lucidePlus, lucideChevronDown })],
     templateUrl: './barrel-dashboard.component.html',
@@ -72,12 +88,15 @@ export class BarrelDashboardComponent implements OnInit {
     barrelForm: FormGroup = barrelForm();
     selectedCellar: Cellar | null = null;
     enumPipe: EnumPipe = new EnumPipe();
-    barrelTypes = barrelTypes;
-    barrelSizes = barrelSizes;
+    protected barrelTypes = barrelTypes;
+    protected barrelSizes = barrelSizes;
+    protected grapeTypes = grapeTypes;
+    protected readonly GrapeType = GrapeType;
 
     constructor(
         protected authService: AuthService,
         private barrelService: BarrelService,
+        private dialogService: DialogService,
     ) {}
 
     ngOnInit() {
@@ -97,8 +116,8 @@ export class BarrelDashboardComponent implements OnInit {
 
     private tabledata = signal<Barrel[]>([]);
 
-    protected _filterChanged(event: Event) {
-        this._table.getColumn('cellar')?.setFilterValue((event.target as HTMLInputElement).value);
+    protected _filterChanged(value: string) {
+        this._table.getColumn('grape')?.setFilterValue(value || undefined);
     }
 
     protected readonly _columns: ColumnDef<Barrel>[] = [
@@ -142,6 +161,7 @@ export class BarrelDashboardComponent implements OnInit {
         },
         {
             id: 'actions',
+            header: 'Actions',
             enableHiding: false,
         },
     ];
@@ -240,10 +260,12 @@ export class BarrelDashboardComponent implements OnInit {
         this.barrelService.createBarrel(barrelRequest).subscribe(user => {
             if (user) {
                 this.updateCurrentCellar(this.selectedCellar);
+                this.tabledata.set(this.selectedCellar?.barrels || []);
                 toast.success('Barrel creation successful!', {
                     position: 'bottom-center',
                     duration: 2000,
                 });
+                this.dialogService.setClosedState();
             } else {
                 toast.error('Barrel creation failed!', {
                     position: 'bottom-center',
@@ -262,8 +284,22 @@ export class BarrelDashboardComponent implements OnInit {
                 return;
             });
         }
-        return;
     }
 
-    deleteBarrel(id: number): void {}
+    deleteBarrel(id: number): void {
+        this.barrelService.deleteBarrel(id).subscribe(user => {
+            if (user) {
+                this.updateCurrentCellar(this.selectedCellar);
+                toast.success('Cellar deleted successfully!', {
+                    position: 'bottom-center',
+                });
+                this.dialogService.setClosedState();
+            } else {
+                toast.error('Cellar deletion failed!', {
+                    position: 'bottom-center',
+                });
+                throw new Error();
+            }
+        });
+    }
 }

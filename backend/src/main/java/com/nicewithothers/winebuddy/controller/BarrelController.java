@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,5 +44,11 @@ public class BarrelController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @DeleteMapping("/deleteBarrel/{id}")
+    public ResponseEntity<UserDto> deleteBarrel(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        barrelService.deleteCellarBarrel(id);
+        return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
     }
 }

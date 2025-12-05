@@ -17,7 +17,6 @@ import {
     GeoJSON,
     geoJSON,
     latLng,
-    Layer,
     LayerEvent,
     Map as LeafletMap,
     MapOptions,
@@ -32,7 +31,6 @@ import { HlmDialogImports } from '@spartan-ng/helm/dialog';
 import { GrapevineService } from '../../../shared/services/grapevine.service';
 import { lucideGrape, lucideMenu, lucideRefreshCcw, lucideX } from '@ng-icons/lucide';
 import { CustomtooltipComponent } from '../../../shared/components/customtooltip/customtooltip.component';
-import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 
 @Component({
     selector: 'app-grapevine-dashboard',
@@ -49,7 +47,6 @@ import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
         ReactiveFormsModule,
         BrnMenuImports,
         HlmDialogImports,
-        HlmSpinnerImports,
     ],
     providers: [provideIcons({ lucideGrape, lucideMenu, lucideX, lucideRefreshCcw })],
     templateUrl: './grapevine-dashboard.component.html',
@@ -59,6 +56,7 @@ export class GrapevineDashboardComponent implements OnInit {
     user!: User;
     map!: LeafletMap;
     control!: Control.Draw;
+    vineyardLayer: FeatureGroup = new FeatureGroup();
     drawnGrapevine: FeatureGroup = new FeatureGroup();
     drawnGrapevineValidated: boolean = false;
     cellarLayers: FeatureGroup = new FeatureGroup();
@@ -103,14 +101,18 @@ export class GrapevineDashboardComponent implements OnInit {
     }
 
     initMap() {
-        const vineyardLayer = geoJSON(this.user.vineyard!.mapArea);
-        vineyardLayer
+        if (this.vineyardLayer) {
+            this.map.removeLayer(this.vineyardLayer);
+        }
+
+        this.vineyardLayer = geoJSON(this.user.vineyard!.mapArea);
+        this.vineyardLayer
             .setStyle({
                 color: '#008515',
             })
             .addTo(this.map);
-        this.map.setMaxBounds(vineyardLayer.getBounds());
-        this.map.fitBounds(vineyardLayer.getBounds());
+        this.map.setMaxBounds(this.vineyardLayer.getBounds());
+        this.map.fitBounds(this.vineyardLayer.getBounds());
 
         this.map.on(Draw.Event.CREATED, (event: LayerEvent) => {
             const layer = event.layer as GeoJSON;
@@ -180,6 +182,8 @@ export class GrapevineDashboardComponent implements OnInit {
     }
 
     drawCellars(): void {
+        this.cellarLayers.clearLayers();
+
         this.user.vineyard!.cellars!.forEach(cellar => {
             this.cellarLayers.addLayer(
                 geoJSON(cellar.mapArea, {
@@ -204,6 +208,8 @@ export class GrapevineDashboardComponent implements OnInit {
     }
 
     drawGrapevines(): void {
+        this.grapevineLayers.clearLayers();
+
         this.user.vineyard!.grapevines!.forEach(grapevine => {
             this.grapevineLayers.addLayer(
                 geoJSON(grapevine.geometry, {
@@ -248,19 +254,6 @@ export class GrapevineDashboardComponent implements OnInit {
                 weight: 6,
             })
             .addTo(this.map);
-    }
-
-    refreshMap(): void {
-        this.map.eachLayer(layer => {
-            if (!(layer instanceof TileLayer)) {
-                this.map.removeLayer(layer);
-            }
-        });
-        this.cellarLayers.clearLayers();
-        this.grapevineLayers.clearLayers();
-
-        this.drawCellars();
-        this.drawGrapevines();
     }
 
     updateDrawControl(): void {

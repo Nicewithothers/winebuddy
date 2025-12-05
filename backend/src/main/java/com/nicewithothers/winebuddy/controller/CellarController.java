@@ -6,7 +6,6 @@ import com.nicewithothers.winebuddy.model.User;
 import com.nicewithothers.winebuddy.model.dto.cellar.CellarRequest;
 import com.nicewithothers.winebuddy.model.dto.user.UserDto;
 import com.nicewithothers.winebuddy.repository.CellarRepository;
-import com.nicewithothers.winebuddy.repository.UserRepository;
 import com.nicewithothers.winebuddy.repository.VineyardRepository;
 import com.nicewithothers.winebuddy.service.CellarService;
 import com.nicewithothers.winebuddy.utility.ShapeUtility;
@@ -32,7 +31,6 @@ public class CellarController {
     private final VineyardRepository vineyardRepository;
     private final CellarService cellarService;
     private final UserMapper userMapper;
-    private final UserRepository userRepository;
     private final ShapeUtility shapeUtility;
     private final CellarRepository cellarRepository;
 
@@ -41,9 +39,7 @@ public class CellarController {
         try {
             Cellar cellar = cellarService.createCellar(user.getVineyard(), cellarRequest);
             double area = cellarService.calculateArea(cellar);
-            int capacity = cellarService.calculateCapacity(area);
             cellar.setArea(area);
-            cellar.setCapacity(capacity);
             user.getVineyard().getCellars().add(cellar);
             vineyardRepository.save(user.getVineyard());
             return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);

@@ -37,4 +37,27 @@ export class BarrelService {
                 }),
             );
     }
+
+    deleteBarrel(id: number) {
+        return this.http
+            .delete(`${this.apiURL}/deleteBarrel/${id}`, {
+                params: { id },
+                observe: 'response',
+            })
+            .pipe(
+                map((response: any) => {
+                    if (response.ok && response.body) {
+                        const user = response.body as User;
+                        this.authService.userSubject.next(user);
+                        return user;
+                    } else {
+                        throw new Error('Error deleting Vineyard');
+                    }
+                }),
+                catchError(err => {
+                    console.error(err);
+                    throw new Error('Unable to delete Vineyard');
+                }),
+            );
+    }
 }

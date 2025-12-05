@@ -7,6 +7,7 @@ import {
     geoJSON,
     GeoJSON,
     latLng,
+    Layer,
     LayerEvent,
     Map,
     MapOptions,
@@ -69,6 +70,7 @@ export class CellarDashboardComponent implements OnInit {
     user!: User;
     map!: Map;
     control!: Control.Draw;
+    vineyardLayer: FeatureGroup = new FeatureGroup();
     drawnLayer: FeatureGroup = new FeatureGroup();
     drawnLayerValidated: boolean = false;
     cellarLayers: FeatureGroup = new FeatureGroup();
@@ -114,14 +116,18 @@ export class CellarDashboardComponent implements OnInit {
     }
 
     initMap() {
-        const vineyardLayer = geoJSON(this.user.vineyard!.mapArea);
-        vineyardLayer
+        if (this.vineyardLayer) {
+            this.map.removeLayer(this.vineyardLayer);
+        }
+
+        this.vineyardLayer = geoJSON(this.user.vineyard!.mapArea);
+        this.vineyardLayer
             .setStyle({
                 color: '#008515',
             })
             .addTo(this.map);
-        this.map.setMaxBounds(vineyardLayer.getBounds());
-        this.map.fitBounds(vineyardLayer.getBounds());
+        this.map.setMaxBounds(this.vineyardLayer.getBounds());
+        this.map.fitBounds(this.vineyardLayer.getBounds());
 
         this.map.on(Draw.Event.CREATED, (event: LayerEvent) => {
             const layer = event.layer as GeoJSON;
@@ -202,6 +208,8 @@ export class CellarDashboardComponent implements OnInit {
     }
 
     drawCellars(): void {
+        this.cellarLayers.clearLayers();
+
         this.user.vineyard!.cellars!.forEach(cellar => {
             this.cellarLayers.addLayer(
                 geoJSON(cellar.mapArea, {
@@ -240,6 +248,7 @@ export class CellarDashboardComponent implements OnInit {
     addCellar(): void {
         const cellarRequest: CellarRequest = {
             name: this.cellarForm.get('name')?.value,
+            capacity: this.cellarForm.get('capacity')?.value,
             createdPolygon: this.drawnLayer.toGeoJSON(),
         };
         this.cellarService.createCellar(cellarRequest).subscribe(user => {
@@ -259,15 +268,9 @@ export class CellarDashboardComponent implements OnInit {
         this.cellarForm.reset();
     }
 
-    deleteCellarLayer(): void {
-        this.cellarLayers.clearLayers();
-        this.drawCellars();
-    }
-
     deleteCellar(id: number): void {
         this.cellarService.deleteCellar(id).subscribe(user => {
             if (user) {
-                this.deleteCellarLayer();
                 toast.success('Cellar deleted successfully!', {
                     position: 'bottom-center',
                 });

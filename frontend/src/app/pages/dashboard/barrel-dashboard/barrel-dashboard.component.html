@@ -34,84 +34,36 @@
                             </hlm-select>
                             @if (selectedCellar) {
                                 @if (selectedCellar!.barrels!.length > 0) {
-                                    <!--
-                                    <div class="w-1/2 overflow-x-auto shadow-lg rounded-lg">
-                                        <table hlmTable class="bg-amber-100">
-                                            <thead hlmTHead>
-                                                <tr hlmTr>
-                                                    <th hlmTh>Type</th>
-                                                    <th hlmTh>Size</th>
-                                                    <th hlmTh>Volume</th>
-                                                    <th hlmTh>Grape</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody hlmTBody>
-                                                @for (
-                                                    barrel of selectedCellar!.barrels;
-                                                    track barrel
-                                                ) {
-                                                    <tr hlmTr [brnCtxMenuTriggerFor]="menu">
-                                                        <td hlmTd>
-                                                            {{
-                                                                barrel.barrelType | enum: BarrelType
-                                                            }}
-                                                        </td>
-                                                        <td hlmTd>
-                                                            {{
-                                                                barrel.barrelSize | enum: BarrelSize
-                                                            }}
-                                                        </td>
-                                                        <td hlmTd>
-                                                            {{ barrel.volume }}/{{
-                                                                barrel.maxVolume
-                                                            }}
-                                                        </td>
-                                                        <td hlmTd>
-                                                            {{ barrel.grape ?? 'X' }}
-                                                        </td>
-                                                    </tr>
-                                                    <ng-template #menu>
-                                                        <hlm-menu>
-                                                            <button
-                                                                variant="destructive"
-                                                                class="w-full"
-                                                                (click)="deleteBarrel(barrel.id)"
-                                                                hlmBtn
-                                                            >
-                                                                <ng-icon
-                                                                    name="lucideTrash2"
-                                                                ></ng-icon>
-                                                                Delete
-                                                            </button>
-                                                        </hlm-menu>
-                                                    </ng-template>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    -->
                                     <div
                                         class="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
                                     >
-                                        <button
-                                            hlmBtn
-                                            variant="outline"
-                                            align="end"
-                                            [brnMenuTriggerFor]="menu"
+                                        <hlm-select
+                                            (valueChange)="_filterChanged($event)"
+                                            placeholder="Sort by grape"
                                         >
-                                            Columns
-                                            <ng-icon
-                                                hlm
-                                                name="lucideChevronDown"
-                                                class="ml-2"
-                                                size="sm"
-                                            />
-                                        </button>
-                                        <ng-template #menu>
-                                            <hlm-menu class="w-32">
-                                                @for (column of _hidableColumns; track column.id) {}
-                                            </hlm-menu>
-                                        </ng-template>
+                                            <hlm-select-trigger class="w-[200px]">
+                                                <hlm-select-value>
+                                                    <div
+                                                        class="flex items-center gap-x-2"
+                                                        *brnSelectValue="let value"
+                                                    >
+                                                        {{ value | enum: GrapeType }}
+                                                    </div>
+                                                </hlm-select-value>
+                                            </hlm-select-trigger>
+                                            <hlm-select-content>
+                                                <hlm-select-scroll-up />
+                                                <hlm-select-group>
+                                                    <hlm-select-label>Grapes</hlm-select-label>
+                                                    @for (grape of grapeTypes; track grape) {
+                                                        <hlm-option [value]="grape.value">
+                                                            {{ grape.label }}
+                                                        </hlm-option>
+                                                    }
+                                                </hlm-select-group>
+                                                <hlm-select-scroll-down />
+                                            </hlm-select-content>
+                                        </hlm-select>
                                     </div>
                                     <div class="overflow-hidden rounded-md border">
                                         @defer {
@@ -172,7 +124,7 @@
                                                             >
                                                                 @for (
                                                                     cell of row.getVisibleCells();
-                                                                    track $index
+                                                                    track cell.id
                                                                 ) {
                                                                     <td hlmTd>
                                                                         <ng-container
@@ -187,6 +139,88 @@
                                                                                 [innerHTML]="cell"
                                                                             ></div>
                                                                         </ng-container>
+                                                                        @if (
+                                                                            cell.column.id ===
+                                                                            'actions'
+                                                                        ) {
+                                                                            <div class="text-right">
+                                                                                <button
+                                                                                    hlmBtn
+                                                                                    size="icon"
+                                                                                    variant="destructive"
+                                                                                    class="size-8 cursor-pointer"
+                                                                                    [brnAlertDialogTriggerFor]="
+                                                                                        deleteDialog
+                                                                                    "
+                                                                                >
+                                                                                    <ng-icon
+                                                                                        hlm
+                                                                                        size="sm"
+                                                                                        name="lucideTrash2"
+                                                                                    />
+                                                                                </button>
+                                                                                <hlm-alert-dialog
+                                                                                    #deleteDialog
+                                                                                >
+                                                                                    <hlm-alert-dialog-content
+                                                                                        *brnAlertDialogContent="
+                                                                                            let ctx
+                                                                                        "
+                                                                                    >
+                                                                                        <hlm-alert-dialog-header>
+                                                                                            <h3
+                                                                                                hlmAlertDialogTitle
+                                                                                            >
+                                                                                                Are
+                                                                                                you
+                                                                                                sure?
+                                                                                            </h3>
+                                                                                            <p
+                                                                                                hlmAlertDialogDescription
+                                                                                            >
+                                                                                                If
+                                                                                                you
+                                                                                                delete
+                                                                                                your
+                                                                                                barrel,
+                                                                                                all
+                                                                                                of
+                                                                                                your
+                                                                                                content
+                                                                                                will
+                                                                                                be
+                                                                                                gone!
+                                                                                            </p>
+                                                                                        </hlm-alert-dialog-header>
+                                                                                        <hlm-alert-dialog-footer>
+                                                                                            <button
+                                                                                                class="cursor-pointer"
+                                                                                                hlmAlertDialogCancel
+                                                                                                (click)="
+                                                                                                    ctx.close()
+                                                                                                "
+                                                                                            >
+                                                                                                Cancel
+                                                                                            </button>
+                                                                                            <button
+                                                                                                class="cursor-pointer"
+                                                                                                hlmAlertDialogAction
+                                                                                                (click)="
+                                                                                                    deleteBarrel(
+                                                                                                        cell
+                                                                                                            .row
+                                                                                                            .original
+                                                                                                            .id
+                                                                                                    )
+                                                                                                "
+                                                                                            >
+                                                                                                Continue
+                                                                                            </button>
+                                                                                        </hlm-alert-dialog-footer>
+                                                                                    </hlm-alert-dialog-content>
+                                                                                </hlm-alert-dialog>
+                                                                            </div>
+                                                                        }
                                                                     </td>
                                                                 }
                                                             </tr>
@@ -208,7 +242,7 @@
                                     </div>
 
                                     <div
-                                        class="flex flex-col justify-between py-4 sm:flex-row sm:items-center"
+                                        class="flex flex-col justify-between py-4 gap-x-4 sm:flex-row sm:items-center"
                                     >
                                         @if (_table.getRowCount() > 0) {
                                             <div class="`${hlmMuted}`">

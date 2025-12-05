@@ -25,6 +25,9 @@ public class BarrelService {
         Cellar cellar = cellarRepository.findCellarById(barrelRequest.getCellarId()).orElse(null);
 
         if (cellar != null) {
+            if (cellar.getCapacity() < cellar.getBarrels().size()) {
+                throw new RuntimeException("Cellar capacity is max, you can't put more barrels in this cellar.");
+            }
             Barrel barrel = Barrel.builder()
                     .volume(0)
                     .maxVolume(barrelRequest.getBarrelSize().getValue())
@@ -39,13 +42,12 @@ public class BarrelService {
         return null;
     }
 
-    public void deleteCellarBarrel(Long barrelId, Cellar cellar) {
-        Barrel currentBarrel = barrelRepository.findBarrelById(barrelId).orElse(null);
-
-        if (currentBarrel != null) {
-            cellar.getBarrels().remove(currentBarrel);
+    public void deleteCellarBarrel(Long barrelId) {
+        Barrel barrel = barrelRepository.findBarrelById(barrelId).orElse(null);
+        if (barrel != null) {
+            Cellar cellar = barrel.getCellar();
+            cellar.getBarrels().removeIf(b -> b.getId().equals(barrelId));
             cellarRepository.save(cellar);
-            barrelRepository.delete(currentBarrel);
         }
     }
 

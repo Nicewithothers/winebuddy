@@ -25,6 +25,7 @@ import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 import { BrnAlertDialogContent, BrnAlertDialogTrigger } from '@spartan-ng/brain/alert-dialog';
 import { grapevineHarvestForm } from '../../forms/grapevine/grapevine-harvest.form';
 import { GrapevineHarvestRequest } from '../../models/requests/grapevine/GrapevineHarvestRequest';
+import { DialogService } from '../../services/dialog.service';
 
 @Component({
     selector: 'app-cellarcard',
@@ -66,6 +67,7 @@ export class CustomcardComponent {
         protected router: Router,
         protected authService: AuthService,
         private grapevineService: GrapevineService,
+        private dialogService: DialogService,
     ) {}
 
     urlCleaner(url: string): string {
@@ -79,6 +81,7 @@ export class CustomcardComponent {
                 toast.success('Grape set to grapevine successfully!', {
                     position: 'bottom-center',
                 });
+                this.dialogService.setClosedState();
             } else {
                 toast.error('Updating grapevine failed!', {
                     position: 'bottom-center',

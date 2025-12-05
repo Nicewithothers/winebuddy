@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -28,7 +29,7 @@ public class CellarService {
                 .name(cellarRequest.getName())
                 .mapArea(polygon)
                 .area(0.0)
-                .capacity(0)
+                .capacity(cellarRequest.getCapacity())
                 .owningDate(Instant.now())
                 .vineyard(vineyardRepository.getReferenceById(vineyard.getId()))
                 .barrels(Collections.emptyList())
@@ -40,17 +41,8 @@ public class CellarService {
         return cellarRepository.getAreaMeters(cellar.getMapArea(), cellar.getId())/100000; // m² -> km²
     }
 
-    public Integer calculateCapacity(double calculatedArea) {
-        return (int) Math.ceil(calculatedArea / 3);
-    }
-
     public void deleteVineyardCellar(Long id, Vineyard vineyard) {
-        Cellar cellar = cellarRepository.findCellarById(id).orElse(null);
-
-        if (cellar != null) {
-            vineyard.getCellars().remove(cellar);
-            vineyardRepository.save(vineyard);
-            cellarRepository.delete(cellar);
-        }
+        vineyard.getCellars().removeIf(c -> c.getId().equals(id));
+        vineyardRepository.save(vineyard);
     }
 }
