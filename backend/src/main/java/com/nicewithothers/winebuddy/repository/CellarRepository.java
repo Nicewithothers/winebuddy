@@ -1,6 +1,7 @@
 package com.nicewithothers.winebuddy.repository;
 
 import com.nicewithothers.winebuddy.model.Cellar;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +26,15 @@ public interface CellarRepository extends JpaRepository<Cellar, Long> {
             """, nativeQuery = true)
     Boolean isNotWithinCellars(@Param("cellarGeom") Polygon cellarGeom);
 
+    @Query(value= """
+            select not exists (
+            	select 1
+            	from grapevine gv
+            	where st_intersects(:cellarGeom, gv.geometry)
+            );
+            """, nativeQuery = true)
+    Boolean isNotWithinGrapevines(@Param("cellarGeom") Polygon cellarGeom);
+
     @Query(value = """
             select st_area((:cellarArea)::geography)
             from cellar c
@@ -33,4 +43,6 @@ public interface CellarRepository extends JpaRepository<Cellar, Long> {
     Double getAreaMeters(@Param("cellarArea") Polygon cellarArea, @Param("cellarId") Long cellarId);
 
     Optional<Cellar> findCellarById(Long id);
+
+    Cellar getCellarById(Long id);
 }

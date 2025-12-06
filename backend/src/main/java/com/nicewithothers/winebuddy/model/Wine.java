@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "wine")
+@Builder
 public class Wine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,13 +43,16 @@ public class Wine {
     @Column(nullable = false)
     private Double alcoholPercentage;
 
+    @Column(nullable = false)
+    private Integer quantity;
+
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "vineyard_id", referencedColumnName = "id")
-    private Vineyard vineyard;
+    @JoinColumn(name = "cellar_id", referencedColumnName = "id")
+    private Cellar cellar;
 
     @JsonManagedReference
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "wine_grape",
             joinColumns = @JoinColumn(name = "wine_id"),

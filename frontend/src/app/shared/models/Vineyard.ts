@@ -12,5 +12,4 @@ export interface Vineyard {
     owner: User;
     cellars?: Cellar[];
     grapevines?: Grapevine[];
-    wines?: Wine[];
 }

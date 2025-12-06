@@ -1,6 +1,8 @@
 package com.nicewithothers.winebuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nicewithothers.winebuddy.model.enums.grape.GrapeColor;
 import com.nicewithothers.winebuddy.model.enums.grape.GrapeType;
@@ -50,11 +52,11 @@ public class Grape {
     @Column(nullable = false)
     private Integer grapeGrowthTime;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "grape", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Barrel> barrels;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "grape", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Grapevine> grapevines;
 

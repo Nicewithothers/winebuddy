@@ -1,5 +1,6 @@
 import { Vineyard } from './Vineyard';
 import { Barrel } from './Barrel';
+import { Wine } from './Wine';
 
 export interface Cellar {
     id: number;
@@ -10,4 +11,5 @@ export interface Cellar {
     area: number;
     vineyard: Vineyard;
     barrels?: Barrel[];
+    wines?: Wine[];
 }

@@ -1,1 +1,348 @@
-<p>wine-dashboard works!</p>
+<section class="section-container">
+    <div class="flex w-full h-full">
+        <div class="w-full h-full flex flex-col justify-center">
+            <div class="w-full p-4 flex flex-col justify-center gap-4">
+                <div class="flex flex-col justify-center items-center gap-y-4">
+                    @if (this.authService.user$ | async; as user) {
+                        @if (user.vineyard!.cellars && user.vineyard!.cellars!.length > 0) {
+                            <hlm-select
+                                (valueChange)="handleCurrentCellar($event)"
+                                placeholder="Select a cellar"
+                            >
+                                <hlm-select-trigger class="w-[280px]">
+                                    <hlm-select-value>
+                                        <div
+                                            class="flex items-center gap-x-2"
+                                            *brnSelectValue="let value"
+                                        >
+                                            {{ value.name }}
+                                        </div>
+                                    </hlm-select-value>
+                                </hlm-select-trigger>
+                                <hlm-select-content>
+                                    <hlm-select-scroll-up />
+                                    <hlm-select-group>
+                                        <hlm-select-label>Cellars</hlm-select-label>
+                                        @for (cellar of this.user.vineyard!.cellars; track cellar) {
+                                            <hlm-option [value]="cellar">
+                                                {{ cellar.name }}
+                                            </hlm-option>
+                                        }
+                                    </hlm-select-group>
+                                    <hlm-select-scroll-down />
+                                </hlm-select-content>
+                            </hlm-select>
+                            @if (selectedCellar) {
+                                @if (selectedCellar!.wines!.length > 0) {
+                                    <div class="overflow-hidden rounded-md border">
+                                        @defer {
+                                            <div>
+                                                <table hlmTable>
+                                                    <thead hlmTHead>
+                                                        @for (
+                                                            headerGroup of _table.getHeaderGroups();
+                                                            track headerGroup.id
+                                                        ) {
+                                                            <tr hlmTr>
+                                                                @for (
+                                                                    header of headerGroup.headers;
+                                                                    track header.id
+                                                                ) {
+                                                                    <th
+                                                                        hlmTh
+                                                                        [attr.colSpan]="
+                                                                            header.colSpan
+                                                                        "
+                                                                    >
+                                                                        @if (
+                                                                            !header.isPlaceholder
+                                                                        ) {
+                                                                            <ng-container
+                                                                                *flexRender="
+                                                                                    header.column
+                                                                                        .columnDef
+                                                                                        .header;
+                                                                                    props: header.getContext();
+                                                                                    let headerText
+                                                                                "
+                                                                            >
+                                                                                <div
+                                                                                    [innerHTML]="
+                                                                                        headerText
+                                                                                    "
+                                                                                ></div>
+                                                                            </ng-container>
+                                                                        }
+                                                                    </th>
+                                                                }
+                                                            </tr>
+                                                        }
+                                                    </thead>
+                                                    <tbody hlmTBody>
+                                                        @for (
+                                                            row of _table.getRowModel().rows;
+                                                            track row.id
+                                                        ) {
+                                                            <tr
+                                                                hlmTr
+                                                                [attr.key]="row.id"
+                                                                [attr.data-state]="
+                                                                    row.getIsSelected() &&
+                                                                    'selected'
+                                                                "
+                                                            >
+                                                                @for (
+                                                                    cell of row.getVisibleCells();
+                                                                    track cell.id
+                                                                ) {
+                                                                    <td hlmTd>
+                                                                        <ng-container
+                                                                            *flexRender="
+                                                                                cell.column
+                                                                                    .columnDef.cell;
+                                                                                props: cell.getContext();
+                                                                                let cell
+                                                                            "
+                                                                        >
+                                                                            <div
+                                                                                [innerHTML]="cell"
+                                                                            ></div>
+                                                                        </ng-container>
+                                                                        @if (
+                                                                            cell.column.id ===
+                                                                            'actions'
+                                                                        ) {
+                                                                            <div class="text-right">
+                                                                                <button
+                                                                                    hlmBtn
+                                                                                    size="icon"
+                                                                                    variant="destructive"
+                                                                                    class="size-8 cursor-pointer"
+                                                                                    [brnAlertDialogTriggerFor]="
+                                                                                        deleteDialog
+                                                                                    "
+                                                                                >
+                                                                                    <ng-icon
+                                                                                        hlm
+                                                                                        size="sm"
+                                                                                        name="lucideTrash2"
+                                                                                    />
+                                                                                </button>
+                                                                                <hlm-alert-dialog
+                                                                                    #deleteDialog
+                                                                                >
+                                                                                    <hlm-alert-dialog-content
+                                                                                        *brnAlertDialogContent="
+                                                                                            let ctx
+                                                                                        "
+                                                                                    >
+                                                                                        <hlm-alert-dialog-header>
+                                                                                            <h3
+                                                                                                hlmAlertDialogTitle
+                                                                                            >
+                                                                                                Are
+                                                                                                you
+                                                                                                sure?
+                                                                                            </h3>
+                                                                                            <p
+                                                                                                hlmAlertDialogDescription
+                                                                                            >
+                                                                                                If
+                                                                                                you
+                                                                                                delete
+                                                                                                your
+                                                                                                barrel,
+                                                                                                all
+                                                                                                of
+                                                                                                your
+                                                                                                content
+                                                                                                will
+                                                                                                be
+                                                                                                gone!
+                                                                                            </p>
+                                                                                        </hlm-alert-dialog-header>
+                                                                                        <hlm-alert-dialog-footer>
+                                                                                            <button
+                                                                                                class="cursor-pointer"
+                                                                                                hlmAlertDialogCancel
+                                                                                                (click)="
+                                                                                                    ctx.close()
+                                                                                                "
+                                                                                            >
+                                                                                                Cancel
+                                                                                            </button>
+                                                                                            <button
+                                                                                                class="cursor-pointer"
+                                                                                                hlmAlertDialogAction
+                                                                                            >
+                                                                                                Continue
+                                                                                            </button>
+                                                                                        </hlm-alert-dialog-footer>
+                                                                                    </hlm-alert-dialog-content>
+                                                                                </hlm-alert-dialog>
+                                                                            </div>
+                                                                        }
+                                                                    </td>
+                                                                }
+                                                            </tr>
+                                                        } @empty {
+                                                            <tr hlmTr>
+                                                                <td
+                                                                    hlmTd
+                                                                    class="h-24 text-center"
+                                                                    [attr.colspan]="_columns.length"
+                                                                >
+                                                                    No results.
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div
+                                        class="flex flex-col justify-between py-4 gap-x-4 sm:flex-row sm:items-center"
+                                    >
+                                        @if (_table.getRowCount() > 0) {
+                                            <div class="`${hlmMuted}`">
+                                                Showing
+                                                {{ pageInformation().start }}-{{
+                                                    pageInformation().end
+                                                }}
+                                                of
+                                                {{ pageInformation().paginationSize }}
+                                            </div>
+                                            <div class="mt-2 flex space-x-2 sm:mt-0">
+                                                <button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    hlmBtn
+                                                    [disabled]="!_table.getCanPreviousPage()"
+                                                    (click)="_table.previousPage()"
+                                                >
+                                                    Previous
+                                                </button>
+                                                <button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    hlmBtn
+                                                    [disabled]="!_table.getCanNextPage()"
+                                                    (click)="_table.nextPage()"
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+                                        } @else {
+                                            <div
+                                                class="flex h-full w-full items-center justify-center"
+                                            >
+                                                <div class="text-muted-foreground text-sm">
+                                                    No Data
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <h2 hlmH2>You do not have any wines available.</h2>
+                                }
+                                <hlm-dialog>
+                                    <div class="flex justify-center w-full h-full">
+                                        <button
+                                            class="h-20 w-20 cursor-pointer"
+                                            variant="outline"
+                                            brnDialogTrigger
+                                            hlmBtn
+                                        >
+                                            <ng-icon name="lucidePlus" size="40px"></ng-icon>
+                                        </button>
+                                    </div>
+                                    <hlm-dialog-content *brnDialogContent>
+                                        <hlm-dialog-header>
+                                            <h3 class="text-center" hlmDialogTitle>Add wine</h3>
+                                            <p hlmDialogDescription>
+                                                Adding wine to {{ user.vineyard!.name }}
+                                            </p>
+                                        </hlm-dialog-header>
+                                        <form [formGroup]="wineForm" (ngSubmit)="addWines()">
+                                            <div class="flex flex-col items-center gap-y-2">
+                                                <hlm-form-field>
+                                                    <input
+                                                        class="w-64"
+                                                        type="text"
+                                                        placeholder="Wine name"
+                                                        formControlName="name"
+                                                        hlmInput
+                                                    />
+                                                </hlm-form-field>
+                                                <hlm-form-field>
+                                                    <brn-select
+                                                        class="inline-block"
+                                                        placeholder="Select grape types"
+                                                        formControlName="grapeTypes"
+                                                        [multiple]="true"
+                                                    >
+                                                        <hlm-select-trigger class="w-64">
+                                                            <hlm-select-value />
+                                                        </hlm-select-trigger>
+                                                        <hlm-select-content>
+                                                            <hlm-select-label
+                                                                >Grape types</hlm-select-label
+                                                            >
+                                                            @for (
+                                                                grapeType of grapeTypes;
+                                                                track grapeType
+                                                            ) {
+                                                                <hlm-option
+                                                                    [value]="grapeType.value"
+                                                                    >{{
+                                                                        grapeType.label
+                                                                    }}</hlm-option
+                                                                >
+                                                            }
+                                                        </hlm-select-content>
+                                                    </brn-select>
+                                                </hlm-form-field>
+                                                <hlm-form-field>
+                                                    <input
+                                                        class="w-64"
+                                                        type="number"
+                                                        min="0"
+                                                        max="50"
+                                                        placeholder="Quantity"
+                                                        formControlName="quantity"
+                                                        hlmInput
+                                                    />
+                                                </hlm-form-field>
+                                                <div class="flex gap-6">
+                                                    <button
+                                                        variant="destructive"
+                                                        hlmBtn
+                                                        type="reset"
+                                                        class="cursor-pointer"
+                                                        brnDialogClose
+                                                    >
+                                                        Close
+                                                    </button>
+                                                    <button
+                                                        variant="default"
+                                                        hlmBtn
+                                                        type="submit"
+                                                        class="cursor-pointer"
+                                                        [disabled]="this.checkFields()"
+                                                    >
+                                                        Add
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </hlm-dialog-content>
+                                </hlm-dialog>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

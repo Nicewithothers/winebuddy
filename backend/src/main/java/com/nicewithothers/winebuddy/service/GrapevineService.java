@@ -91,30 +91,30 @@ public class GrapevineService {
         log.debug("Grapevine maturity check completed with {} changes.", validGrapevines.size());
     }
 
-    public Integer calculateGrapeVolume(Grapevine grapevine) {
-        return (int) Math.ceil(((grapevine.getLength() * 1000) / 2) * 5); // km -> m, vines 2 meter spacing, 5 kg per vine.
+    public Double calculateGrapeVolume(Grapevine grapevine) {
+        return Math.ceil(((grapevine.getLength() * 1000) / 2) * 5); // km -> m, vines 2 meter spacing, 5 kg per vine.
     }
 
     public void harvestGrapevine(Long grapevineId, GrapevineHarvestRequest harvestRequest) throws Exception {
         Grapevine grapevine = grapevineRepository.findById(grapevineId).orElseThrow(() -> new RuntimeException("Grapevine not found"));
         List<Barrel> fillableBarrels = barrelService.getEligibleBarrels(harvestRequest.getCellarId(), harvestRequest.getGrapeType());
-        int fillableBarrelVolume = fillableBarrels.stream()
-                .mapToInt(barrel -> barrel.getMaxVolume() - barrel.getVolume())
+        double fillableBarrelVolume = fillableBarrels.stream()
+                .mapToDouble(barrel -> barrel.getMaxVolume() - barrel.getVolume())
                 .sum();
-        int harvestedGrapeVolume = calculateGrapeVolume(grapevine);
+        double harvestedGrapeVolume = calculateGrapeVolume(grapevine);
         if (harvestedGrapeVolume > fillableBarrelVolume) {
             throw new Exception("Not enough space in barrels to harvest the grapes.");
         }
 
         while (harvestedGrapeVolume > 0) {
             for (Barrel barrel : fillableBarrels) {
-                int availableVolume = barrel.getMaxVolume() - barrel.getVolume();
+                double availableVolume = barrel.getMaxVolume() - barrel.getVolume();
                 if (availableVolume > 0) {
                     if (harvestedGrapeVolume <= availableVolume) {
                         barrel.setVolume(barrel.getVolume() + harvestedGrapeVolume);
                         harvestedGrapeVolume = 0;
                     } else {
-                        barrel.setVolume(barrel.getMaxVolume());
+                        barrel.setVolume(Double.valueOf(barrel.getMaxVolume()));
                         harvestedGrapeVolume -= availableVolume;
                     }
                     barrel.setGrape(grapevine.getGrape());

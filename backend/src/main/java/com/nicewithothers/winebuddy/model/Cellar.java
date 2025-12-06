@@ -37,4 +37,8 @@ public class Cellar extends BaseLocation {
     @JsonManagedReference
     @OneToMany(mappedBy = "cellar", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Barrel> barrels;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "cellar", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Wine> wines;
 }

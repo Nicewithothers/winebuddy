@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class BarrelService {
                 throw new RuntimeException("Cellar capacity is max, you can't put more barrels in this cellar.");
             }
             Barrel barrel = Barrel.builder()
-                    .volume(0)
+                    .volume(0.0)
                     .maxVolume(barrelRequest.getBarrelSize().getValue())
                     .barrelType(BarrelType.valueOf(barrelRequest.getBarrelType().name()))
                     .barrelSize(BarrelSize.valueOf(barrelRequest.getBarrelSize().name()))
@@ -66,6 +68,24 @@ public class BarrelService {
                         .toList();
             }
             return eligibleBarrels;
+        }
+        return null;
+    }
+
+    public List<Barrel> getEligibleWineBarrels(Long cellarId, List<GrapeType> grapeTypes) {
+        Cellar cellar = cellarRepository.findCellarById(cellarId).orElse(null);
+        if (cellar != null) {
+            List<Barrel> eligibleWineBarrels = cellar.getBarrels().stream()
+                    .filter(b -> b.getGrape() != null && grapeTypes.contains(b.getGrape().getGrapeType()))
+                    .sorted(Comparator.comparing(Barrel::getVolume))
+                    .toList()
+                    .reversed();
+            Set<GrapeType> coveredGrapeTypes = eligibleWineBarrels.stream()
+                    .map(b -> b.getGrape().getGrapeType())
+                    .collect(Collectors.toUnmodifiableSet());
+            if (coveredGrapeTypes.containsAll(grapeTypes)) {
+                return eligibleWineBarrels;
+            }
         }
         return null;
     }

@@ -35,7 +35,7 @@ public class Barrel {
     private Long id;
 
     @Column(nullable = false)
-    private Integer volume;
+    private Double volume;
 
     @Column(nullable = false)
     private Integer maxVolume;

@@ -59,7 +59,8 @@ public class CellarController {
         try {
             Polygon createdPolygon = shapeUtility.createPolygon(polygon);
             boolean validated = cellarRepository.isWithinVineyard(createdPolygon, user.getVineyard().getId())
-                    && cellarRepository.isNotWithinCellars(createdPolygon);
+                    && cellarRepository.isNotWithinCellars(createdPolygon)
+                    && cellarRepository.isNotWithinGrapevines(createdPolygon);
             return new ResponseEntity<>(validated, HttpStatus.OK);
         } catch (ParseException pe) {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);

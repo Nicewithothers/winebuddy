@@ -3,7 +3,8 @@ import { Grape } from './Grape';
 export interface Wine {
     id: number;
     name: string;
-    year: number;
+    yearOfCreation: number;
     alcoholPercentage: number;
+    quantity: number;
     grapes: Grape[];
 }

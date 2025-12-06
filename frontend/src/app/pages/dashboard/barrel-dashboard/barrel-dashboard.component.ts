@@ -7,7 +7,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { User } from '../../../shared/models/User';
 import { AuthService } from '../../../shared/services/auth.service';
 import { barrelForm } from '../../../shared/forms/barrel.form';
-import { lucideChevronDown, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideChevronDown, lucidePlus, lucideRefreshCcw, lucideTrash2 } from '@ng-icons/lucide';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { Cellar } from '../../../shared/models/Cellar';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
@@ -79,7 +79,7 @@ import {
         HlmAlertDialogTitle,
         HlmAlertDialogImports,
     ],
-    providers: [provideIcons({ lucideTrash2, lucidePlus, lucideChevronDown })],
+    providers: [provideIcons({ lucideTrash2, lucidePlus, lucideChevronDown, lucideRefreshCcw })],
     templateUrl: './barrel-dashboard.component.html',
     styleUrl: './barrel-dashboard.component.css',
 })
@@ -117,7 +117,7 @@ export class BarrelDashboardComponent implements OnInit {
     private tabledata = signal<Barrel[]>([]);
 
     protected _filterChanged(value: string) {
-        this._table.getColumn('grape')?.setFilterValue(value || undefined);
+        this._table.getColumn('grape')?.setFilterValue(value);
     }
 
     protected readonly _columns: ColumnDef<Barrel>[] = [
@@ -206,10 +206,6 @@ export class BarrelDashboardComponent implements OnInit {
         },
     }));
 
-    protected readonly _hidableColumns = this._table
-        .getAllColumns()
-        .filter(column => column.getCanHide());
-
     private loadBarrelData(user: User) {
         const cellars = user.vineyard?.cellars ?? [];
         const allBarrels = cellars.flatMap(c => {
@@ -219,7 +215,11 @@ export class BarrelDashboardComponent implements OnInit {
         this.tabledata.set(allBarrels);
     }
 
-    pageInformation = computed(() => {
+    protected resetFilter() {
+        this._table.resetColumnFilters();
+    }
+
+    protected pageInformation = computed(() => {
         const table = this._table;
         const pageIndex = table.getState().pagination.pageIndex;
         const pageSize = table.getState().pagination.pageSize;
@@ -245,8 +245,8 @@ export class BarrelDashboardComponent implements OnInit {
         );
     }
 
-    handleCurrentBarrel(newBarrel: Cellar): void {
-        this.selectedCellar = newBarrel;
+    handleCurrentCellar(newCellar: Cellar): void {
+        this.selectedCellar = newCellar;
     }
 
     addBarrel(id: number): void {

@@ -6,7 +6,7 @@
                     @if (this.authService.user$ | async; as user) {
                         @if (user.vineyard!.cellars && user.vineyard!.cellars!.length > 0) {
                             <hlm-select
-                                (valueChange)="handleCurrentBarrel($event)"
+                                (valueChange)="handleCurrentCellar($event)"
                                 placeholder="Select a cellar"
                             >
                                 <hlm-select-trigger class="w-[280px]">
@@ -55,6 +55,7 @@
                                                 <hlm-select-scroll-up />
                                                 <hlm-select-group>
                                                     <hlm-select-label>Grapes</hlm-select-label>
+                                                    <hlm-option value="None">None</hlm-option>
                                                     @for (grape of grapeTypes; track grape) {
                                                         <hlm-option [value]="grape.value">
                                                             {{ grape.label }}
@@ -64,6 +65,15 @@
                                                 <hlm-select-scroll-down />
                                             </hlm-select-content>
                                         </hlm-select>
+                                        <button
+                                            hlmBtn
+                                            variant="secondary"
+                                            class="size-8 cursor-pointer"
+                                            size="icon"
+                                            (click)="resetFilter()"
+                                        >
+                                            <ng-icon hlm size="sm" name="lucideRefreshCcw" />
+                                        </button>
                                     </div>
                                     <div class="overflow-hidden rounded-md border">
                                         @defer {
