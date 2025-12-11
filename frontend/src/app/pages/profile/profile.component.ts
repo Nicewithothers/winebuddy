@@ -13,6 +13,7 @@ import { HlmTypographyImports } from '@spartan-ng/helm/typography';
 import { ChartConfiguration } from 'chart.js';
 import { grapeTypes } from '../../shared/models/enums/grape/GrapeType';
 import { DateTransformPipe } from '../../shared/pipes/datetransform.pipe';
+import { map } from 'rxjs';
 
 @Component({
     selector: 'app-profile',
@@ -81,7 +82,61 @@ export class ProfileComponent implements OnInit {
                         const value = ctx.parsed || 0;
                         const total = this.user!.vineyard!.grapevines!.length;
                         const percentage = ((value / total) * 100).toFixed(1);
-                        return `${label}: ${value} vines (${percentage}%)`;
+                        return `${label}: ${value} wines (${percentage}%)`;
+                    },
+                },
+            },
+        },
+    };
+
+    winePieData: ChartConfiguration['data'] = {
+        labels: [],
+        datasets: [
+            {
+                data: [],
+                backgroundColor: [
+                    'rgba(147, 51, 234, 0.7)',
+                    'rgba(239, 68, 68, 0.7)',
+                    'rgba(234, 179, 8, 0.7)',
+                    'rgba(34, 197, 94, 0.7)',
+                    'rgba(59, 130, 246, 0.7)',
+                    'rgba(236, 72, 153, 0.7)',
+                    'rgba(156, 163, 175, 0.7)',
+                ],
+                borderColor: [
+                    'rgb(147, 51, 234)',
+                    'rgb(239, 68, 68)',
+                    'rgb(234, 179, 8)',
+                    'rgb(34, 197, 94)',
+                    'rgb(59, 130, 246)',
+                    'rgb(236, 72, 153)',
+                    'rgb(156, 163, 175)',
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    winePieOptions: ChartConfiguration['options'] = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'center',
+            },
+            title: {
+                display: true,
+                text: 'Wines by name',
+            },
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const label = ctx.label || '';
+                        const value = ctx.parsed || 0;
+                        const total = this.user!.vineyard!.cellars!.map(c => c.wines).length;
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return `${label}: ${value} wines (${percentage}%)`;
                     },
                 },
             },
@@ -127,6 +182,53 @@ export class ProfileComponent implements OnInit {
         },
     };
 
+    mapRadarData: ChartConfiguration['data'] = {
+        labels: [],
+        datasets: [
+            {
+                data: [],
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.7)',
+                    'rgba(59, 130, 246, 0.7)',
+                    'rgba(156, 163, 175, 0.7)',
+                ],
+                borderColor: ['rgb(239, 68, 68)', 'rgb(59, 130, 246)', 'rgb(156, 163, 175)'],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    mapRadarOptions: ChartConfiguration['options'] = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'center',
+            },
+            title: {
+                display: true,
+                text: 'Summed map areas by type (km²)',
+            },
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        console.log(ctx.parsed);
+                        const label = ctx.label || '';
+                        const value = ctx.parsed.r.toFixed(1);
+                        const total =
+                            this.user.vineyard!.area +
+                            this.user
+                                .vineyard!.cellars!.map(c => c.area)
+                                .reduce((a, b) => a + b, 0);
+                        const percentage = ((Number.parseFloat(value) / total) * 100).toFixed(1);
+                        return `${label}: ${value} km² (${percentage}%)`;
+                    },
+                },
+            },
+        },
+    };
+
     constructor(
         protected authService: AuthService,
         private fileService: FileService,
@@ -136,8 +238,10 @@ export class ProfileComponent implements OnInit {
         this.authService.user$.subscribe(user => {
             this.user = user;
         });
-        this.processGrapevineData();
-        this.processCellarData();
+        this.processGrapevinePieData();
+        this.processCellarBarData();
+        this.processWinePieData();
+        this.processMapRadarData();
     }
 
     protected openImageDialog(): void {
@@ -172,15 +276,31 @@ export class ProfileComponent implements OnInit {
         }
     }
 
-    private processCellarData(): void {
+    private processCellarBarData(): void {
         if (!this.user.vineyard?.cellars) {
             return;
         }
-        this.cellarBarData.labels = this.user.vineyard!.cellars!.map(c => c.name);
-        this.cellarBarData.datasets[0].data = this.user.vineyard!.cellars!.map(c => c.capacity);
+
+        const cellarGroups = new Map<string, number>();
+
+        this.user.vineyard!.cellars!.map(c => {
+            const cellarVolumeSum = c.barrels!.map(b => b.volume).reduce((a, b) => a + b, 0) || 0;
+            cellarGroups.set(c.name, cellarVolumeSum);
+        });
+
+        const labels: string[] = [];
+        const data: number[] = [];
+
+        cellarGroups.forEach((sum, name) => {
+            labels.push(name);
+            data.push(sum);
+        });
+
+        this.cellarBarData.labels = labels;
+        this.cellarBarData.datasets[0].data = data;
     }
 
-    private processGrapevineData(): void {
+    private processGrapevinePieData(): void {
         if (!this.user.vineyard?.grapevines) {
             return;
         }
@@ -203,5 +323,56 @@ export class ProfileComponent implements OnInit {
 
         this.grapevinePieData.labels = labels;
         this.grapevinePieData.datasets[0].data = data;
+    }
+
+    private processWinePieData(): void {
+        if (!this.user.vineyard?.cellars) {
+            return;
+        }
+
+        const wineGroups = new Map<string, number>();
+
+        this.user.vineyard!.cellars!.map(c => {
+            const wineTotalByName = c.wines!.map(w => w.quantity).reduce((a, b) => a + b, 0);
+            wineGroups.set(c.name, wineTotalByName);
+        });
+
+        const labels: string[] = [];
+        const data: number[] = [];
+
+        wineGroups.forEach((count, gt) => {
+            labels.push(gt);
+            data.push(count);
+        });
+
+        this.winePieData.labels = labels;
+        this.winePieData.datasets[0].data = data;
+    }
+
+    private processMapRadarData(): void {
+        if (!this.user.vineyard?.grapevines) {
+            return;
+        }
+
+        const mapAreaGroups = new Map<string, number>();
+
+        // Vineyard
+        mapAreaGroups.set('Vineyard', this.user.vineyard.area);
+
+        // Cellar
+        const cellarAreaSum =
+            this.user.vineyard!.cellars!.map(c => c.area).reduce((a, b) => a + b, 0) || 0;
+        mapAreaGroups.set('Cellar', cellarAreaSum);
+
+        const labels: string[] = [];
+        const data: number[] = [];
+
+        mapAreaGroups.forEach((count, gt) => {
+            labels.push(gt);
+            data.push(count);
+        });
+
+        this.mapRadarData.labels = labels;
+        this.mapRadarData.datasets[0].data = data;
     }
 }

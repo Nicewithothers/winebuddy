@@ -33,11 +33,13 @@ import { HlmFormFieldImports } from '@spartan-ng/helm/form-field';
 import { wineForm } from '../../../shared/forms/wine.form';
 import { WineService } from '../../../shared/services/wine.service';
 import { WineRequest } from '../../../shared/models/requests/WineRequest';
-import { grapeTypes } from '../../../shared/models/enums/grape/GrapeType';
+import { GrapeType, grapeTypes } from '../../../shared/models/enums/grape/GrapeType';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { lucidePlus } from '@ng-icons/lucide';
 import { Wine } from '../../../shared/models/Wine';
 import { Cellar } from '../../../shared/models/Cellar';
+import { EnumPipe } from '../../../shared/pipes/enum.pipe';
+import { Grape } from '../../../shared/models/Grape';
 
 @Component({
     selector: 'app-wine-dashboard',
@@ -68,6 +70,7 @@ export class WineDashboardComponent implements OnInit {
     wineForm: FormGroup = wineForm();
     protected readonly grapeTypes = grapeTypes;
     selectedCellar: Cellar | null = null;
+    enumPipe: EnumPipe = new EnumPipe();
 
     constructor(
         protected authService: AuthService,
@@ -122,7 +125,16 @@ export class WineDashboardComponent implements OnInit {
             id: 'grapes',
             header: 'Grapes',
             enableSorting: false,
-            accessorFn: row => row.grapes.map(grape => grape.grapeType) || null,
+            accessorFn: row => row.grapes,
+            cell: info => {
+                const grapes = info.getValue<Grape[]>();
+                if (!grapes || grapes.length === 0) {
+                    return null;
+                }
+                return grapes
+                    .map(grape => this.enumPipe.transform(grape.grapeType, GrapeType))
+                    .join(', ');
+            },
         },
         {
             accessorKey: 'quantity',

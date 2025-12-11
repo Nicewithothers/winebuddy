@@ -23,7 +23,7 @@ public interface GrapevineRepository extends JpaRepository<Grapevine, Long> {
             	where st_intersects(:grapevineArea, c.map_area)
             );
             """, nativeQuery = true)
-    Boolean isNotIntersects(@Param("grapevineArea") LineString grapevineArea);
+    Boolean isNotWithinCellars(@Param("grapevineArea") LineString grapevineArea);
 
     @Query(value= """
             select not exists (
@@ -32,7 +32,7 @@ public interface GrapevineRepository extends JpaRepository<Grapevine, Long> {
             	where st_intersects(:grapevineArea, gv.geometry)
             );
             """, nativeQuery = true)
-    Boolean isNotWithinCellars(@Param("grapevineArea") LineString grapevineArea);
+    Boolean isNotIntersects(@Param("grapevineArea") LineString grapevineArea);
 
     @Query(value = """
         select st_length((:grapevineArea)::geography)

@@ -244,16 +244,21 @@ export class GrapevineDashboardComponent implements OnInit {
                             tooltipalt = null;
                         });
                     },
+                    style: {
+                        // Green: done, Yellow: in progress, Grey: new/no grape
+                        color:
+                            grapevine.grape !== null
+                                ? grapevine.isMature
+                                    ? '#00ff00'
+                                    : '#ffff00'
+                                : '#525252',
+                        weight: 6,
+                    },
                 }),
             );
         });
 
-        this.grapevineLayers
-            .setStyle({
-                color: '#525252',
-                weight: 6,
-            })
-            .addTo(this.map);
+        this.grapevineLayers.addTo(this.map);
     }
 
     updateDrawControl(): void {

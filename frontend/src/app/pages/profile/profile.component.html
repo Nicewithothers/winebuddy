@@ -72,13 +72,13 @@
                     </div>
                     <div hlmTabsContent="statistics" class="flex flex-col items-center">
                         <div
-                            class="flex flex-row flex-wrap justify-between items-center gap-12 max-w-[1200px] [&>div]:w-[300px] [&>div]:h-[300px]"
+                            class="flex flex-row flex-wrap justify-between items-center gap-12 max-w-[900px] [&>div]:w-[300px] [&>div]:h-[300px]"
                         >
                             @if (user.vineyard?.grapevines) {
                                 <div>
                                     <canvas
                                         baseChart
-                                        type="pie"
+                                        type="doughnut"
                                         [data]="grapevinePieData"
                                         [options]="grapevinePieOptions"
                                     ></canvas>
@@ -87,7 +87,7 @@
                                 <h4 hlmH4>Create at least one grapevine for a chart.</h4>
                             }
                             @if (user.vineyard?.cellars) {
-                                <div>
+                                <div class="flex flex-row items-center">
                                     <canvas
                                         baseChart
                                         type="bar"
@@ -98,56 +98,29 @@
                             } @else {
                                 <h4 hlmH4>Create at least one cellar for a chart.</h4>
                             }
-                            @if (user.vineyard?.grapevines) {
-                                <div>
+                            @if (user.vineyard?.cellars && user.vineyard!.cellars!.length > 0) {
+                                <div class="flex flex-row items-center">
                                     <canvas
                                         baseChart
                                         type="pie"
-                                        [data]="grapevinePieData"
-                                        [options]="grapevinePieOptions"
+                                        [data]="winePieData"
+                                        [options]="winePieOptions"
                                     ></canvas>
                                 </div>
                             } @else {
-                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
+                                <h4 hlmH4>Create at least one wine for a chart.</h4>
                             }
-                            @if (user.vineyard?.grapevines) {
+                            @if (user.vineyard?.cellars) {
                                 <div>
                                     <canvas
                                         baseChart
-                                        type="pie"
-                                        [data]="grapevinePieData"
-                                        [options]="grapevinePieOptions"
+                                        type="polarArea"
+                                        [data]="mapRadarData"
+                                        [options]="mapRadarOptions"
                                     ></canvas>
                                 </div>
                             } @else {
-                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
-                            }
-                            @if (
-                                user.vineyard?.grapevines?.length &&
-                                user.vineyard!.grapevines!.length > 0
-                            ) {
-                                <div>
-                                    <canvas
-                                        baseChart
-                                        type="pie"
-                                        [data]="grapevinePieData"
-                                        [options]="grapevinePieOptions"
-                                    ></canvas>
-                                </div>
-                            } @else {
-                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
-                            }
-                            @if (user.vineyard?.grapevines) {
-                                <div>
-                                    <canvas
-                                        baseChart
-                                        type="pie"
-                                        [data]="grapevinePieData"
-                                        [options]="grapevinePieOptions"
-                                    ></canvas>
-                                </div>
-                            } @else {
-                                <h4 hlmH4>Create at least one grapevine for a chart.</h4>
+                                <h4 hlmH4>Create at least one cellar for a chart.</h4>
                             }
                         </div>
                     </div>
